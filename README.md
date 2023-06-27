@@ -58,7 +58,8 @@
   - [Transaction Models](#transaction-models)
     - [Duplex Write](#duplex-write)
     - [Logged Write](#logged-write)
-  - [cyclic Redeundancy Check (CRC) Generation](#cyclic-redeundancy-check-crc-generation)
+  - [Cyclic Redeundancy Check (CRC) Generation](#cyclic-redeundancy-check-crc-generation)
+    - [How to determine the CRC polynomial](#how-to-determine-the-crc-polynomial)
     - [Checking validity with CRC](#checking-validity-with-crc)
 
 ## Administration Information
@@ -479,9 +480,20 @@ The property that enables a system to continue operating properly in the event o
 
 Module availability: measures the ratio of service accomplishment to elapsed time: $\cfrac{\text{Mean time to failure}}{\text{Mean time to failure + Mean time to repair}}$, where _Mean time to failure_ is the time elapsing before a failure is experienced.
 
+- $\text{Mean time to failure} = 1 / \text{Failure Rate}$
+- $\text{Mean time to repair} = 1 / \text{Repair Rate}$
+
 ## Fault tolerance by RAID
 
-Redundant Array of Independent Disks (RAID) - different ways to combine multiple disks as a unit for fault tolerance or performance improvement, or both of a database system.
+RAID is a storage technology that combines multiple disk drive components into a logical unit for the purposes of data redundancy and performance improvement.
+
+Redundant Array of Independent Disks (RAID) - different ways to combine multiple disks as a unit for **fault tolerance** or _performance improvement_, or both of a database system.
+
+Bits (b), Bytes (B), Blocks (4K or 8K bytes of storage)
+
+- e.g. we have data 1010 1100 1011 1100
+- bit: 1 0 1 0 1 1 0 0 1 0 1 1 1 0 0 0
+- bytes: **1010 1100** 1011 1100, bytes are 8 bits
 
 ### RAID o (Block Level Stripping)
 
@@ -596,7 +608,11 @@ Disk writes for consistency: Either entire block is written correctly on disk or
 
 Similar to duplex write, except one of the writes goes to a log. This method is very efficient if the changes to a block are small.
 
-## cyclic Redeundancy Check (CRC) Generation
+## Cyclic Redeundancy Check (CRC) Generation
+
+Cyclic Redundancy Check (CRC) is a technique used to detect errors in digital data. It involves the use of a generator polynomial. The choice of the polynomial is beyond the data that is being sent; it is determined by the protocol agreed upon by the sending and receiving parties. Different polynomials will catch different error patterns.
+
+CRC involves binary division of the data units by the generator polynomial. The remainder of this division is appended to the end of the data unit and sent to the receiver. At the receiver end, the same division is performed, if there's no remainder, the data is assumed to be intact, if there's a remainder, an error is detected
 
 $\text{CRC polynomial } x^{32} + x^{23} = x^7 + 1$
 
@@ -604,16 +620,28 @@ Most errors in communicatoins or on disk happen contiguously, that is in burst i
 
 Example of CRC polynomials:
 
-- $x^5 + x^3 + 1$
-- $x^{15} + x^{14} + x^{11} + x^{10} + x^{8} + x^{7} + x^{4} + x^{3} + 1$
+- $x^5 + x^3 + 1$ $\rightarrow$ five bits long due to the five xors
+- $x^{15} + x^{14} + x^{11} + x^{10} + x^{8} + x^{7} + x^{4} + x^{3} + 1$ $\rightarrow$ 15 bits long 1110 0001 1001 1001
+
+### How to determine the CRC polynomial
+
+The CRC polynomial is chosen to maximize the error detection capability, but it is also chosen to be easy to implement in hardware. The CRC polynomial is chosen to be a prime number.
+
+---
+
+> Data 101011
+> CRC polynomial $1 \times x^3 + 0 \times x^2 + 1 \times x + 1$
+>
+> 1. Add 3 zeros to the right of the data
+> 2. Divide the data by the polynomial use XOR (exclusive OR) operation
 
 To compute an _n_-bit binary CRC:
 
 1. Add n zero bits as 'paddint' to the right of the input bits
 
 > Input: 11010011101100
-> *This is first padded with zeros corresponding to the bit length $n$ of the CRC:
-> 11010011101100 *000\* $\leftarrow$ input left shifted by 3 bits of padding.
+> This is first padded with zeros corresponding to the bit length $n$ of the CRC:
+> 11010011101100 _000_ $\leftarrow$ input left shifted by 3 bits of padding.
 
 2. Compute the _$(n+1)$_-bit pattern representing the CRC's divisor (called a polynomial)
 
@@ -636,4 +664,4 @@ To compute an _n_-bit binary CRC:
 
 The validity of a received message can easily be verified by performing the above calculation again, this time with the check value added instead of zeros. The remainder should equal zero if there are no detectable errors.
 
-![](images/2023-06-26-18-09-38.png)
+![](images/2023-06-27-09-41-58.png)
