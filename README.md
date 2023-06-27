@@ -60,7 +60,7 @@
   - [Transaction Models](#transaction-models)
     - [Duplex Write](#duplex-write)
     - [Logged Write](#logged-write)
-  - [Cyclic Redeundancy Check (CRC) Generation](#cyclic-redeundancy-check-crc-generation)
+  - [Cyclic Redundancy Check (CRC) Generation](#cyclic-redundancy-check-crc-generation)
     - [How to determine the CRC polynomial](#how-to-determine-the-crc-polynomial)
     - [Checking validity with CRC](#checking-validity-with-crc)
 
@@ -683,7 +683,7 @@ Disk writes for consistency: Either entire block is written correctly on disk or
 
 Similar to duplex write, except one of the writes goes to a log. This method is very efficient if the changes to a block are small.
 
-## Cyclic Redeundancy Check (CRC) Generation
+## Cyclic Redundancy Check (CRC) Generation
 
 Cyclic Redundancy Check (CRC) is a technique used to detect errors in digital data. It involves the use of a generator polynomial. The choice of the polynomial is beyond the data that is being sent; it is determined by the protocol agreed upon by the sending and receiving parties. Different polynomials will catch different error patterns.
 
