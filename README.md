@@ -568,6 +568,13 @@ Example:
 
 - If we have 3 disks, assume we need to write 4 blocks of data. Then data will write to disk 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, ... (circularly).
 
+> Choosing the suitable RAID level by considering the following factors:
+>
+> - Reliability
+> - Performance
+> - Storage utilisation
+> - Price/Number of disks
+
 ### RAID 1 (mirroing)
 
 ![](images/2023-06-26-18-32-22.png)
@@ -682,6 +689,15 @@ Example of CRC polynomials:
 
 - $x^5 + x^3 + 1$ $\rightarrow$ five bits long due to the five xors
 - $x^{15} + x^{14} + x^{11} + x^{10} + x^{8} + x^{7} + x^{4} + x^{3} + 1$ $\rightarrow$ 15 bits long 1110 0001 1001 1001
+
+An error detection algorithm:
+
+1. A polynomial needs to be specified
+2. A sequence o bitwise exclusive-or operation needs to be performed
+3. The final CRC value needs to be stored for each data block (or the data unit on which CRC is performed)
+4. Data correctness can be checked with CRD
+   - Its corresponding CRC value is retrieved
+   - A sequence of bitwise XOR operation needs to performed to find out the correctness of data
 
 ### How to determine the CRC polynomial
 
