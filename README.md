@@ -21,6 +21,7 @@
   - [Memory Hierarchy](#memory-hierarchy)
     - [Data Reading Flow](#data-reading-flow)
     - [Data Transferred from HDD](#data-transferred-from-hdd)
+  - [Communication Costs](#communication-costs)
   - [Multi-Core System](#multi-core-system)
   - [Types of Database Systems](#types-of-database-systems)
     - [Simple File System](#simple-file-system)
@@ -86,6 +87,8 @@
 
 - Five quizzes 2% each during the semester.
 - A group project (40%), GitHub:
+  1. Form a group of 4 students by 2 July, 2023, 11:59 pm
+  2. Pick a topic of your interest
 - A final exam (50%)
 
 ### Staff information
@@ -158,8 +161,8 @@ A database system should provide:
 | Actuator Arm | a device that positions the head over the appropriate track.                                                            |
 | Cluster      | a group of sectors.                                                                                                     |
 
-- Track -> Dividied into track sectors.
-- Multiple track sectors -> Cluster.
+- Track $\rightarrow$ Dividied into track sectors.
+- Multiple track sectors $\rightarrow$ Cluster.
 - Actuator arm reads/writes data on the disk.
 
 **How Hard Drives Work**: https://www.youtube.com/watch?v=wteUW2sL7bc
@@ -237,7 +240,7 @@ $$
 
 ## Memory Hierarchy
 
-![](images/2023-06-26-15-09-50.png)
+<img src="images/2023-06-26-15-09-50.png" width=400 />
 
 ### Data Reading Flow
 
@@ -264,7 +267,7 @@ where
 > | 90%| 10.9|
 > | 99.90%| 1.1|
 
-![](images/2023-06-26-15-12-20.png)
+<img src="images/2023-06-26-15-12-20.png" width=350 />
 
 ### Data Transferred from HDD
 
@@ -287,13 +290,23 @@ where:
 > | 99.90% | 1.999 |
 > | 99.99% | 1.0999 |
 
+## Communication Costs
+
+$$
+\text{Transimit Time} = \text{Distance/c} + (\text{Message Bits}/\text{Bandwidth})
+$$
+
+$c = \text{Speed of Light (200 million meters/sec) with fibre optics}$
+
+This means we can no longer reduce latency on contemporary hardware further and increasingly the motto is that the message length should be large to achieve a better utilization.
+
 ## Multi-Core System
 
-![](images/2023-06-26-15-10-12.png)
+<img src="images/2023-06-26-15-10-12.png" width=250/>
 
 Each core has its own L1 cache and L2 cache. L3 cache is shared among all cores.
 
-![](images/2023-06-26-15-10-36.png)
+<img src="images/2023-06-26-15-10-36.png" width=350/>
 
 > **Recall Memory Hierachy**
 > Processor $\rightarrow$ Register $\rightarrow$ Cache (level 1, 2, 3) $\rightarrow$ Main Memory $\rightarrow$ Hard Disk Drive
@@ -391,7 +404,7 @@ DDBS is a database system that can make deductions (i.e., conclude additional fa
 
 ### Centralised
 
-![](images/2023-06-26-17-30-00.png)
+<img src="images/2023-06-26-17-30-00.png" width=350 />
 
 Data stored in one location. All users access the same data.
 
@@ -400,7 +413,7 @@ Data stored in one location. All users access the same data.
 - Optimisation process is generally very effective
 - PC/Cluster Computing/data centres are examples of this architecture
 
-![](images/2023-06-26-17-31-07.png)
+<img src="images/2023-06-26-17-31-07.png" width=350 />
 
 Client-server architecture that uses a centralised database server.
 
@@ -412,7 +425,7 @@ Client-server architecture that uses a centralised database server.
 
 ### Distributed
 
-![](images/2023-06-26-17-32-29.png)
+<img src="images/2023-06-26-17-32-29.png" width=350 />
 
 Data distributed across several nodes, can be in different locations. Users access data from their local node.
 
@@ -425,7 +438,7 @@ Data distributed across several nodes, can be in different locations. Users acce
 
 ### WWW
 
-![](images/2023-06-26-17-33-51.png)
+<img src="images/2023-06-26-17-33-51.png" width=350 />
 
 Stored all over the world, several owners of the data.
 
@@ -507,6 +520,10 @@ A0, A1, A2, ... are contiguous blocks of data of a file.
 
 > A means Block (4K or 8K bytes of storage)
 > MTTF = Mean Time To Failure
+
+Example:
+
+- If we have 3 disks, assume we need to write 4 blocks of data. Then data will write to disk 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, ... (circularly).
 
 ### RAID 1 (mirroing)
 
