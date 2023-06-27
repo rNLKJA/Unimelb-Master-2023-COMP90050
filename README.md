@@ -41,6 +41,7 @@
     - [Grid](#grid)
     - [P2P](#p2p)
     - [Cloud](#cloud)
+  - [Storage Area Networks (SAN)](#storage-area-networks-san)
   - [Fault Tolerance](#fault-tolerance)
   - [A system's lifecycle](#a-systems-lifecycle)
   - [Fault tolerance by RAID](#fault-tolerance-by-raid)
@@ -316,6 +317,8 @@ Each core has its own L1 cache and L2 cache. L3 cache is shared among all cores.
 
 ## Types of Database Systems
 
+![](images/2023-06-27-12-08-59.png)
+
 ### Simple File System
 
 Simple file system as a plain text file. Each line holds one record, with fields separated by delimiter (e.g., commas or tabs).
@@ -374,9 +377,26 @@ Key-value pair database systems store data as a collection of key-value pairs, w
 
 ##### Document-Based: MongoDB, CouchDB, OrientDB, RavenDB, etc.
 
+- Document databases store data in documents similar to JSON (JavaScript Object Notation) objects.
+- Each document contains pairs of fields and values.
+- Each value can be a scalar, a list, or another document.
+- Document databases may be used for storing, retrieving, and managing document-oriented information, also known as semi-structured data.
+- Document databases are generally used for content management and mobile application data handling.
+- Document databases are currently used in the following industries: advertising, content management, gaming, mobile, personalization, and web.
+
 ##### Column-Based: BigTable, Apache Cassandra, HBase, Hypertable, etc.
 
+- Column-based databases store data tables as sections of columns of data, rather than as rows of data.
+- Column-based databases are well suited for analyzing and managing large datasets for data warehousing and analytics processing.
+- Column-based databases are currently used in the following industries: advertising, financial services, life sciences, retail, telecommunications, and utilities.
+
 ##### Graph-Based: Neo4J, InfiniteGraph, Flock DB, etc.
+
+- Graph databases are based on graph theory, and employ nodes, properties, and edges. Nodes represent entities (such as people, businesses, accounts, or any other item to be tracked), and edges represent the relationships between nodes.
+- Graph databases are generally built for use with transactional (OLTP) systems.
+- Graph databases are growing in popularity for analysing interconnections. For example, companies might use a graph database to mine data about customers from social media. Financial services companies could use a graph database to detect fraud rings or money-laundering rings by mining data about relationships between people, companies, accounts, and transactions.
+- Graph databases can also be used to analyse data from social networking sites, transportation routes, and biological networks.
+- Graph databases are currently used in the following industries: social networking, life sciences, retail, telecommunications, financial services, and utilities.
 
 ##### Some other DB systems - Deductive database systems (DDBS)
 
@@ -398,9 +418,17 @@ DDBS is a database system that can make deductions (i.e., conclude additional fa
 | NoSQL Database System             | Non relational - database modelled other than the tabular relations. Covers a wide range of database types                   | Flexible/no fixed data schema (unlike RDB) | Most NoSQL databases offer "eventual consistency", which might result in reading data from an older version, a problem known as stale reads | Key-value store, Document-Based, Column-Based, Graph-Based, etc. |
 | Deductive database systems (DDBS) | A database system that can make deductions (i.e., conclude additional facts) based on rules and facts stored in the database | It allows recursion                        | Many RDBs do provide some of the functionality                                                                                              |                                                                  |
 
+> How to determine the database structure?
+>
+> - Can this database system be used for the application?
+> - Is that wise to use this database system for the application?
+> - What's the complexity of the application?
+
 ## Database Architecture
 
 ![](images/2023-06-26-17-40-35.png)
+
+![](images/2023-06-27-12-12-40.png)
 
 ### Centralised
 
@@ -437,8 +465,6 @@ Data distributed across several nodes, can be in different locations. Users acce
 - There are usually data replication and data fragmentation -> potential for data inconsistency
 
 ### WWW
-
-<img src="images/2023-06-26-17-33-51.png" width=350 />
 
 Stored all over the world, several owners of the data.
 
@@ -482,6 +508,23 @@ Cloud services offered in several forms:
 - IaaS: Infrastructure as a Service (provide virtual machines)
 - PaaS: Platform as a Service (provide development platform)
 - SaaS: Software as a Service (provide software)
+
+## Storage Area Networks (SAN)
+
+> A dedicated network of storage devices.
+
+- Storage can be organised as RAID.
+- Storage is partitioned and allocated to each system and can also be shared.
+
+Video from 6:30. https://www.youtube.com/watch?v=XSkRGMeqh2o
+
+- They are used for shared-disk file systems.
+- Automated backup functionality
+- It was the fundamental storage for data center type systems with mainframes for decades
+- Different versions volved over time to allow for more data, but fundamentals are the same even today
+- But in short, failure probability of one disk is different than 100s disks - which requires design choices
+
+> JOBD: Just a bunch of disks
 
 ## Fault Tolerance
 
@@ -571,7 +614,7 @@ The moment 5th one fails, system stops as there cannot be 6 devices agreeing on 
 
 In Failfast, we are only concerned of majority among the working ones. We are assuming that we can tell which ones are working. Hence we can continue to operate until 2 working ones and if both agree we can proceed with the action. But if they different the system stops.
 
-![](images/2023-06-26-18-22-35.png)
+<img src="images/2023-06-26-18-22-35.png" width=500 />
 
 ### Fault Tolerance for disks
 
