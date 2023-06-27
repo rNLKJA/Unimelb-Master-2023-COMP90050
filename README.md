@@ -80,6 +80,14 @@
 ### Learning outcomes:
 
 1. Understanding issues related to performance and reliability in building applications involving large-scale database systems.
+
+Performance and Reliability are important. Achieving reliability requires additional hardware/algorithms.
+
+- Effect of Hardware on performance - different memory hierachy
+- Hardware reliability
+- Communication reliability
+- Disk write reliability
+
 2. Understand Database Technologies used in large-scale applications such as Google search Engines.
 3. Understand the concepts and technologies underpinning new forms of Web data.
 4. Deep knowledge of transaction processing and recovery from failures and concepts employed in modern database systems.
