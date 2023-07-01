@@ -57,12 +57,43 @@
   - [Availability of Failvote systems](#availability-of-failvote-systems)
   - [Fault Tolerance with Repair](#fault-tolerance-with-repair)
   - [Fault Tolerance with Supermodule](#fault-tolerance-with-supermodule)
+  - [Communication Reliability](#communication-reliability)
   - [Transaction Models](#transaction-models)
     - [Duplex Write](#duplex-write)
     - [Logged Write](#logged-write)
   - [Cyclic Redundancy Check (CRC) Generation](#cyclic-redundancy-check-crc-generation)
     - [How to determine the CRC polynomial](#how-to-determine-the-crc-polynomial)
     - [Checking validity with CRC](#checking-validity-with-crc)
+  - [Database Engine](#database-engine)
+  - [Query Processing Steps](#query-processing-steps)
+    - [Join Operations](#join-operations)
+  - [How data are stored](#how-data-are-stored)
+  - [Query plans and optimisation](#query-plans-and-optimisation)
+    - [How to estimate the cost of a query plan?](#how-to-estimate-the-cost-of-a-query-plan)
+      - [Step 1: Result size calculation/estimation using Reduction Factor](#step-1-result-size-calculationestimation-using-reduction-factor)
+      - [Step 2: Different options for retrieving data and calculating cost (estimation)](#step-2-different-options-for-retrieving-data-and-calculating-cost-estimation)
+  - [Joins Continued](#joins-continued)
+    - [Nested-loop join](#nested-loop-join)
+    - [Page-Oriented Nested Loop Join](#page-oriented-nested-loop-join)
+  - [Why it's important to have a good query optimiser](#why-its-important-to-have-a-good-query-optimiser)
+  - [Better estimation of reduction factors](#better-estimation-of-reduction-factors)
+  - [Adaptive plans](#adaptive-plans)
+  - [Readjust statistics: learning from mistake](#readjust-statistics-learning-from-mistake)
+  - [Query Costs In Practices](#query-costs-in-practices)
+  - [Can we further lower query costs?](#can-we-further-lower-query-costs)
+    - [Store derived data](#store-derived-data)
+    - [Use pre-joined tables](#use-pre-joined-tables)
+  - [What needs to be efficient](#what-needs-to-be-efficient)
+  - [A Key Choice to Make](#a-key-choice-to-make)
+  - [Indexing is Critical for Efficiency](#indexing-is-critical-for-efficiency)
+    - [What becomes faster?](#what-becomes-faster)
+    - [Ordered Indices](#ordered-indices)
+      - [The most popular in DBMS B+ trees](#the-most-popular-in-dbms-b-trees)
+        - [How is a B+ tree defined?](#how-is-a-b-tree-defined)
+        - [Why need them:](#why-need-them)
+        - [A single Node](#a-single-node)
+        - [B+ tree example](#b-tree-example)
+    - [Hash Indices](#hash-indices)
 
 ## Administration Information
 
@@ -587,6 +618,15 @@ Example:
 
 ![](images/2023-06-26-18-32-22.png)
 
+Most commonly use raid structure.
+
+- Provides higher read throughput but lower write throughput (half the total speed, i.e. single disk speed)
+- Half storage utilisation
+- MTTF increases substantially (quadratica improvement, i.e. MTTF)
+
+> A means Block (4K or 8K bytes of storage)
+> MTTF = Mean Time To Failure
+
 ### RAID 2 (Bit level Striping)
 
 ![](images/2023-06-26-18-32-32.png)
@@ -595,17 +635,54 @@ Example:
 
 ![](images/2023-06-26-18-32-46.png)
 
+B0, B1, B2, B3 are bytes of data of file.
+
+- Striping takes place at byte level
+- Rarely used
+- Provides higher transfer rate as in RAID 0
+- P0 is parity by bytes B0 and B1
+- $P_i = B_{2i} \oplus B_{2i+1}$, here $\oplus$ is XOR operator.
+- MTTF increases substantially (1/3 of RAID1 = MTTF^2/3), as 1 disk failure can be recovered from the data of the other 2 disks.
+
+> B means Byte (8 bits of storage)
+> P is parity
+> MTTF = Mean Time To Failure
+> Parity (or check bits) are used for error detection
+
 ### RAID 4 (Block level level striping)
 
 ![](images/2023-06-26-18-32-57.png)
+
+- Striping takes place at block level
+- Dedicated disk for parity blocks
+- Provides higher throughput but very slow writes. Disk3 has more writes as Parity needs to be updated for every data write.
+- MTTF increases substantially (same as RAID3)
+- $P_i = A_{2i}\oplus A_{2i+1}$, here $\oplus$ is an exlusive-or operator.
+
+> A means Block (4K or 8K bytes of storage)
+> P is parity
+> MTTF = Mean Time To Failure
 
 ### RAID 5 with 3 disks (Block level striping)
 
 ![](images/2023-06-26-18-33-05.png)
 
+- A0, A1, A2, A3, ... are contiguous blocks of data of a file
+- Striping takes place at block level
+- Parity blocks are also striped
+- Provides higher thoughput but slower writes but better than RAID 4 as Parity bits are distributed among all disks and the number of write operations on average equal among all 3 disks
+- MTTF increases substantially (same as RAID3)
+- $P_i = A_{2i}\oplus A_{2i+1}$, here $\oplus$ is an exclusive-or operator.
+
+> RAID5 is more commonly use compare to RAID3 and RAID4.
+
 ### RAID 6 (Block level level striping)
 
 ![](images/2023-06-26-18-33-54.png)
+
+- Similar to RAID5 execpt two parity blocks used
+- Reliability is of the order of MTTF^3/10
+- P0 and P1 are parity blocks for blocks A0, A1 and A2. These are computed in such wa that any two disk failures can be safe to recover the data.
 
 ## Fault Tolerance by Voting
 
@@ -633,7 +710,7 @@ In Failfast, we are only concerned of majority among the working ones. We are as
 
 ### Fault Tolerance for disks
 
-Supermodel - Natually, a system with multiple hard disk drives is expected to function with only one working disk (use voting when multiple disks are working/available, but still work even when only one is available)
+Supermodule - Natually, a system with multiple hard disk drives is expected to function with only one working disk (use voting when multiple disks are working/available, but still work even when only one is available)
 
 ## Availability of Failvote systems
 
@@ -659,6 +736,8 @@ Probability of a particular module is not available = $\cfrac{\text{MTTR}}{\text
 
 ## Fault Tolerance with Supermodule
 
+Probabiliyt of a particular module is not available = $P = \cfrac{1}{\text{MTTF}}$
+
 Probability that (n-1) modules are unavailable, $P_{n-1} = \cfrac{\text{MTTR}}{\text{MTTF}}^{n-1}$
 
 Probability that a particular $i^{\text{th}}$ moduel fails, $P_i = \cfrac{i}{\text{MTTF}}$
@@ -666,6 +745,10 @@ Probability that a particular $i^{\text{th}}$ moduel fails, $P_i = \cfrac{i}{\te
 Probability that the system fails with a particular $i^{\text{th}}$ module failing last = $P_f\times P_{n-1} = \cfrac{i}{\text{MTTF}}\cfrac{\text{MTTR}}{\text{MTTF}}^{n-1}$
 
 Probability that a supermodule fails due to any one of the n modules failing last, when other (n-1) modules are unavailable = $\cfrac{n}{\text{MTTF}}\cfrac{\text{MTTR}}{\text{MTTF}}^{n-1}$
+
+## Communication Reliability
+
+Stable storage: A storage that is not affected by failures. It is used to store critical data that must survive failures.
 
 ## Transaction Models
 
@@ -749,3 +832,468 @@ To compute an _n_-bit binary CRC:
 The validity of a received message can easily be verified by performing the above calculation again, this time with the check value added instead of zeros. The remainder should equal zero if there are no detectable errors.
 
 ![](images/2023-06-27-09-41-58.png)
+
+## Database Engine
+
+Database Engine is a key component of a database management system. It is responsible for processing SQL statements, performing database I/O operations and managing the database cache.
+
+- Different types of queries from different types of users
+- Query evalution engine (communicate with storage engine)
+- The storage manager provide the interface between the low-level data stored in the database and the application programs and queries submitted to the system.
+- The storage manager implments several data structures as part of the physical system implementation:
+  1. Data files: the database itself
+  2. Indices: to provide fast access to data item
+  3. Data dictionary: metadata
+
+## Query Processing Steps
+
+![](images/2023-06-29-23-03-15.png)
+
+- How optimisation work?
+- How optimisation affect the database perofrmance?
+
+```sql
+SELECT columns
+FROM database
+WHERE conditions
+
+-- e.g.
+SELECT salary
+FROM Employees
+WHERE salary < 60000
+```
+
+The above example could convert to:
+
+$$
+\Pi_{\text{salary}}(\sigma_{\text{salary} < 60000}(\text{Employees}))
+$$
+
+This also equals to:
+
+$$
+\sigma_{\text{salary} < 60000}(\Pi_{\text{salary}}(\text{Employees}))
+$$
+
+Query processing steps:
+
+1. Parsing and translation: translate to relational algebra expression
+2. Make execution plan: optimisation
+3. Choose the plan with the lowest cost (fastest plan)
+
+For more general case, if we have a query like:
+
+```sql
+SELECT A1, A2, ..., An
+FROM r1, r2, ..., rn
+WHERE P
+```
+
+Is the same as the following in relational algebra expression:
+
+$$
+\Pi_{A_1, A_2, ..., A_n}(\sigma_P(r_1 \times r_2 \times ... \times r_n))
+$$
+
+### Join Operations
+
+- Common in Relational databases
+- Time consuming in execution
+- Natural join - joininbg based on common columns
+- Joins are very common and also very expensive
+
+```
+SELECT salary
+FROM Employees
+INNER JOIN Managers
+ON Employees.EmpID = Managers.EmpID
+```
+
+The above example could convert to:
+
+$$
+\Pi_{\text{salary}}(\sigma_{\text{Employees.EmpID} = \text{Managers.EmpID}}(\text{Employees} \times \text{Managers}))
+$$
+
+![](images/2023-06-29-23-18-32.png)
+
+- $r$ and $s$ are tables
+- Theta ($\theta$) is the condition (for example, <, >, =)
+
+> Page: fixed size block of data
+
+> Example
+> Page size = 4096 bytes
+> Size of each record = $s$
+> number of records then can fit in one page = $\begin{bmatrix}\cfrac{\text{Page Size}}{s}\end{bmatrix}$
+> Total number of record = $N$
+> Number pages required = $\begin{bmatrix}\cfrac{N}{P}\end{bmatrix}$
+>
+> Costs = Number of pages required to read the entire table
+> Read time is negligible if the table is in memory
+
+## How data are stored
+
+- `Files`: A database is mapped into different files. A file is sequence of records
+- `Data blocks`: Each file is mapped into fixed length storage units, called blocks (also called logical blocks, or pages)
+- `Cost of a query`: The number of pages/disk blocks that are accessed from disk to answer the query.
+
+> Access from disk is the most dominant cost factor in query processing (recall from memory hierarchy)
+
+## Query plans and optimisation
+
+Steps in cost-based query optimisation
+
+1. Generate logically equivalent expression of the query
+2. Annotate resultant expressions to get alternative query plans
+   - Heap scan/Index scan?
+   - What type of join algorithm?
+
+![](images/2023-06-29-23-34-03.png)
+
+3. Choose the cheapest plan based on estimated cost.
+
+Estimation of plan cost based on:
+
+- statistical information about tables: example number of distinct values for an attribute
+- statistical estimation for intermediate results to compute cost
+
+![](images/2023-06-29-23-35-19.png)
+
+Query optimisor estimate the cost from the bottom left to the top right.
+
+> Heap scan: scan the entire table
+> Index scan: scan the index
+
+> Result size estimation is based on Reduction Factor (RF)
+> For example, if we want to select a employee with salary less than 60,000 with a maiximum value 100,000, we can estimate the result size by:
+> $RF = \cfrac{val - low}{high - low} = \cfrac{60000 - 0}{100000 - 0} = 0.6$
+
+### How to estimate the cost of a query plan?
+
+![](images/2023-06-30-13-48-58.png)
+
+#### Step 1: Result size calculation/estimation using Reduction Factor
+
+Depends on the type of the predicate:
+
+1. Col = value: RF = 1 / Number of unique values (Col)
+2. Col > value: RF = (High(col) - value) / (High(col) - Low(col))
+3. Col < value: RF = (val - Low(col)) / (High(col) - Low(col))
+4. Col A = Col B (for joins): RF = 1 / max(Number of unique values (Col A), Number of unique values (Col B))
+
+> **What can go wrong?**
+
+#### Step 2: Different options for retrieving data and calculating cost (estimation)
+
+![](images/2023-06-30-14-13-48.png)
+
+If there is a B+ tree available, the estimated cost is: $(I + N) \times RF_1 \times RF_2$ where $I$ is the number of index pages and $N$ is the number of data pages.
+
+> **What can go wrong?**
+
+## Joins Continued
+
+Several different algorithms to implement joins exist that the optimizer can look at and pick the best:
+
+- Nested-loop join
+- Pate-oriented nested-loop join
+- Merge-join
+- Hash-join
+
+### Nested-loop join
+
+![](images/2023-06-30-14-22-24.png)
+
+```
+for each tuple t, in r do begin
+  for each tuple t, in s do begin
+    test pair (t_p, t_s) to see if they satisfy the join condition theta
+    if they do, add t_r • t_s to the result
+  end
+end
+```
+
+The cost is calculated by the number of pages being retrieved from disk. The relation could be represented by $P_r$ or $b_r$.
+
+Total number of cost for doing the nested loop join = $b_r + (n_p \times b_s)$
+
+- $r$ is called the outer relation and $s$ the inner relation of the join.
+- Requires no indices and can be used with any kin of join condition.
+- Expensive since it examines every pair of tuples in the two relations.
+- Remember that for every retrieval, espcially for a different item from the disk in a nonconsecutive location we pay a seek time as a penalty, this is where it could happen a large number of times.
+- Could be cheap if you do it on two small tables where they fit to main memory though (disk brings the whole tables).
+
+---
+
+Example of a bank database:
+
+- Number or records of customer: 10,000, depositor: 5000
+- Number of pages of customer: 400, depositor: 100
+
+In the worst case, if there is enough memory only to hold one page/block of each table, the estimated cost is: $b_t + (n_r \times b_s) \text{Page Access}$
+
+We have two options:
+
+1. with depositor as the outer relation: $100 + (5000 * 400) = 2,000,100$ page access
+2. with customer as the outer relation: $400 + (10000 * 100) = 1,000,400$ page access
+
+If you had 1,000,000 customers, then you would wait several hours for one simple join.
+
+---
+
+### Page-Oriented Nested Loop Join
+
+![](images/2023-06-30-14-35-29.png)
+
+Variant of nested-loop join in which every page of inner relation is paired with every page of outer relation.
+
+```
+for each page B, of r do begin
+  for each page B of s do begin
+    for each tuple t in B do begin
+      for each tuple t in B do begin
+        Check if (t_p, t_s) satisfy the join condition theta
+        if they do, add t_r • t_s to the result
+      end
+    end
+  end
+end
+```
+
+The cost is calculated by the number of pages being retrieved from disk.
+
+- $P_r + (P_r \times P_s)$
+- $b_r + (b_r \times b_s)$
+
+For the above example, now we have:
+
+- with depositor as the outer relation: $100 + (100 * 400) = 40,100$ page access
+- with depositor as the outer relation: $400 + (400 * 100) = 40,400$ page access
+
+Several order to magnitude faster than the nested loop join (NLJ).
+
+## Why it's important to have a good query optimiser
+
+- It's the heart of query efficiency
+- Generating all equivalent expressions exhaustively - very expensive
+- Must consider the interaction of evaluation techniques when choosing evaluation plans. Choosing the cheapest algorithm for each operation independently may not yield best overall cost
+- Estimations of the result size may not be accurate
+
+In real life, **_Cost-based optimisation is expensive, thus_**
+
+- Systems may use heuristics to reduce the number of choices that must be made in a cost-based fashion
+- Heuristic optimisation transforms the query-tree by using a set of rules that typically (but not in all cases) improve execution performance
+
+  1. Perform selects early (reduces the number of tuples)
+  2. Perform projections early (reduces the number of attributes)
+  3. Perform most restrictive selection and join operations (i.e., with smallest result size) before other similar operations
+
+- Some systems use only heuristics, other combine heuristics with cost-based optimisation
+- **_Optimizers often use simple heuristics for very cheap queries, and perform exhaustive enumeration for more expensive queries_**
+
+## Better estimation of reduction factors
+
+1. Sampling
+   - Select employees where salary < 60,000 with a maximum value of 100,000, we can estimate the 60% of the employees have salary less than 60,000.
+2. Histograms:
+   - If there is a range, sampling estimate the number of values in the given range. (How many data points fall into the data range).
+   - equi-depth histogram: divide the range into equal number of buckets and count the number of values in each bucket.
+   - equi-width histogram: divide the range into equal width buckets and count the number of values in each bucket.
+   - equi-height histogram: divide the range into buckets such that each bucket has the same number of values.
+
+## Adaptive plans
+
+Wait for one/some parts of a plan to execute first, then choose the next best alternative.
+
+![](images/2023-07-01-00-19-56.png)
+
+![](images/2023-07-01-00-08-17.png)
+
+## Readjust statistics: learning from mistake
+
+![](images/2023-07-01-00-07-08.png)
+
+## Query Costs In Practices
+
+SQL server management studio for monitoring - Query Store
+
+| SQL Server Version     | Exeuction Metric                                                                                                                                                                                  | Statistic Function                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| SQL Server 2016 (13.x) | CPU time, Duration, Execution count, Logical reads, Logical writes, Memory consumption, Physical reads, CLR time, Degree of parallism (DOP), and Row count                                        | Average, Maximum, Minimum, Standard Deviation, Total |
+| SQL Server 2017 (14.x) | CPU time, Duration, Execution count, Logical reads, Logical writes, Memory consumption, Physical reads, CLR time, Degree of parallism (DOP), Row count, Log memory, TempDB memory, and Wait times | Average, Maximum, Minimum, Standard Deviation, Total |
+
+Troubleshooting to manage costs
+
+- Identify 'regressed queries' - Pinpoint the queires for which execution metrics have recently regressed (for example, changed to worse)
+- Track specific queires - Track the exection of the most important queires in real time
+
+![](images/2023-07-01-01-07-16.png)
+
+When you identify a query with suboptimial performance.
+
+- Force a query plan instaed of the plan chosen by the optimizer.
+- Do we need an index?
+- Enfore statistic recompilation
+- Rewrite query?
+
+Query rewriting with parameters for execution plan reuse
+
+```sql
+SELECT *
+FROM Product
+WHERE categoryID = 1;
+
+SELECT *
+FROM Product
+WHERE categoryID = 4;
+```
+
+We expect the optimiser to generate essentially the same plan and reuse the plan - parameterise
+
+```sql
+DECLARE @MyintParm INT
+SET @MyIntParm = 1
+EXEC sp_executesql
+  N'SELECT *
+    FROM Product
+    WHERE categoryID = @Parm',
+  N'@Parm INT',
+  @Parm = @MyIntParm
+```
+
+## Can we further lower query costs?
+
+### Store derived data
+
+- When you frequently need derived values
+- Data do not change frequently
+
+### Use pre-joined tables
+
+- When tables need to be joined frequently
+- Regularly check and update pre-joined table for updates in the original table
+
+## What needs to be efficient
+
+DMBS must support:
+
+- insert/delete/modity record
+- read a particular record (specified using record id)
+- scam all records (possibly with some conditions on the records to be retrieved), or scan a range of records.
+
+## A Key Choice to Make
+
+- DBMS admin generally creates indices to allow most direct access to individual items.
+- these are also good during join operations
+  - If there is a join condition that restricts the number of items to be joined in a table
+
+## Indexing is Critical for Efficiency
+
+Indexing mechanisms used to speed up access to desired data in a similar way to look up a phone book or dictionary.
+
+> **Search key**: attribute or set of attributes used to look up records/rows in a system like an ID of a person.
+
+An **index file** consists of records (called index entries) of the form _search-key, pointer to where data is_.
+
+Index files are typically much smaller than the original data files and many parts of it are already in memory.
+
+### What becomes faster?
+
+Disk access becomes faster through:
+
+- Records with a specified value in the attribute accessed with minimal disk access.
+- or records with an attribute value falling in a specific range of values can be retrieved with a single seek and then consecutive sequential reads.
+
+- Insertion time to index is also important
+- Deletion time is important as well
+- No big index rearrangement after insertion and deletion
+- Space overhead needs to be considered for the index itself
+- No single indexing technique is the best. Rather, each technique is best suited to particular applications.
+
+Two basic kinds of indices based on search keys:
+
+- **Ordered indices**: search keys are stored in some order
+- **Hash indices**: search keys are distributed hopefully uniformly across "buckets" using a "function"
+
+### Ordered Indices
+
+The records in the indexed file may themselves be stored in some sorted order.
+
+> **Clustering index/Primary index**: in a sequentially ordered file, the index whose search key specifies the sequential order of the file.
+>
+> - The search key of a primary index, is usually but not nececessarily the primary key
+>   ![](images/2023-07-01-19-16-30.png) > ![](images/2023-07-01-19-16-39.png)
+
+> **Non-Clustering index/Secondary index**: an index whose search key specifies an order different from the sequential order of the file.
+> Secondary indeces improve the performance of queires that use keys other than the search key of the clustering index.
+> ![](images/2023-07-01-19-16-15.png)
+
+#### The most popular in DBMS B+ trees
+
+B+ trees is a generalization of a binary search tree in which a node can have more than two children.
+
+B+ trees similar to Binary tree in many aspects but the fan out is much higher.
+
+##### How is a B+ tree defined?
+
+- It is similar to a binary tree in concept but with a fan out that is defined through a nuber $n$.
+- All paths from root to leaf are the same length (depth)
+- Each node that is not a root or a leaf has between $[n/2]$ and $n$ children.
+- A leaf node has between $[(n-1)/2]$ and $n-1$ values
+- Specifical cases:
+  - If the root is not a leaf, it has at least 2 children
+  - If the root is a leaf (that is, there are no other nodes in the tree), it can have betwee $0$ and $(n-1)$ values
+
+##### Why need them:
+
+- Keeping files in order for fast search ultimately degrades as file grows, since many overflow blocks get created.
+- So binary search on ordered files cannot be done.
+- Periodic reorganisation of entire file is required to achieve this.
+
+Advantages of B+ trees:
+
+- Automatically reorganise itself with small, local, changes, in the face of insertions and deletions.
+- Reorganisation of entire data file is not required to maintain performance.
+
+Disadvantages of B+ trees:
+
+- Extra information and deletion overhead and space overhead.
+
+Advantages of B+ trees outweight disadvantages for DBMSs
+
+- B+ trees are used extensively
+
+##### A single Node
+
+Typical node:
+![](images/2023-07-01-19-52-11.png)
+
+- $K_i$ are the search-key values
+- $P_i$ are pointers to children (for non-leaf nodes) or pointers to records or buckets of records (for leaf nodes)
+
+the search-keys in a node are ordered: $K_1 < K_1 < K_3 < \dots < K_{n-1}$
+
+##### B+ tree example
+
+![](images/2023-07-01-19-46-21.png)
+
+- Leaf nodes must have between 2 and 4 values
+- Non-leaf nodes other than root must have between 3 and 5
+- Root must have at least 2 children
+
+![](images/2023-07-01-19-51-28.png)
+
+Finding all records with a search-key value of k:
+
+1. N=root initially
+2. Repeat:
+   1. Examine N for the smallest search-key value > k
+   2. If such a value exists, assume it is $K_r$, Then set $N=P_i$
+   3. Otherwise $k \ge K_{n-1}$. Set $N=P_n$. Follow pointer.
+3. If for some $i$, key $K_i=k$, follow pointer $P_i$ to the desired record or bucket.
+4. Else no record with search-key $k$ exists.
+
+![](images/2023-07-01-19-50-17.png)
+
+### Hash Indices
