@@ -102,8 +102,7 @@
     - [Bitmap Indices Example](#bitmap-indices-example)
   - [Indexing for other Data Types](#indexing-for-other-data-types)
   - [How do we create buckets then? - Quadtrees](#how-do-we-create-buckets-then---quadtrees)
-    - [But hold on where is the tree?](#but-hold-on-where-is-the-tree)
-    - [How to run a NN query?](#how-to-run-a-nn-query)
+    - [How to run a Nearest Neighbor (NN) query?](#how-to-run-a-nearest-neighbor-nn-query)
     - [More on Quadtrees](#more-on-quadtrees)
   - [R-Trees](#r-trees)
     - [R-Trees Example](#r-trees-example)
@@ -1426,18 +1425,112 @@ They are in use in Oracle Spatial and other comparable DBMS extensions.
 
 The following class of data structures is one such index: Quadtrees.
 
-### But hold on where is the tree?
+![](images/2023-07-02-13-41-26.png)
 
-### How to run a NN query?
+### How to run a Nearest Neighbor (NN) query?
+
+![](images/2023-07-02-13-42-43.png)
+
+Bascially the same approach, as any other tree does, e.g. Best First Search.
+
+Just order acess with respect to distance to point.
 
 ### More on Quadtrees
 
+- Each node of a quadtree is associated with a rectangular region of space; the top node is associated with the entire target space.
+- Each division happens with respect to a rule based on data type.
+- Each non-leaf nodes divides its region into four equal sized quadrants.
+- Thus each such node has four child nodes corresonding to the four quadrants and division continues recursively until a stopping condition.
+- Example: Leaf nodes have between zero and some fixed maximum number of points
+
+<img src="images/2023-07-02-13-47-32.png" height=50% align=center />
+
 ## R-Trees
+
+R-Trees are an N-dimensional extension of B+ trees, useful for indexing sets of rectangles and other polygons.
+
+Supported in many modern database systems, along with variants like R+ trees and R\* trees.
+
+The basic idea: generalize the notion of a one-dimensional interval associated with each B+ tree node to an N-dimensional interval, that is, an N-dimensional rectangle.
+
+It will consider only the two-dimensional case (N=2), generalisation for N > 2 is straightforward, although R-trees work well only for relatively small N.
+
+Bouding boxes (BB) of children of a node are allowed to overlap.
+
+Note: A bounding box of a node is a maximum sized rectanlge that contains all the rectangles/polygons associated with the node.
 
 ### R-Trees Example
 
+A set of rectanlges (solid line) and the bounding boxes (dashed line) of the nodes of a R-tree for the rectangles.
+
+The R-tree is shown on the right.
+
+The clustering of objects are based on a rule.
+
+![](images/2023-07-02-13-57-31.png)
+
 ### Search in R-Trees
+
+To find data items intersecting a given query point/region, do the following, starting from the root node:
+
+- If the node is a leaf node, output the data items whose keys intersect the given query point/region.
+- Else, for each child of the current node whose bound box intersects the query point/region, recursively search the child.
+
+Can be very inefficient in worst case since multiple paths may need to be searched due to overlaps, but works acceptably in practice.
+
+![](images/2023-07-02-14-05-44.png)
 
 ## Using indexes
 
+Some indexes are automatically created by the DBMS
+
+- For UNIQUE constraint, DBMS creates a nonclustered index.
+- For PRIMARY KEY, DBMS creates a clustered index.
+
+You can create indexes on any relation (or view).
+
+<img src="images/2023-07-02-14-09-09.png" width=300px />
+
 ## Index Definition in SQL
+
+Create an index on a relation
+
+```sql
+CREATE INDEX index-name ON relation-name (attribute-list);
+```
+
+To drop an index
+
+```sql
+DROP INDEX index-name;
+```
+
+Most database systems allow specification of type of index, and clustering.
+
+Create a clustered index on a table
+
+```sql
+CREATE CLUSTERED INDEX index1 ON table1 (column1);
+```
+
+Create a non-clustered index with an unique constraints
+
+```sql
+CREATE UNIQUE INDEX index1 ON table1 (column1 DESC, column2 ASC, column3 DESC);
+```
+
+> A unique index is one in which no two rows are permitted to have the same index key value.
+
+Speciallized indexes: filtered index
+
+```sql
+CREATE INDEX index1 ON table1 (column1)
+WHERE column1 IS NOT NULL;
+```
+
+Speciallized indexes: spatial index
+
+```sql
+CREATE SPATIAL INDEX index1 ON
+table_name(Geometry_type_col_name) WITH (BOUNDING_BOX = (0, 0, 500, 200));
+```
