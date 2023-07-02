@@ -93,7 +93,23 @@
         - [Why need them:](#why-need-them)
         - [A single Node](#a-single-node)
         - [B+ tree example](#b-tree-example)
-    - [Hash Indices](#hash-indices)
+        - [Metrics](#metrics)
+      - [Range Queries on B+ Trees](#range-queries-on-b-trees)
+      - [B+ Trees Insertion and Deletion](#b-trees-insertion-and-deletion)
+      - [B+ Tree File Organization](#b-tree-file-organization)
+  - [Hash Indices](#hash-indices)
+  - [Bitmap Indices](#bitmap-indices)
+    - [Bitmap Indices Example](#bitmap-indices-example)
+  - [Indexing for other Data Types](#indexing-for-other-data-types)
+  - [How do we create buckets then? - Quadtrees](#how-do-we-create-buckets-then---quadtrees)
+    - [But hold on where is the tree?](#but-hold-on-where-is-the-tree)
+    - [How to run a NN query?](#how-to-run-a-nn-query)
+    - [More on Quadtrees](#more-on-quadtrees)
+  - [R-Trees](#r-trees)
+    - [R-Trees Example](#r-trees-example)
+    - [Search in R-Trees](#search-in-r-trees)
+  - [Using indexes](#using-indexes)
+  - [Index Definition in SQL](#index-definition-in-sql)
 
 ## Administration Information
 
@@ -1237,7 +1253,7 @@ B+ trees similar to Binary tree in many aspects but the fan out is much higher.
 
 ##### How is a B+ tree defined?
 
-- It is similar to a binary tree in concept but with a fan out that is defined through a nuber $n$.
+- It is similar to a binary tree in concept but with a fan out that is defined through a nuber $n$ where $n$ is the maximum number of children a node can have.
 - All paths from root to leaf are the same length (depth)
 - Each node that is not a root or a leaf has between $[n/2]$ and $n$ children.
 - A leaf node has between $[(n-1)/2]$ and $n-1$ values
@@ -1296,4 +1312,132 @@ Finding all records with a search-key value of k:
 
 ![](images/2023-07-01-19-50-17.png)
 
-### Hash Indices
+##### Metrics
+
+- If there are $K$ search-key in the file, the height of the tree is no more than $[\log_{n/2}(K)]$ and it would be balanced.
+- A node is generally the same size as a disk block, typically $4$ kilobytes
+  - and $n$ is typically around $100$ ($40$ bytes per index entry).
+- With 1 million search key values and $n=100 \rightarrow$ number of of disk blocks will be read.
+  - $\log_{50}(1,000,000) = 4$ nodes are accessed in a look up
+- Contrast this with a balanced binary tree with 1 million search key values
+  - around $20$ nodes are accessed in a lookup
+  - above difference is signficant since every node access may need a disk I/O, costing around $20$ milliseconds.
+
+#### Range Queries on B+ Trees
+
+Range queries find all records with search key values in a given range.
+
+![](images/2023-07-02-00-13-17.png)
+
+#### B+ Trees Insertion and Deletion
+
+![](images/2023-07-02-00-13-24.png)
+
+B+ Tree before and after insertion of "Adams"
+
+![](images/2023-07-02-00-13-43.png)
+
+B+ Tree before and after insertion of "Lamport"
+
+![](images/2023-07-02-00-14-22.png)
+
+---
+
+![](images/2023-07-02-00-16-50.png)
+
+B+ Tree before and after deleting "Srinivasan"
+
+![](images/2023-07-02-00-16-37.png)
+
+B+ Tree before and after deleting "Singh" and "Wu"
+
+![](images/2023-07-02-00-17-21.png)
+
+- Leaf containing Singh and Wu became undefull, and borrowed a value Kim from its left sibling.
+- Search-key value in the parent changes as a result.
+
+B+ Tree before and after delting "Gold"
+
+![](images/2023-07-02-00-18-47.png)
+
+- Node with Gold and Katz became underfull, and was merged with its sibling.
+- Parent node becomes underfull, and is merged with its sibling.
+  - Value separating two nodes (at the parent) is pulled down when merging.
+- Root node then has only one child, and is deleted.
+
+#### B+ Tree File Organization
+
+B+ Tree File Organisation
+
+- Leaf nodes in a B+ tree file organisation store records, instead of pointers to children.
+- Hleps keep data records clustered (ordered) even when there are insertions/deletions/updates.
+- Insertion and deletion or records are handled in the same way as insertion and deletion of entires in a B+ tree index.
+
+## Hash Indices
+
+- A hash index organizes the search keys, with their associated record pointers, into a hash file structure. Order is not important.
+- Hash indices are always secondary indices.
+- Given a key the aim is to find the related record on file in one shot which is important.
+- An ideal hash function is **uniform**, i.e., each bucket is assigned the same number of search-key values from the set of all possible values.
+  > As close to random and as close to uniform as possible
+- Ideal has function is **random**, so each bucket will have the same number of records assigned to it irrespective of the actual distribution of search key values in the file.
+- Typical hash functions perform computation on the internal binary representation of the search key.
+
+<img align=left src="images/2023-07-02-00-26-02.png" width=48% />
+
+<img align=right src="images/2023-07-02-00-26-13.png" width=48% />
+
+## Bitmap Indices
+
+Records in a relation are assumed to be numbered sequentially from, say, 0
+
+Applicable on attributes that take on a relatively small number of distinct values
+
+- e.g. gender, country, state, ...
+- e.g. income-level (income broken up into a small number of levels such as 0-9999, 10000-19999, 20000-50000, 50000-infinity)
+
+A bitmap is simply an array of bits.
+
+### Bitmap Indices Example
+
+In its simplest form a bitmap index on an attribute has a bitmap for each value of the attribute.
+
+- Bitmap has as many bits as records
+- In a bitmap for value v, the bit for a record is 1 if the record has the value v for the attribute, and is 0 otherwise
+- Used for business analysis, where rather than individual records say how much of one type exists is the query/important
+
+<img align=left width=49% src="images/2023-07-02-00-32-21.png" />
+
+<img align=right width=49% src="images/2023-07-02-00-32-38.png" />
+
+## Indexing for other Data Types
+
+Unlike things we can access by names, ids, there is a lot of data that exists, and increasingly that requires special indexing.
+
+For example spatial data requires more complex computations for accessing data. e.g., intersections of objects in space.
+
+There is no trivial way to sort items which is a key issue, e.g. belwo is a common range query on a simple set of items and a Nearest Neighbor query.
+
+## How do we create buckets then? - Quadtrees
+
+In 2-d space, similar to B+ Trees to exponentially reduce the number of calculations by a repetitive division of space, novel indices were invented.
+
+They are in use in Oracle Spatial and other comparable DBMS extensions.
+
+The following class of data structures is one such index: Quadtrees.
+
+### But hold on where is the tree?
+
+### How to run a NN query?
+
+### More on Quadtrees
+
+## R-Trees
+
+### R-Trees Example
+
+### Search in R-Trees
+
+## Using indexes
+
+## Index Definition in SQL
