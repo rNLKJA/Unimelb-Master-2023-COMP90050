@@ -667,8 +667,6 @@ DDBS is a database system that can make deductions (i.e., conclude additional fa
 > - Distributed database
 > - Centralised database
 >
-> Reason:
->
 > ---
 >
 > FriendBook is a new social network site that will launch its operation soon. THey have officies in many majory cities of USA. They need a database that can handle millions of users across the globe. For preserving privacy and security, the need their own data storage system, which is not shared or owned by any other company. Which of the following database architecture is the most suitable choice for this scenario?
@@ -677,8 +675,6 @@ DDBS is a database system that can make deductions (i.e., conclude additional fa
 > - Word Wide Web
 > - **Distributed database**
 > - Centralised database
->
-> Reason:
 
 ## Database Architecture
 
