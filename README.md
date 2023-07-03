@@ -59,7 +59,7 @@
   - [Fault Tolerance](#fault-tolerance)
   - [A system's lifecycle](#a-systems-lifecycle)
   - [Fault tolerance by RAID](#fault-tolerance-by-raid)
-    - [RAID o (Block Level Stripping)](#raid-o-block-level-stripping)
+    - [RAID 0 (Block Level Stripping)](#raid-0-block-level-stripping)
     - [RAID 1 (mirroing)](#raid-1-mirroing)
     - [RAID 2 (Bit level Striping)](#raid-2-bit-level-striping)
     - [RAID 3 (Byte level Striping)](#raid-3-byte-level-striping)
@@ -123,6 +123,17 @@
     - [Search in R-Trees](#search-in-r-trees)
   - [Using indexes](#using-indexes)
   - [Index Definition in SQL](#index-definition-in-sql)
+  - [Quiz 1](#quiz-1)
+    - [Why solid state drives are faster than hard disk drives in general?](#why-solid-state-drives-are-faster-than-hard-disk-drives-in-general)
+    - [Machine A has a higher cache hit ratio than Machine B. The cache access time and the memory access time of both machines are the same. Which machine has a faster effective memory access time?](#machine-a-has-a-higher-cache-hit-ratio-than-machine-b-the-cache-access-time-and-the-memory-access-time-of-both-machines-are-the-same-which-machine-has-a-faster-effective-memory-access-time)
+    - [Jane wants to add an online shopping cart option to her local clothing store website. The users do not need to register to shop online there, but they get a temporary ID when they start adding items to the online shopping cart. Each time an item is added to a cart, an entry needs to be stored with that user’s ID and the item’s ID in a database. Which of the following types of databases can be used in this context?](#jane-wants-to-add-an-online-shopping-cart-option-to-her-local-clothing-store-website-the-users-do-not-need-to-register-to-shop-online-there-but-they-get-a-temporary-id-when-they-start-adding-items-to-the-online-shopping-cart-each-time-an-item-is-added-to-a-cart-an-entry-needs-to-be-stored-with-that-users-id-and-the-items-id-in-a-database-which-of-the-following-types-of-databases-can-be-used-in-this-context)
+    - [Weather service Australia has installed multiple sensors in Melbourne with a small computing device in them. Each computing devices store and manage the data of its own sensor. When the sensors record any new data, they connect with the other nearby sensors in an ad-hoc network, share those data, and then disconnect. Which of the following database architecture is the most suitable choice for this scenario?](#weather-service-australia-has-installed-multiple-sensors-in-melbourne-with-a-small-computing-device-in-them-each-computing-devices-store-and-manage-the-data-of-its-own-sensor-when-the-sensors-record-any-new-data-they-connect-with-the-other-nearby-sensors-in-an-ad-hoc-network-share-those-data-and-then-disconnect-which-of-the-following-database-architecture-is-the-most-suitable-choice-for-this-scenario)
+  - [Quiz 2](#quiz-2)
+    - [Which of the following RAID settings has the highest storage utilisation when all disks have the same capacity.](#which-of-the-following-raid-settings-has-the-highest-storage-utilisation-when-all-disks-have-the-same-capacity)
+    - [Both failvote and failfast systems can provide more reliable outputs (if there is majority agreement) than a single module system with no voting. True or False](#both-failvote-and-failfast-systems-can-provide-more-reliable-outputs-if-there-is-majority-agreement-than-a-single-module-system-with-no-voting-true-or-false)
+    - [Which of the following thecniques is NOT used to achieve a reliable communication?](#which-of-the-following-thecniques-is-not-used-to-achieve-a-reliable-communication)
+    - [Which of the following techniques is NOT used to achieve a reliable communication?](#which-of-the-following-techniques-is-not-used-to-achieve-a-reliable-communication)
+      - [Which of the following is true for the cyclic redundancy check (CRC) technique?](#which-of-the-following-is-true-for-the-cyclic-redundancy-check-crc-technique)
 
 ## Administration Information
 
@@ -858,7 +869,7 @@ Bits (b), Bytes (B), Blocks (4K or 8K bytes of storage)
 - bit: 1 0 1 0 1 1 0 0 1 0 1 1 1 0 0 0
 - bytes: **1010 1100** 1011 1100, bytes are 8 bits
 
-### RAID o (Block Level Stripping)
+### RAID 0 (Block Level Stripping)
 
 ![](images/2023-06-26-18-15-55.png)
 
@@ -1827,3 +1838,145 @@ CREATE INDEX index1 ON view1 (column1, column2);
 ```
 
 ... and many more.
+
+---
+
+## Quiz 1
+
+### Why solid state drives are faster than hard disk drives in general?
+
+- [ ] SSDs are expensive
+- [x] SSDs do not have any moving part
+- [ ] Hard disk drives need to make backups more frequently
+- [ ] SSDs are smaller in size
+
+The main reason why Solid State Drives (SSDs) are faster than Hard Disk Drives (HDDs) is that **SSDs do not have any moving parts**.
+
+1. SSDs store data on flash memmory chips, and data can be accessed almost instantly regardless of where it's stored on the drive. This is because SSDs use electrical circuits to access and read data, resulting in very high speed.
+2. On the other hand, HDDs store data on spinning platters, and they use a mechanical arm to read and write data. The time it takes for the arm to locate the data on the platter (seek time) significantly slows down the read/write operations compared to SSDs.
+
+The other options listed are not directly related to the speed of SSDs:
+
+- While it's true that SSDs are more expensive per gigabyte than HDDs, this doesnt' influence their speed.
+- Making backups more frequently is a function of how a system is configured, rather than a characteristic of the HDD itself.
+- The size of the SSD does not directly affect its speed. While it's true that SSDs tend to be smaller, this is more a factor of their design and does not impact the speed at which they operate.
+
+### Machine A has a higher cache hit ratio than Machine B. The cache access time and the memory access time of both machines are the same. Which machine has a faster effective memory access time?
+
+- [ ] Machine B
+- [ ] Both machines have the same effective memory access time
+- [x] Machine A
+
+e.g. $H_A = 0.5, H_B = 0.1$
+
+Effective memory access time or A: $\text{EA} = \text{H}\times\text{C} + (1-\text{H})\times \text{M}$ = $0.5\text{C}+(1-0.5)\times 100\text{C}$ = $50.5$
+
+Effective memory access time or B: $\text{EA} = \text{H}\times\text{C} + (1-\text{H})\times \text{M}$ = $0.1\text{C}+(1-0.1)\times 100\text{C}$ = $90.1C$
+
+- A cache hit ratio represents the percentage of cache accesses that result in a hit (finding the requested data in cache memory). A higher cache hit ratio means that more frequently, the system can retrieve data from cache, which is faster than accessing main memory.
+- As a result, Machine A with its higher cache hit ratio, will spend less time accessing the slower main memory and more time accessing the faster cache, leading to a lower (and therefore faster) effective memory access time overall.
+- Machine B, with a lower cache hit ratio, will need to access the slower main memory more frequently when it doesn't find data in the cache, leading to a higher (and therefore slower) effetive memory access time.
+
+### Jane wants to add an online shopping cart option to her local clothing store website. The users do not need to register to shop online there, but they get a temporary ID when they start adding items to the online shopping cart. Each time an item is added to a cart, an entry needs to be stored with that user’s ID and the item’s ID in a database. Which of the following types of databases can be used in this context?
+
+- [x] All of the other options can be used for this purpose, but each will have their own advantages and disadvantages
+- [ ] key-value storage
+- [ ] relational databases
+- [ ] simple file
+
+Let's discuss each of them:
+
+1. Key-Value Storage: In this type of database, data is stored as a collection of key-value pairs where a key serves as a unique identifier. In the context of Jane's store, the user's temporary ID could serve as the key, and the items in their cart could be the associated values. These databases are usually highly scalable and performant for simple data models, but may lack complex querying capabilities.
+2. Relational Databases: These types of databases organize data into tables, and relationships between data are stored as tables as well. They provide a high degree of flexibility and querying capabilities. In Jane's case, a table could be created where each row represents an item in a user's cart, with columns for the user ID and item ID. These databases are typically reliable and ACID compliant, but may face performance challenges at scale.
+3. Simple File: Even a simple file system can be used to store this data, where each line could contain a user ID and item ID. However, as the amount of data grows, finding, managing, and updating data in files becomes slower and more difficult, hence it is not an optimal choice for this scenario.
+
+Each of these options could theoretically be used, but the optimal choice depends on several factors, including expected load, complexity of the data, required query capabilities, scalability needs, and other system requirements. For a more robust and flexible solution, a relational database or a key-value store is generally a better choice over a simple file system.
+
+### Weather service Australia has installed multiple sensors in Melbourne with a small computing device in them. Each computing devices store and manage the data of its own sensor. When the sensors record any new data, they connect with the other nearby sensors in an ad-hoc network, share those data, and then disconnect. Which of the following database architecture is the most suitable choice for this scenario?
+
+- [x] P2P databases
+- [ ] Distributed database
+- [ ] Cloud storage
+- [ ] Centralised database
+
+1. P2P databases: Peer-to-peer architecture allows each node (in this case, each sensor with its computing device) in the network to collect, store, and manage its own data and interact with other nodes directly to share this data. The ad-hoc network described in the scenario is a common characteristic of P2P systems.
+2. Distributed Database: While this option allows data to be stored in different locations, it usually assumes that the nodes are constantly connected in a fixed network, which is not the case in the scenario described.
+3. Cloud Storage: This option requires constant internet connectivity to function properly, which might not be available or reliable for sensors spread across various locations.
+4. Centralised Database: This type of database stores all data in one location, which doesn't match the scenario where each sensor manages its own data. A centralised system could also introduce latency issues when collecting data from multiple sensors.
+
+It's worth noting that in practice, the architecture might be a hybrid or a variant of these. For instance, the sensors might operate as a P2P network locally but could periodically sync data to a centralised or distributed cloud database for long-term storage, analysis, and backup.
+
+---
+
+## Quiz 2
+
+### Which of the following RAID settings has the highest storage utilisation when all disks have the same capacity.
+
+- [ ] RAID 3 with 3 disks
+- [ ] RAID 1 with 3 disks
+- [ ] RAID 4 with 3 disks
+- [x] RAID 0 with 3 disks
+
+Among the given RAID settings, RAID 0 with 3 disks has the highest storage utilisation when all disks have the same capacity. RAID 0 combines the storage capacity of multiple disks into a single logical volume without any data redundancy or fault tolerance. It strips the data across all the disks in the array, providing increased performance and total storage capacity equal to the sum of the individual disk capacities.
+
+RAID 3 with 3 disks uses byte-level striping with dedicated parity. It requires at least 3 disks, when one disk dedicated to storing parity information. RAID 3 provides data redundancy and fault tolerance but sacrifices some storage capacity for parity information.
+
+RAID 1 with 3 disks, also known as mirroring, duplicates the data across multiple disks, providing complete data redundancy and fault tolerance. However, the storage capacity is limited to the capacity of a single disk since all data is mirrored.
+
+RAID 4 with 3 disks uses block-level striping with a dedicated parity disk, similar to RAID 3. It also provides data redundancy and fault tolerance but sacrifies some storage capacity for parity information.
+
+Therefore, in terms of storage utilisation, RAID 0 with 3 disks has the highest storage utilisation when all disks have the same capacity.
+
+### Both failvote and failfast systems can provide more reliable outputs (if there is majority agreement) than a single module system with no voting. True or False
+
+- [x] True
+- [ ] False
+
+Both failvote and failfast system can provide more reliable outputs than a single module system with no voting, given that there is majority agreement. Let's examine each system.
+
+1. Failvote: In a failvote system, multiple modules or subsystems as used to perform a task, and the outputs of these modules are compared through voting. If there is a majority agreement among the modules, the output is considered reliable. This approach increases the system's reliability because it reduces the chances of a single module producing an erroneous result. By comparing outputs and considering the majority, the system can potentially overcome errors of failures in individual modules, improving overall accuracy.
+   2, Failfast: A failfast system operates similarly to a failvote system, but with a slightly different approach. In a failfast system, the modules or subsystems provide their outputs, and the system compares them. However, instead of waiting for majority agreement, the system accepts the output of the first module that provides a result. This approach assumes that the first module to produce an output is likely to be correct. By quickly accepting the first output, the system reduces the impact of potential errors in other modules, providing a faster and potentially more reliable result.
+
+In both cases, the failvote and failfast systems benefit from the inclusion of multiple modules or subsystems, which increases the likelihood of obtaining reliable outputs. This is in contrast to a single module system with no voting, where there is no redundancy or agreement mechanism to mitigate the risk of errors or failures in the module.
+
+### Which of the following thecniques is NOT used to achieve a reliable communication?
+
+- [ ] Update the stable storage information if any data is received or transmitted, or any acknowledgement received
+- [ ]Use a stable storage to store information related to received data, transmitted data and acknowledgements
+- [ ] Sending acknowledgement after receiving a message
+- [x] Delete all records from the stable storage after a message has been transmitted successfully
+
+In reliable communication protocols, it is important to have mechanisms in place to ensure the successful and error-free transmission of data. Let's analyze the other options:
+
+1. Update the stable storage information if any data is received or transmitted, or any acknowledgement received: This technique involves updating the stable storage with relevant information whenever data is received or transmitted, or when an acknowledgement is received. By maintaining an updated record of these events, the system can track the progress and status of the communication, aiding in reliability.
+2. Use a stable storage to store information related to received data, transmitted data, and acknowledgements: This technique involves utilizing a stable storage to store relevant information about received data, transmitted data, and acknowledgements. By storing this information in a stable storage, which is typically more reliable and durable, the system ensures that the data is preserved even in the event of failures or crashes.
+3. Sending acknowledgement after receiving a message: This technique involves sending an acknowledgement to the sender after successfully receiving a message. By acknowledging the receipt of the message, the sender can be assured that the message reached its destination and was processed successfully. This mechanism helps in achieving reliable communication by enabling error detection and ensuring message delivery.
+
+Based on the above explanations, the technique that is NOT used to achieve reliable communication is: _Delete all records from the stable storage after a message has been transmitted successfully._
+
+Deleting records from the stable storage after successful transmission would not be a reliable approach, as it removes the history and evidence of the communication. It is important to maintain a record of transmitted data, received data, and acknowledgements to ensure reliability and traceability in the communication process.
+
+### Which of the following techniques is NOT used to achieve a reliable communication?
+
+- [ ] Update the stable storage information if any data is received or transmitted, or any acknowledgement received
+
+- [ ] Use a stable storage to store information related to received data, transmitted data and acknowledgements
+
+Sending acknowledgement after receiving a message
+
+Delete all records from the stable storage after a message has been transmitted successfully
+
+#### Which of the following is true for the cyclic redundancy check (CRC) technique?
+
+- [x] CRC can be used to detect data error in a disk block
+- [ ] CRC can be used to repair data error in a disk block
+- [ ] CRC can improve disk storage utilization
+- [ ] CRC can improve read throughput
+
+Cyclic Redundancy Check (CRC) is a technique used for detecting errors in data. It calculates a check value over the data being sent and sends this check value along with the data. The receiver does the same calculation on the data and if the receiver's calculation matches the sent check value, it is assumed that the data was not tampered with or corrupted during transmission.
+
+The other statements are not accurate for CRC:
+
+- CRC for error repair: CRC does not provide a mechansim to repair errors, it can only detect them. The recovery from the error (usually by retransmitting data) must be managed by higher-level protocols.
+- CRC for disk storage utilisation: While CRC is used to increase the reliability of data storage, it does not improve disk storage utilisation. In fact, it adds overhead to storage because additional space is needed to store the check value.
+- CRC for read throughput: CRC does not inherently improve read throughput. It is used for error detection, not performance improvement. Reading the data and the CRC check value may slightly reduce throughput due to the additional data that needs to be read.
