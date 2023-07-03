@@ -6,6 +6,12 @@
     - [Subject Overview:](#subject-overview)
     - [Learning outcomes:](#learning-outcomes)
     - [Assessment:](#assessment)
+      - [Report Rationale](#report-rationale)
+      - [Presentation Rationale and Structure](#presentation-rationale-and-structure)
+      - [Presentation Structure](#presentation-structure)
+      - [Formatting Issues: Fonts are important](#formatting-issues-fonts-are-important)
+      - [Transitions](#transitions)
+      - [Disucssion/Conclusion Part](#disucssionconclusion-part)
     - [Staff information](#staff-information)
   - [Subject Introduction](#subject-introduction)
   - [Core Concepts of Database Management System](#core-concepts-of-database-management-system)
@@ -15,11 +21,13 @@
   - [Basic Hardware of a classifical disk](#basic-hardware-of-a-classifical-disk)
     - [Disk Access Time for HDD](#disk-access-time-for-hdd)
   - [SSD (Solid State Drive/Solid State Disk)](#ssd-solid-state-drivesolid-state-disk)
+    - [Where does the Data Drives Fit in Computers?](#where-does-the-data-drives-fit-in-computers)
   - [Moore's Law](#moores-law)
   - [Joy's Law](#joys-law)
   - [Storage Metrics](#storage-metrics)
   - [Memory Hierarchy](#memory-hierarchy)
     - [Data Reading Flow](#data-reading-flow)
+    - [How to solve the performance issue?](#how-to-solve-the-performance-issue)
     - [Data Transferred from HDD](#data-transferred-from-hdd)
   - [Communication Costs](#communication-costs)
   - [Multi-Core System](#multi-core-system)
@@ -41,7 +49,13 @@
     - [Grid](#grid)
     - [P2P](#p2p)
     - [Cloud](#cloud)
-  - [Storage Area Networks (SAN)](#storage-area-networks-san)
+    - [Amazon serices](#amazon-serices)
+    - [Amazon Elastic Compute EC2](#amazon-elastic-compute-ec2)
+    - [Amazon Storage Services](#amazon-storage-services)
+      - [Amazon Elastic Block Storage](#amazon-elastic-block-storage)
+      - [Amazon Simple Storage](#amazon-simple-storage)
+      - [Storage Area Networks (SAN)](#storage-area-networks-san)
+    - [Amazon Relational Database Service (RDS)](#amazon-relational-database-service-rds)
   - [Fault Tolerance](#fault-tolerance)
   - [A system's lifecycle](#a-systems-lifecycle)
   - [Fault tolerance by RAID](#fault-tolerance-by-raid)
@@ -146,6 +160,88 @@ Performance and Reliability are important. Achieving reliability requires additi
   2. Pick a topic of your interest
 - A final exam (50%)
 
+#### Report Rationale
+
+It is important that the report is not only about listing the top papers, but you should be able to categories the developments/approaches and compare and critique them.
+
+- Comparison, and critical analysis is at the core of the survey.
+- You are not expected to learn every paper in detail perfectly comprehensive about the topic. Instead, you should cover key difference/ideas and be able to classify them.
+
+The sections of your presentation/report should show that you know the categorization of works in your topic or choice.
+
+#### Presentation Rationale and Structure
+
+- Presentation is done as a team via zoom.
+- You do not to include and individual reflections into the presentation.
+- You will have no more than 25 minutes to complete your presentation.
+- Better to follow the report structure in the presentation as well.
+- Recommend 14-18 slides for presentation.
+- The presentation file needs to be submitted to Canvas -> Assignment -> Part B before presentation
+
+Most important things:
+
+- Organisation
+- Visual Aids
+- Delivery and Style
+
+Be clear about purpose of your talk: What do you want your audience to learn?
+
+Audience analysis: Identify your audience and their understanding of the area.
+
+#### Presentation Structure
+
+1. Earn the audience's attention
+2. Roadmap
+   - Explain where you plan to go, set up the story
+   - Create a table or figure to organise the area
+3. "Don'ts"
+   - Apologize for being nerouse
+   - Read the introduction or in general any slide (eye contact)
+4. Remember: Keep it very simple for the introduction
+   - No excessive use of technical abbreviations, etc.
+
+#### Formatting Issues: Fonts are important
+
+- Use a sans-serif font (e.g. Arial, Helvetica, Verdana)
+- Use readable font size (e.g. 24pt)
+- Use appropriate color combinations
+
+<img src="images/2023-07-02-15-12-03.png" width=350px >
+
+```
+40 point Title
+28 point Heading/Body
+24-20 point Sub-headings
+Anything smaller is too small
+```
+
+#### Transitions
+
+- A word or phrase that signals when a speaker is moving from a topic or handing to the next presenter.
+- Two parts to a transition:
+  - Idea that the speaker is leaving (the view part)
+  - Idea that the speaker is coming up the (the preview part)
+- Example: "Now that we have seen the benefits of using a B+ tree, let's look at how we can use it to improve the performance of our database system."
+- Use a map to remind people which part of presentation or area in a survey you are coming from and going to.
+
+#### Disucssion/Conclusion Part
+
+Purpose: Tell them what you told them.
+
+- Use a slide or two for comparing approaches
+- Offers the audience a sense of closure
+
+Further Tips:
+
+- Signal and end verablly and non-verablly if you can
+- Make conclusion strong and brief
+
+Don'ts
+
+- Drag out the conclusion
+- End on a weak or rambling note
+- Introduction new points that were not mentioned before
+
 ### Staff information
 
 **Lecturer**
@@ -230,6 +326,9 @@ A database system should provide:
 
 $\text{Disk access time}=\text{seek time} + \text{rotational time} + \cfrac{\text{transfer length}}{\text{bandwith}}$
 
+> If you were about to improve HDD, what changes would you made to the architecture?
+> Cehck the disk access time and respond.
+
 > What is the Disk access time for a transfer size of 4KB, when average seek time is 12 ms, rotation delay is 4 ms, transfer rate is 4MB/sec?
 >
 > Given the parameters of the above question, we can calculate the disk access time as follows:
@@ -250,6 +349,19 @@ $\text{Disk access time}=\text{seek time} + \text{rotational time} + \cfrac{\tex
 
 - Seek time is the time required to position the actuator arm over the appropriate track.
 
+> In a hard disk drive (HDD), the average seek time is 12 ms, rotation delay is 4 ms, and trasfer rate is 4MB/sec. For simplicity we assume 1MB equals to 1000KB.
+> **1. What physical properiy of an HDD causes the seek time delay?**
+> The seek time delay/seek latency is period that the head of actuator arm moves from a position to a required track. (arm needs to move to a specific track)
+> **2. What physical property of an HDD causes the rotation delay?**
+> The rotation delay/latency is the waiting period that the rotation of the disk brings the required sector of a track to head of the actuator arm.
+> **3. What will be the disk access time for a transfer size of 8MB? What will be the disk access time for a transfer size of 8KB?**
+> Disk access time for 8MB = seek time + rotation time + transfer length/band width = 12 + 4 + 8 _ 1000 / 4 = 2016ms
+> Disk access time for 8KB = seek time + rotation time + transfer length/band width = 12 + 4 + 8 / 4 = 18ms
+> A comparison of the two cases highlights that sequentially reading large data pays off as seek time is buried under a lot of transfer time. For example, in the first case, seek time is only 0.6% of the total time while nearly all the time is spent on transferring data. In the second case, seek time is 66.7% of the total time while only a small fraction of the time is spent on data transfer.
+> **4. In a solid state drive, what will be the disk access time for a transfer size of 8MB when transfer rate 4MB/sec? Is an SSD faster than an HDD for the same amount of data transfer (Assuming the base sequential data transfer rates are the same for the given two drives)? Why?**
+> Disk access time of SSD = transfer length / bandwith = 8 _ 1000 / 4 = 2000ms = 2sec
+> Unlike an HDD, a SSD do not have any rotating part. Hence there is no rotation delay or seek delay in and SSD. Therefore, for the same transfer rate and same amount of data transfer, a SSD is always faster than an HDD. Moreover, the data transfer rate of SSDs is usually higher than that of HDDss in general as well. Therefore, the speed of SSDs is higher the that of HDDs given the assumption in the question.
+
 ## SSD (Solid State Drive/Solid State Disk)
 
 - No moving parts like Hard Disk Drive (HDD).
@@ -262,6 +374,15 @@ $\text{Disk access time}=\text{seek time} + \text{rotational time} + \cfrac{\tex
 - Certain read/write limitations plagued it for years
 
 > $\text{Disk Access Time} = \cfrac{\text{Transfer Length}}{\text{Band Width}}$
+
+### Where does the Data Drives Fit in Computers?
+
+- Data after reading should be passed to the processors.
+- The processors need to read from the stroage in orders of Millions of bits.
+- The access time for HDD ($\approx 7\times 10^{-3}$) and SSD ($\approx 55 \times10^{-6}$) are high.
+- For a simple task with 1 Million bit reading from the memory, the processing time will be:
+  - $\approx 7\times 10^{-3} \times 10^6 = 7 000$ seconds for HDD $\approx$ 117 minutes
+  - $\approx 55\times 10^{-6} \times 10^6 = 55$ seconds for SSD $\approx$ 1 minute
 
 ## Moore's Law
 
@@ -297,6 +418,13 @@ $$
 
 <img src="images/2023-06-26-15-09-50.png" width=400 />
 
+> **There are two different machines where machine A has a smaller cache with on average 50% cache hit ratio (H) and the other machine (machine B) has a much larger cache with on average 90% cache hit ratio. However, the memory access tiem of machine A is 100C and the memory access time of machine B is 400C (i.e. memory access in machine A is faster than memory access in machine B), where C is the cache access time. Which machine has overall faster effective memory access time?**
+>
+> Effective memory access time or A: $\text{EA} = \text{H}\times\text{C} + (1-\text{H})\times \text{M}$ = $0.5\text{C}+(1-0.5)\times 100\text{C}$ = $50.5C$
+> Effective memory access time or B: $\text{EA} = \text{H}\times\text{C} + (1-\text{H})\times \text{M}$ = $0.9\text{C}+(1-0.9)\times 400\text{C}$ = $40.9C$
+>
+> ALthough memory access in machine A is faster than memory access in machine B, machine B has overall faster effetive memory access time than machine A due to B's larger cache with higher cache hit ratio.
+
 ### Data Reading Flow
 
 - Hard Disk Drive (HDD) $\leftrightarrow$ Main Memory (RAM)
@@ -322,7 +450,27 @@ where
 > | 90%| 10.9|
 > | 99.90%| 1.1|
 
+### How to solve the performance issue?
+
 <img src="images/2023-06-26-15-12-20.png" width=350 />
+
+Improve the access time for the memory.
+
+- Requires new technological design.
+- SSD is pretty much at the limits of a faster memory.
+- Fast memories will be very expensive.
+
+Change the structure.
+
+- Not all the data in memory is always required.
+- Design a new fast and small memory: Cache.
+- Read from Cache instead of main memory.
+
+Access time for hierarchical structure with one cache.
+
+$$
+\text{Access Time} = \text{Access Cache} \times \text{Hit Ratio} + \text{Access Memory} \times (1-\text{Hit Ratio})
+$$
 
 ### Data Transferred from HDD
 
@@ -395,6 +543,9 @@ RDBS as a collection of tables (relations) consisting of rows and column. A prim
 - Some RBD also support Object Oriented model, e.g. Oracle, DB2 and XML data with queries
 - RDBS can be slow for some simple applications
 
+> - Tables are structured related to each other
+> - Tables in database are related using primary/foreign key relationship
+
 ### Object-Oriented Database System
 
 Data stored in the form of 'objects' directly (like Object-oriented programming).
@@ -429,6 +580,8 @@ Key-value pair database systems store data as a collection of key-value pairs, w
 - Used for building very fast, highly parallel processing of large data - MapReduce and Hadoop are examples
 - Atomic updates at Key-value pair level (row update) only
 
+> **A key-value database stores data as a collection of key-value pairs where a key serves as a unique identifier. All accesses to the database are done via the keys. Both keys and values can be complex.**
+
 ##### Document-Based: MongoDB, CouchDB, OrientDB, RavenDB, etc.
 
 - Document databases store data in documents similar to JSON (JavaScript Object Notation) objects.
@@ -437,6 +590,10 @@ Key-value pair database systems store data as a collection of key-value pairs, w
 - Document databases may be used for storing, retrieving, and managing document-oriented information, also known as semi-structured data.
 - Document databases are generally used for content management and mobile application data handling.
 - Document databases are currently used in the following industries: advertising, content management, gaming, mobile, personalization, and web.
+
+> **Document storage: Flexible for storing different kinds of documents, where they may not all have the same sections. XML, JSON, etc. are subclasses of document-oriented databases.**
+>
+> <img src="images/2023-07-02-15-52-06.png" width=300px />
 
 ##### Column-Based: BigTable, Apache Cassandra, HBase, Hypertable, etc.
 
@@ -452,6 +609,14 @@ Key-value pair database systems store data as a collection of key-value pairs, w
 - Graph databases can also be used to analyse data from social networking sites, transportation routes, and biological networks.
 - Graph databases are currently used in the following industries: social networking, life sciences, retail, telecommunications, financial services, and utilities.
 
+> **Graph storage: graphs capture connectivity between entities. Searching and traversing by relations are very fast in such structures.**
+>
+> - This links can be material or immaterial
+> - Links between two streets are functions
+> - Links between two people as their Facebook connections (non-material links)
+> - A graph is a structure amounting to a set of objects (called vertices) where some pairs of the objects are connected/related in some sence. A connection is called an edge.
+>   <img src="images/2023-07-02-15-55-37.png" width=300px />
+
 ##### Some other DB systems - Deductive database systems (DDBS)
 
 DDBS is a database system that can make deductions (i.e., conclude additional facts) based on rules and facts stored in the database.
@@ -461,6 +626,12 @@ DDBS is a database system that can make deductions (i.e., conclude additional fa
 - There are no commercially available systems like RDBs
 - Many applications do not require the expensive power of these systems (e.g. many commerce related applications)
 - Many RDBs do provide some of the functionality - e.g. supporting transitive closure operation (a form of recursion in SQL2). For example $\text{path(X,Y)}:-\text{edge(X,Y)}$ and $\text{path(X,Y)}:-\text{edge(X,Z), path(Z,Y)}$.
+
+> Applications of different forms of databases
+>
+> - Applications for key-value databases - suitable if the database do not need complex relationabl table type of structure, but can be expressed with simple key-value pairs. The simple structure allows faster insertion and search, and scales quickly. For example, shopping cart in an e-commerce site.
+> - Applications for document storages - well suited when different kinds of documents do not always have the same structure/sections. For example, news articles.
+> - Applications for graph databases - well suited for connection data: social network connections (e.g. who are my firends of friends), spatial data (e.g., route planning - which ways can I go now to reach destination).
 
 ---
 
@@ -472,11 +643,42 @@ DDBS is a database system that can make deductions (i.e., conclude additional fa
 | NoSQL Database System             | Non relational - database modelled other than the tabular relations. Covers a wide range of database types                   | Flexible/no fixed data schema (unlike RDB) | Most NoSQL databases offer "eventual consistency", which might result in reading data from an older version, a problem known as stale reads | Key-value store, Document-Based, Column-Based, Graph-Based, etc. |
 | Deductive database systems (DDBS) | A database system that can make deductions (i.e., conclude additional facts) based on rules and facts stored in the database | It allows recursion                        | Many RDBs do provide some of the functionality                                                                                              |                                                                  |
 
-> How to determine the database structure?
+> **How to determine the database structure?**
 >
 > - Can this database system be used for the application?
 > - Is that wise to use this database system for the application?
 > - What's the complexity of the application?
+
+> **Discuss example applications of different type of NoSQL databases.**
+
+> **Dicuss the advantages and disadvantages of different database architectures for different application scenarios**
+>
+> - Centralised: suitable for simple applications, easy to manage; may not scale well
+> - Distributed: scalable, suitable for large applications and applications that need data access from different physical locations; system administration and crash recovery is difficult, usually have some data inconsistency
+> - WWW: very convenient to access and share data; security issues, no guarantee on availability and consistency
+> - P2P: Suitable when the nodes of the network cannot be planned in advance, or some may leave and join frequently. For example, sensor network
+> - Cloud database: on-demand resources, cost effective and confidentially issue, but most trusted providers well address them
+
+> **Consider the different scenarios below and discuss which database architecture is the most suitable choice and why.**
+> FriendBook is a new startup app that will launch its operation soon. They have only one officie with not much budget right now, but they are expecting a high growth in the scale of millons of users across the globe in a couple of years. Which of the foloowing database architecture is the most suitable choice for this scenario?
+>
+> - **Cloud storage**
+> - Word Wide Web
+> - Distributed database
+> - Centralised database
+>
+> Reason:
+>
+> ---
+>
+> FriendBook is a new social network site that will launch its operation soon. THey have officies in many majory cities of USA. They need a database that can handle millions of users across the globe. For preserving privacy and security, the need their own data storage system, which is not shared or owned by any other company. Which of the following database architecture is the most suitable choice for this scenario?
+>
+> - Cloud storage
+> - Word Wide Web
+> - **Distributed database**
+> - Centralised database
+>
+> Reason:
 
 ## Database Architecture
 
@@ -563,7 +765,54 @@ Cloud services offered in several forms:
 - PaaS: Platform as a Service (provide development platform)
 - SaaS: Software as a Service (provide software)
 
-## Storage Area Networks (SAN)
+The life for developers and programs has become much easier by cloud computing services.
+
+Cloud service providers have taken the responsibilities to do the dirty work, and provide an easy to use service to programmers.
+
+Programmers no longer need to worry about the maintenance issues, or about the required hardware capabilities.
+
+There are a number of cloud-service providers, and Amazon is one of the leading brands.
+
+### Amazon serices
+
+Amazon offers a number of different services including:
+
+- Virtual computers, block storage, simple stroage, and Relational database
+- In addition to these services, amazon also offers NoSQL database services
+
+### Amazon Elastic Compute EC2
+
+Amazon Elastic Compute Cloud (Amazon EC2) is a web service that provides resizable compute capacity in the cloud. It is designed to make web-scale computing easier for developers.
+
+- Amazon EC2 = Virtual Machine
+- Amazon EC2: on-demand compute power
+  - Obtain and boot new server instances in minutes
+  - Quickly scale capacity up or down
+  - Servers from $0.02 (2 cents) per hour
+  - On demand, reserved, and spot pricing
+- Key features:
+  - Support for multiple platforms and OS
+  - Support all majory web application platform
+  - Deploy across availability zones for reliability
+  - Monitors status and usage.
+
+### Amazon Storage Services
+
+The difference between elastic block storage (EBS) and simple storage service (S3) is only acessible from a single EC2 instance, while you can use S3 across multiple instances.
+
+#### Amazon Elastic Block Storage
+
+You can use Amazon EBS as you would use a hard drive on a physical server.
+
+Amazon EBS is particularly well-suited for use as the primary storage for a file system, database or for any applications that requires granular updates and access to raw, unformatted block-level storage.
+
+#### Amazon Simple Storage
+
+In traditional on-premise applications, this type of data would ordinarily be maintained on SAN or NAS. However, a cloud-based mechanism such as Amazon S3 is far more agile, flexible, and geo-redundant.
+
+Amazon S3 is a highly scalable, durable and available distributed object store designed for mission-critical and primary data storage with an easy to use web service interface.
+
+#### Storage Area Networks (SAN)
 
 > A dedicated network of storage devices.
 
@@ -579,6 +828,14 @@ Video from 6:30. https://www.youtube.com/watch?v=XSkRGMeqh2o
 - But in short, failure probability of one disk is different than 100s disks - which requires design choices
 
 > JOBD: Just a bunch of disks
+
+### Amazon Relational Database Service (RDS)
+
+Amazon RDS = MySQL and Oracle 11 Managed Database
+
+Amazon RDS automates common administrative tasks to reduce the complexity and total cost of ownership. Amazon RDS automatically backs up you database and maintains your database software, alloowing you to spend more time on application development.
+
+---
 
 ## Fault Tolerance
 
@@ -1121,13 +1378,13 @@ In real life, **_Cost-based optimisation is expensive, thus_**
 
 Wait for one/some parts of a plan to execute first, then choose the next best alternative.
 
-![](images/2023-07-01-00-19-56.png)
+<img src="images/2023-07-01-00-19-56.png" width=49% align=left />
 
-![](images/2023-07-01-00-08-17.png)
+<img src="images/2023-07-01-00-08-17.png" width=49% align=right />
 
 ## Readjust statistics: learning from mistake
 
-![](images/2023-07-01-00-07-08.png)
+<img src="images/2023-07-01-00-07-08.png" width=350px>
 
 ## Query Costs In Practices
 
@@ -1534,3 +1791,43 @@ Speciallized indexes: spatial index
 CREATE SPATIAL INDEX index1 ON
 table_name(Geometry_type_col_name) WITH (BOUNDING_BOX = (0, 0, 500, 200));
 ```
+
+Speciallized indexes: XML index
+
+```sql
+CREATE XML INDEX index1 ON table1 (column1)
+USING XML INDEX index2 FOR PATH;
+```
+
+Speciallized indexes: full-text index
+
+```sql
+CREATE FULLTEXT INDEX index1 ON table1 (column1)
+KEY INDEX index2 ON catalog1;
+```
+
+Speciallized indexes: columnstore index
+
+```sql
+CREATE COLUMNSTORE INDEX index1 ON table1 (column1, column2);
+```
+
+Speciallized indexes: memory-optimized index
+
+```sql
+CREATE MEMORY_OPTIMIZED_INDEX index1 ON table1 (column1, column2);
+```
+
+Speciallized indexes: hash index
+
+```sql
+CREATE HASH INDEX index1 ON table1 (column1, column2);
+```
+
+Speciallized indexes: index on a view
+
+```sql
+CREATE INDEX index1 ON view1 (column1, column2);
+```
+
+... and many more.
