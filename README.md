@@ -84,6 +84,7 @@
   - [How data are stored](#how-data-are-stored)
   - [Query plans and optimisation](#query-plans-and-optimisation)
     - [How to estimate the cost of a query plan?](#how-to-estimate-the-cost-of-a-query-plan)
+    - [View an actual execution plan?](#view-an-actual-execution-plan)
       - [Step 1: Result size calculation/estimation using Reduction Factor](#step-1-result-size-calculationestimation-using-reduction-factor)
       - [Step 2: Different options for retrieving data and calculating cost (estimation)](#step-2-different-options-for-retrieving-data-and-calculating-cost-estimation)
   - [Joins Continued](#joins-continued)
@@ -99,6 +100,7 @@
     - [Use pre-joined tables](#use-pre-joined-tables)
   - [What needs to be efficient](#what-needs-to-be-efficient)
   - [A Key Choice to Make](#a-key-choice-to-make)
+  - [DB quries](#db-quries)
   - [Indexing is Critical for Efficiency](#indexing-is-critical-for-efficiency)
     - [What becomes faster?](#what-becomes-faster)
     - [Ordered Indices](#ordered-indices)
@@ -1228,16 +1230,39 @@ Steps in cost-based query optimisation
    - Heap scan/Index scan?
    - What type of join algorithm?
 
-![](images/2023-06-29-23-34-03.png)
+<img src="images/2023-06-29-23-34-03.png" width=400 />
 
 3. Choose the cheapest plan based on estimated cost.
+
+> The goal is to minmimise the number of disk blocks (e.g. pages) reads.
+>
+> - Is the query optimiser optimistic or pessmistic about the query cost estimation?
+>   It will consider the worst case. It is pessmistic. For example, if the query cost is estimated as 1000 pages, it will consider the worst case as 3000 pages.
+> - Can you make a table stay in main memory? Yes
+>
+> ```sql
+> CREATE TABLE dbo.Customer (
+>   CustomerID char (5) NOT NULL PRIMARY KEY,
+>   ContactName varchar (30) NOT NULL,
+> ) WITH (MEMORY_OPTIMIZED = ON) -- make table memory optimised.
+> ```
+>
+> - A query cost is estimated as 3000 pages and it took 30ms to get the query results from the database. Another query cost is estimated as 1000 pages and it took 60ms to get the query results from the database. Can this to true? Yes. The query cost estimation is not accurate.
 
 Estimation of plan cost based on:
 
 - statistical information about tables: example number of distinct values for an attribute
 - statistical estimation for intermediate results to compute cost
+- Cost formulate for algorithms, computed using statistics again.
 
-![](images/2023-06-29-23-35-19.png)
+> Disk reads are the most expensive operation in query processing
+
+> What can you do to improve the performance of a query optimizer (as database administrator or database user)? When you identify a query with suboptimal performance, what can you do?
+>
+> - Update the statistics, use indexing, enforce specific query plan, etc.
+> - Enforce statistic recompilation, rewrite query.
+
+<img src="images/2023-06-29-23-35-19.png" width=400 />
 
 Query optimisor estimate the cost from the bottom left to the top right.
 
@@ -1250,7 +1275,13 @@ Query optimisor estimate the cost from the bottom left to the top right.
 
 ### How to estimate the cost of a query plan?
 
-![](images/2023-06-30-13-48-58.png)
+<img src="images/2023-06-30-13-48-58.png" width=400 />
+
+### View an actual execution plan?
+
+<img src="images/2023-07-05-15-04-28.png" width=600 />
+
+> Difference between logical reads and physical reads: logical reads are the number of pages that are read from the buffer cache. Physical reads are the number of pages that are read from the disk.
 
 #### Step 1: Result size calculation/estimation using Reduction Factor
 
@@ -1265,7 +1296,7 @@ Depends on the type of the predicate:
 
 #### Step 2: Different options for retrieving data and calculating cost (estimation)
 
-![](images/2023-06-30-14-13-48.png)
+<img src="images/2023-06-30-14-13-48.png" width=400 />
 
 If there is a B+ tree available, the estimated cost is: $(I + N) \times RF_1 \times RF_2$ where $I$ is the number of index pages and $N$ is the number of data pages.
 
@@ -1467,6 +1498,14 @@ DMBS must support:
 - these are also good during join operations
   - If there is a join condition that restricts the number of items to be joined in a table
 
+## DB quries
+
+<img src="images/2023-07-05-14-55-30.png" width=450 />
+
+> Efficiency is one of the most important requirements for client-facing databases.
+
+The best execution strategy to find the query results - an integral part of DBMS.
+
 ## Indexing is Critical for Efficiency
 
 Indexing mechanisms used to speed up access to desired data in a similar way to look up a phone book or dictionary.
@@ -1502,7 +1541,38 @@ The records in the indexed file may themselves be stored in some sorted order.
 > **Clustering index/Primary index**: in a sequentially ordered file, the index whose search key specifies the sequential order of the file.
 >
 > - The search key of a primary index, is usually but not nececessarily the primary key
->   ![](images/2023-07-01-19-16-30.png) > ![](images/2023-07-01-19-16-39.png)
+>   <img src="images/2023-07-01-19-16-30.png" width=300 />
+>   > <img src="images/2023-07-01-19-16-39.png" width=300 />
+
+Query: Find the names of instructors 'Comp. Sci.'
+
+- Scenario 1: No indexes
+- Scenario 2: B+tree index on IDs
+- Scenario 3: Both of the above will have the same performance
+
+> <img src="images/2023-07-05-16-10-22.png" width=350>
+>
+> Query Find the names of the instructors who are 'lecture'
+>
+> - Scenario 1: No indexes
+> - Senario 2: B+tree index on IDs
+> - Both of the above will have the same performance
+> - _Depends on statistics (e.g., rows that need to be joined)_
+>
+> Query: Find the names of the instructors with salary > 80000
+>
+> - Scenario 1: No indexes
+> - Senario 2: B+tree index on IDs
+> - Both of the above will have the same performance
+> - _Depends on statistics (e.g., rows that need to be joined)_
+>
+> What will be relative performance for the following type of queries? Discuss and write answer next to each query. Provide a short explanation for your answer.
+> Assume there are indexes constructed on: i. B+tree on IDs for both table, ii. Hash index on Department, iii. Bitmap index on Position
+> Query 1: Inserting records for a new lecturer - without any indeex vs. with the given indexes -> without
+> Query 2: Updating the salary of instructor with ID 2 - without any index vs. with the given indexes -> with given B+
+> Query 3: Finding the total number of research assistants - without any index vs. with the given indexes -> with bitmap
+> Query 4: Finding the name of all instructors who are in 'Biology' department - without any index vs. with the given indexes -> with hash
+> Query 5: Find the positions of which the salary is greater than 80,000 - without any index vs. with the given indexes -> with bitmap
 
 > **Non-Clustering index/Secondary index**: an index whose search key specifies an order different from the sequential order of the file.
 > Secondary indeces improve the performance of queires that use keys other than the search key of the clustering index.
@@ -1723,6 +1793,14 @@ Bouding boxes (BB) of children of a node are allowed to overlap.
 
 Note: A bounding box of a node is a maximum sized rectanlge that contains all the rectangles/polygons associated with the node.
 
+To find the nearest neighbor of a given query point/region, do the following, starting from the root node:
+
+- use a sorted priority queue of the R-tree nodes bsaed on the minimum distance from the query
+- Traverse the node that is in the top of the priority queue, and put its elements in the queue. Continue
+- Stop when the top node is a data object (first NN has been found)
+
+This algorithm is a best-first search algorithm.
+
 ### R-Trees Example
 
 A set of rectanlges (solid line) and the bounding boxes (dashed line) of the nodes of a R-tree for the rectangles.
@@ -1841,6 +1919,16 @@ CREATE INDEX index1 ON view1 (column1, column2);
 
 ---
 
+Given a dataset, when uploading to the DBMS
+
+- Find the potential query types
+- Research what indices that particular DBMS would have for that data type
+- Research for what queries you would better do on what index
+- Create index if you have large data
+- Tune or create other indices
+
+---
+
 ## Quiz 1
 
 ### Why solid state drives are faster than hard disk drives in general?
@@ -1851,6 +1939,8 @@ CREATE INDEX index1 ON view1 (column1, column2);
 - [ ] SSDs are smaller in size
 
 The main reason why Solid State Drives (SSDs) are faster than Hard Disk Drives (HDDs) is that **SSDs do not have any moving parts**.
+
+No moving parts = no rotation time = faster access time.
 
 1. SSDs store data on flash memmory chips, and data can be accessed almost instantly regardless of where it's stored on the drive. This is because SSDs use electrical circuits to access and read data, resulting in very high speed.
 2. On the other hand, HDDs store data on spinning platters, and they use a mechanical arm to read and write data. The time it takes for the arm to locate the data on the platter (seek time) significantly slows down the read/write operations compared to SSDs.
