@@ -151,6 +151,22 @@
     - [Data Typtes](#data-typtes)
     - [Error Handling](#error-handling)
     - [Singleton SELECT](#singleton-select)
+  - [Flat Transaction](#flat-transaction)
+    - [Limitations of Flat Transactions](#limitations-of-flat-transactions)
+    - [Flat Transactions with Savepoints](#flat-transactions-with-savepoints)
+    - [Nested Transaction](#nested-transaction)
+      - [Nested Transaction Rule](#nested-transaction-rule)
+        - [**Commit Rule**](#commit-rule)
+        - [**Rollback Rule**](#rollback-rule)
+        - [**Visibility Rule**](#visibility-rule)
+  - [Transaction Processing Monitor (TPM)](#transaction-processing-monitor-tpm)
+    - [TP monitor services](#tp-monitor-services)
+      - [Heterogeneity](#heterogeneity)
+      - [Control communication](#control-communication)
+      - [Terminal management](#terminal-management)
+      - [Presentation service](#presentation-service)
+      - [Context management](#context-management)
+      - [Start/Restart](#startrestart)
 
 ## Administration Information
 
@@ -2158,6 +2174,21 @@ The system should tolerate system failures and any committed updates should not 
 ## Embedded SQL example in C
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sqlca.h>
+#include <sqlda.h>
+#include <sqlcpr.h>
+#include <sqlenv.h>
+#include <sqlcodes.h>
+#include <sqlwarn.h>
+#include <sqlstmt.h>
+#include <sqlutil.h>
+#include <sqludf.h>
+#include <sqludr.h>
+#include <sql.h>
+
 // (Open Database Connectivity)
 int main() {
   exec sql INCLUDE SQLCA; // SQL Communication Area
@@ -2214,3 +2245,129 @@ The DBMS reports run-time errorss to the applications program through an SQL Com
 ### Singleton SELECT
 
 The statement used to return the data is a singleton SELECT statement; that is, it returns only a single row of data. Therefore, the code example does not declare or use cursors.
+
+## Flat Transaction
+
+```sql
+EXEC SQL CREATE TABLE accounts (
+  AccId NUMERIC(9),
+  BranchId NUMERIC(9), FOREIGN KEY REFERENCES branches,
+  AccBalance NUMERIC(10),
+  PRIMARY KEY (AccId));
+```
+
+> Everything inside BEGIN WORK and COMMIT WORK is the same level; that is, the transaction will either survive together with everything else (commit), or it will be rolled back with everything else (abort).
+
+```c
+DCApplication()
+{
+  read input msg;
+  exec sql BEGIN WORK;
+  AccBalance = DodebitCredit(BranchId, TellerId, AccId, delta);
+  send output msg;
+  exec sql COMMIT WORK;
+}
+
+// another example check on the account balance and refusing any debit that overdraws the account.
+DCApplication(){
+	read input msg;
+  exec sql BEGIN WORK;
+  AccBalance = DodebitCredit(BranchId, TellerId, AccId, delta);
+  if (AccBalance < 0 && delta < 0){ // condition check
+    exec sql ROLLBACK WORK;
+  }
+  else{
+    send output msg;
+    exec sql COMMIT WORK;
+  }
+}
+
+```
+
+### Limitations of Flat Transactions
+
+Flat transactions do not model many real applications.
+e.g. airline booking
+
+```
+BEGIN WORK
+  S1: book flight from Melbourne to Singapore
+  S2: book flight from Singapore to London
+  S3: book flight from London to Dublin
+END WORK
+```
+
+Problem: from Dublin, if we cannot reach out our final destination, instead we wish to fly to Paris from Singapore and then reach out our final destination. If we roll back we need to re do the booking from Melbourne to Singapore which is a waste.
+
+Another limitation: if there is a long transaction list, any failure of transaction requires lot of unnecessary computation.
+
+```c
+IncreaseSalary()
+{
+  real percentRaise;
+  receive(percentRaise);
+  exec SQL BEGIN WORK;
+    exec SQL UPDATE employee
+    set salary = salary*(1+ :percentRaise)
+    send(done);
+  exec sql COMMIT WORK;
+  return
+}
+
+```
+
+### Flat Transactions with Savepoints
+
+<img src="images/2023-07-06-16-56-50.png" width=350px />
+
+> Reading: Chained transactions
+
+<!-- TODO: Reading: Chained transactions  -->
+
+### Nested Transaction
+
+<img src="images/2023-07-06-16-58-26.png" width=350px />
+
+#### Nested Transaction Rule
+
+##### **Commit Rule**
+
+- A subtransaction can either commit or abort, however, commit cannot take place unless the parent itself commits.
+- Subtransactions have A, C, and I properties but not D property unless all its ancestors commit.
+- Commit of a sub transaction makes its results available only to its parents.
+
+##### **Rollback Rule**
+
+- If a subtransaction rolls back, all its children are forced to roll back.
+
+##### **Visibility Rule**
+
+Changes made by a subtransaction are visible to the parent only when the subtransaction commits. ALl objects of parent are visible to its children. Implication of this is that the parent should not be modify objects while children are accessing them. This is not a problem as parent does not run in parallel with its children.
+
+> Reading: Open-nested transaction
+
+<!-- TODO Reading Open-nested transaction -->
+
+## Transaction Processing Monitor (TPM)
+
+The main function of a TP monitor is to investigate other system components and manage resources.
+
+- TP monitors manage the transfer of data between clients and servers.
+- breaks down applications or code into transactions and ensures that all databases are updated properly.
+- It also takes appropriate actions if any error occurs.
+
+### TP monitor services
+
+#### Heterogeneity
+
+If the application needs access to different DB systems, local ACID properties of individual DB systems is not sufficient. Local TP monitor needs to interact with other TP monitors to ensure the overall ACID property. A form of 2 phase commit protocol must be employed for this purose
+
+#### Control communication
+
+#### Terminal management
+
+#### Presentation service
+
+#### Context management
+
+#### Start/Restart
