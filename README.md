@@ -136,6 +136,21 @@
     - [Which of the following thecniques is NOT used to achieve a reliable communication?](#which-of-the-following-thecniques-is-not-used-to-achieve-a-reliable-communication)
     - [Which of the following techniques is NOT used to achieve a reliable communication?](#which-of-the-following-techniques-is-not-used-to-achieve-a-reliable-communication)
       - [Which of the following is true for the cyclic redundancy check (CRC) technique?](#which-of-the-following-is-true-for-the-cyclic-redundancy-check-crc-technique)
+  - [SQL Injection](#sql-injection)
+    - [SQL Injection Example, SQL syntax](#sql-injection-example-sql-syntax)
+    - [Prevention](#prevention)
+  - [Database Transaction](#database-transaction)
+  - [Transaction Models](#transaction-models-1)
+    - [Atomoicity](#atomoicity)
+    - [Consistency](#consistency)
+    - [Isolation](#isolation)
+    - [Durability](#durability)
+    - [Types of Actions](#types-of-actions)
+  - [Embedded SQL example in C](#embedded-sql-example-in-c)
+    - [Host variables](#host-variables)
+    - [Data Typtes](#data-typtes)
+    - [Error Handling](#error-handling)
+    - [Singleton SELECT](#singleton-select)
 
 ## Administration Information
 
@@ -2070,3 +2085,132 @@ The other statements are not accurate for CRC:
 - CRC for error repair: CRC does not provide a mechansim to repair errors, it can only detect them. The recovery from the error (usually by retransmitting data) must be managed by higher-level protocols.
 - CRC for disk storage utilisation: While CRC is used to increase the reliability of data storage, it does not improve disk storage utilisation. In fact, it adds overhead to storage because additional space is needed to store the check value.
 - CRC for read throughput: CRC does not inherently improve read throughput. It is used for error detection, not performance improvement. Reading the data and the CRC check value may slightly reduce throughput due to the additional data that needs to be read.
+
+## SQL Injection
+
+SQL injection is a code injection technique that exploits a security vulnerability occurring in the database layer of an application. The vulnerability is present when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and thereby unexpectedly executed. It is an instance of a more general class of vulnerabilities that can occur whenever one programming or scripting language is embedded inside another. SQL injection attacks are also known as SQL insertion attacks.
+
+It can happen when an application executes database querying user-input data, and the user input or part of the user input is treated as SQL statement.
+
+### SQL Injection Example, SQL syntax
+
+```sql
+LOGIC `a` = `a` -- login with username and password
+SELECT * FROM `login` WHERE `user`='farhana' AND pass = `comp90050`
+
+-- SQL injection use multi statement
+-- first level of injection
+SELECT * FROM `login` WHERE `user`=''; DROP TABLE `login`; --' AND pass = ``
+```
+
+### Prevention
+
+User parameterized query/prepared statement - allows the database to distinguish between code and data.
+
+```
+string query = "SELECT * FROM login WHERE user = ? AND pass = ?" + request.getParameter("username");
+```
+
+## Database Transaction
+
+Transaction - A unit of work in a database
+
+- A transaction can have any number and type of opeartions in it
+- Either happens as a whole or not
+- Transactions ideally have four properties, commonly knwon as ACID properties
+
+## Transaction Models
+
+ACID (Atomicity, Consistency, Isolation, Durability)
+
+### Atomoicity
+
+All changes to data are performed as if they are a single operation. That is, all the changes are performed, or none of them are.
+
+Example: A transaction that (i) subtracts $100 if balance > 100 (ii) deposits $100 to another account.
+
+(both actions with either happen together or non will happen)
+
+### Consistency
+
+Data is in a 'consistent' state when a transaction starts and when it ends - in other words, any data written to the database must be valid according to all defined rules (e.g. no duplicate student ID, no negative fund transfer, etc.).
+
+- What is 'consistent' - depends on the application and context constraints
+- It is not easily computable in general
+- Only restricted type of consistency can be guaranteed, e.g.g serializable transactions which will be discussed later.
+
+### Isolation
+
+Transaction are executed as it is the only in the system.
+
+For example, in an application that transfers funds from one account to another, the isolation ensures that another transaction sees the transfered funds in one account or the other, but nor in neither.
+
+### Durability
+
+The system should tolerate system failures and any committed updates should not be lost.
+
+### Types of Actions
+
+- **Unprotected actions** - no ACID property
+- **Protected actions** - these actions are not externalised before they are completely done. These actions are controlled and can be rolled back if required. These have ACID property.
+- **Real actions** - these are real physical actions once performed cannot be undone. In many situations, atomicity is not possible with real actions (e.g., firing two rockets as a single atomic action)
+
+## Embedded SQL example in C
+
+```c
+// (Open Database Connectivity)
+int main() {
+  exec sql INCLUDE SQLCA; // SQL Communication Area
+  exec sql BEGIN DECLARE SECTION;
+  // the following variables are used for communicating between SQL and C
+
+  int OrderID;
+  int CustID;
+  char SalesPerson[10] // Retrieve salesperson name
+  char Status[6]       // Retrieve order status
+
+  // setup error processing
+  exec sql WHENEVER SQLERROR GOTO query_error;
+  exec sql WHENEVER NOT FOUND GOTO bad_number;
+
+  // Prompt the user for order number
+  printf("Enter order number: ");
+  scanf("%d", &OrderID);
+
+  // Execuate the SQL query
+  exec sql SELECT CustID, SalesPerson, Status FROM Orders
+  WHERE OrderID = :OrderID; // : indicates to refere to C variable
+  INTO :CustID, :SalesPerson, :Status;
+
+  // Display the results
+  printf("Customer number: %d\n", CustID);
+  printf("Salesperson: %s\n", SalesPerson);
+  printf("Status: %s\n", Status);
+
+  query_error:
+    printf("SQL error: %Id\n", sqlca->sqlcode); exit();
+  bad_number:
+    printf("Invalid order number. \n"); exit();
+}
+```
+
+### Host variables
+
+Declared in a section enclosed by the BEGIN DECLARE SECTION and END DECLARE SECTION. WHile accessing these variables, they are prefixed by a colon `:`. The colon is essential to distinguish between host variables and database objects (for example tables and columns).
+
+### Data Typtes
+
+The data types supported by a DBMS and a host language can be quite different. Host variables play a dual role:
+
+- Host variables are program variables, declared and manipulated by host language statements, and
+- They are used in embedded SQL to retrieve database data.
+
+If there is no host language type corresponding to a DBMS date type, DBMS automatically converts the data. So, the host variable types must be chosen carefully.
+
+### Error Handling
+
+The DBMS reports run-time errorss to the applications program through an SQL Communications Area (SQLCA) by INCLUDE SQLCA. The WHENEVER...GOTO statement tells the pre-processor to generate error-handling code to process errors returned by the DBMS.
+
+### Singleton SELECT
+
+The statement used to return the data is a singleton SELECT statement; that is, it returns only a single row of data. Therefore, the code example does not declare or use cursors.
