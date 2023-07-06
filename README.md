@@ -2360,14 +2360,24 @@ The main function of a TP monitor is to investigate other system components and 
 
 #### Heterogeneity
 
-If the application needs access to different DB systems, local ACID properties of individual DB systems is not sufficient. Local TP monitor needs to interact with other TP monitors to ensure the overall ACID property. A form of 2 phase commit protocol must be employed for this purose
+If the application needs access to different DB systems, local ACID properties of individual DB systems is not sufficient. Local TP monitor needs to interact with other TP monitors to ensure the overall ACID property. A form of 2 phase commit protocol must be employed for this purose.
 
 #### Control communication
 
+If the application communicates with other remote processes, the local TP monitor should maintain the communication status among the processes to be able to recover from a crash.
+
 #### Terminal management
+
+Since many terminals run client software, the TP monitor should provide appropriate ACID property between the client and the server processes.
 
 #### Presentation service
 
+This is similar to terminal management in the sense it has to deal with different presentation (user interface) software, e.g. X-windows.
+
 #### Context management
 
+E.g. maintaining the sessions, etc.
+
 #### Start/Restart
+
+There is no difference between start and restart in TP based system.
