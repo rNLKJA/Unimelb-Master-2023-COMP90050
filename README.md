@@ -167,6 +167,21 @@
       - [Presentation service](#presentation-service)
       - [Context management](#context-management)
       - [Start/Restart](#startrestart)
+  - [Concurrency Problems](#concurrency-problems)
+    - [**Dekker's algorithm**:](#dekkers-algorithm)
+    - [**OS supported primitives (through interruption call)**: expensive, independent of number of processes, machine independent](#os-supported-primitives-through-interruption-call-expensive-independent-of-number-of-processes-machine-independent)
+    - [**Spin locks (using atmoic lock/unlock instructions)**: most commonly used](#spin-locks-using-atmoic-lockunlock-instructions-most-commonly-used)
+      - [Implementation of Atomic operations: test and set](#implementation-of-atomic-operations-test-and-set)
+      - [Implementation of Atomic operations: compare and swap](#implementation-of-atomic-operations-compare-and-swap)
+  - [Quiz 3](#quiz-3)
+    - [Which one of the following actions will definitely not reduce any query cost?](#which-one-of-the-following-actions-will-definitely-not-reduce-any-query-cost)
+    - [When a particular query is executed in a database for the first time, the query was executed in 100 ms. After executing the same query for a couple of more times, you have observed that the query execution is now faster, and taking about 50ms. Which of the following can be a reason for this improvement (assuming that all other factors in the database is unchanged)?](#when-a-particular-query-is-executed-in-a-database-for-the-first-time-the-query-was-executed-in-100-ms-after-executing-the-same-query-for-a-couple-of-more-times-you-have-observed-that-the-query-execution-is-now-faster-and-taking-about-50ms-which-of-the-following-can-be-a-reason-for-this-improvement-assuming-that-all-other-factors-in-the-database-is-unchanged)
+    - [Select all the options from the following that are steps or tasks of a query optimizer. You need to choose multiple options if they are the answers.](#select-all-the-options-from-the-following-that-are-steps-or-tasks-of-a-query-optimizer-you-need-to-choose-multiple-options-if-they-are-the-answers)
+  - [Quiz 4](#quiz-4)
+    - [Select the most suitable index for the following data and queries - we want to store the records of 10,000 families, where each family is a row in the database. Families are categorised as low-income, mid-income, and high-income. The most common queries in this database are – (i) find the total number of low-income families; (ii) find the total number of families with mid-income.](#select-the-most-suitable-index-for-the-following-data-and-queries---we-want-to-store-the-records-of-10000-families-where-each-family-is-a-row-in-the-database-families-are-categorised-as-low-income-mid-income-and-high-income-the-most-common-queries-in-this-database-are--i-find-the-total-number-of-low-income-families-ii-find-the-total-number-of-families-with-mid-income)
+    - [Select the most suitable index for the following data and query – The data is the location (latitude and longitude) of all 5G antennas in Melbourne. The most common query in this database is, given any particular location in Melbourne, find the 5G antenna nearest to that location.](#select-the-most-suitable-index-for-the-following-data-and-query--the-data-is-the-location-latitude-and-longitude-of-all-5g-antennas-in-melbourne-the-most-common-query-in-this-database-is-given-any-particular-location-in-melbourne-find-the-5g-antenna-nearest-to-that-location)
+    - [A company stores the records of its employees, where the employee IDs are between 1 to 10000. Assume there is a B+ tree index on the employee IDs. Which of the following statements is false?](#a-company-stores-the-records-of-its-employees-where-the-employee-ids-are-between-1-to-10000-assume-there-is-a-b-tree-index-on-the-employee-ids-which-of-the-following-statements-is-false)
+    - [Which one of the following is not a property of an R-tree (or not true for an R-tree)?](#which-one-of-the-following-is-not-a-property-of-an-r-tree-or-not-true-for-an-r-tree)
 
 ## Administration Information
 
@@ -2381,3 +2396,146 @@ E.g. maintaining the sessions, etc.
 #### Start/Restart
 
 There is no difference between start and restart in TP based system.
+
+## Concurrency Problems
+
+- To resolve conflicts
+- To preserve database consistency
+
+Different ways for concurrency control
+
+### **Dekker's algorithm**:
+
+- needs almost no hardware support although it needs atomic reads and writes to main memory, That is exclusive access of one time cycle of memory access time.
+- _The code is very complicated to implemennt if more than two transactions/process are involved._
+- Hard to understand the algorithm for more than two processes.
+- Takes a lot of storage space.
+- Uses busy waiting.
+- Efficient if the lock contention (that is frequency of access to the locks) is low
+
+### **OS supported primitives (through interruption call)**: expensive, independent of number of processes, machine independent
+
+- through an interrupt call, the lock request is passed to the OS
+- need no special hardware
+- are very expensive (several hundreds to thousands of instructions need to be executed to save context of the requesting process)
+- do not use busy waiting and therefore more effective
+
+### **Spin locks (using atmoic lock/unlock instructions)**: most commonly used
+
+- Executed using atomic machine instructions such as test and set or swap
+- need hardware support - should be able to lock bus (communication channel between CPU and memory + any other devices) for two memory cycles (one for reading and one for writing). During this time no other devices' access is allowed to this memory location.
+- use busy waiting
+- algorithm does not depend on number of processes
+- are very efficient for low lock contentions - all BD systems use them
+
+#### Implementation of Atomic operations: test and set
+
+```c
+testAndSet(int *lock) {
+  /* the following is executed atomically, memory bus can be locked for up to two cycles (one for read and for writing) */
+
+  if (*lock == 1) {
+    *lock = 0;
+    return (true)
+  } else return (false);
+}
+```
+
+![](images/2023-07-10-09-52-39.png)
+
+#### Implementation of Atomic operations: compare and swap
+
+The following code may have lost values
+
+<p style='background-color:yellow'>temp = counter + 1; //unsafe to increment a shared counter</p>
+<p style='background-color:yellow'>counter = temp; // this assignment may suffer a lost update</p>
+
+Instead, we can use the atomic operation of compare and swap instruction
+
+```c
+boolean cs(int *cell, int *old, int *new) {
+  // the following is executed atomically
+  if (*cell == *old) { // is this value modified by other transactions?
+    *cell = *new; return true;
+  } else {
+    *old = *cell; return false;
+  }
+}
+```
+
+```
+// Using compare and swap in spin lock for exclusive access
+temp = counter;
+do
+  new = temp + 1;
+while (!cs(&counter, &temp, &new));
+```
+
+---
+
+> **Exclusive access**
+>
+> In the content of a database management system (DBMS), exclude access refers to a level of access control that allows only one user or transaction to manipulate a specific resource exclusively at any given time. This means that when exclusive access is granted to a user or transacction, no other user or transaction can concurrently access or modify the same resource until the exclusive access is released.
+>
+> Exclusive access ensure data integrity and consistency by preventing conflicts and concurrency issues that could arise when multiple users or transactions attempt to modify the same resource, such as inserting, updating or deleting recordings during that time.
+
+---
+
+## Quiz 3
+
+### Which one of the following actions will definitely not reduce any query cost?
+
+- [x] Rewrite query to select all columns of a table instead of some particular columns
+- [ ] Store derived data
+- [ ] Create an index
+- [ ] Rewrite query with parameters
+
+### When a particular query is executed in a database for the first time, the query was executed in 100 ms. After executing the same query for a couple of more times, you have observed that the query execution is now faster, and taking about 50ms. Which of the following can be a reason for this improvement (assuming that all other factors in the database is unchanged)?
+
+- [ ] The data block sizes have changed
+- [ ] The optimiser used exhaustive enumeration for query plans for the first time execution, but now using simple heuristics
+- [ ] The optimiser used simple heuristics for the first time execution, but now using exhaustive enumeration for query plans
+- [x] Some of the required data blocks are already in cache, so they are not needed to be read from disk for later executions
+
+### Select all the options from the following that are steps or tasks of a query optimizer. You need to choose multiple options if they are the answers.
+
+- [x] Estimate the costs of the alternative query plans
+- [x] Generate logically equivalent expressions of the query
+- [x] Choose the cheapest plan based on estimated cost
+- [x] Generate different alternative query plans
+
+---
+
+## Quiz 4
+
+### Select the most suitable index for the following data and queries - we want to store the records of 10,000 families, where each family is a row in the database. Families are categorised as low-income, mid-income, and high-income. The most common queries in this database are – (i) find the total number of low-income families; (ii) find the total number of families with mid-income.
+
+- [ ] B+ tree
+- [ ] Hash
+- [ ] R-tree
+- [x] Bitmap
+
+> Bitmap:
+
+### Select the most suitable index for the following data and query – The data is the location (latitude and longitude) of all 5G antennas in Melbourne. The most common query in this database is, given any particular location in Melbourne, find the 5G antenna nearest to that location.
+
+- [ ] Bitmap
+- [x] R-tree
+- [ ] B+ tree
+- [ ] Hash
+
+### A company stores the records of its employees, where the employee IDs are between 1 to 10000. Assume there is a B+ tree index on the employee IDs. Which of the following statements is false?
+
+- [ ] This B+ tree index can improve the query performance of a query like “find the record of a particular employee with ID 25”
+- [x] This B+ tree index can improve the query performance of a query like “Increase the salary of all employees in this database by 3%”
+- [ ] This B+ tree index can improve the query performance of a query like “find the records of all employees with IDs between 100 to 300”
+- [ ] This B+ tree index can improve the query performance of a query like “Update salary of a particular employee with ID 42”
+
+### Which one of the following is not a property of an R-tree (or not true for an R-tree)?
+
+- [ ] Bounding boxes of children of a node in an R-tree are allowed to overlap
+- [ ] R-trees are useful for indexing sets of rectangles and polygons
+- [ ] To find data items intersecting a given query region, the search starts from the root node of the R-tree
+- [x] Each node of an R-tree has 4 children
+
+---
