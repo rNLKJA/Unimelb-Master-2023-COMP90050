@@ -185,6 +185,8 @@
   - [Semaphores](#semaphores)
     - [Implementation of Exclusive mode Semaphore](#implementation-of-exclusive-mode-semaphore)
     - [Convoy avoding semaphore](#convoy-avoding-semaphore)
+  - [Deadlocks](#deadlocks)
+    - [Deadlock avoidance/mitigation](#deadlock-avoidancemitigation)
 
 ## Administration Information
 
@@ -2641,3 +2643,31 @@ void unlock(Xsemphore *sem) {
   return;
 }
 ```
+
+## Deadlocks
+
+In a deaklock, each process in the deadlock is waiting for another member to release the resources it wants.
+
+![](images/2023-07-10-15-41-05.png)
+
+Solutions:
+
+- Have enough resources so that no waiting occurs - not practical
+- Do not allow a process to wait, simply rollback after a certain time. This can create live locks which are worse than deadlocks
+- Linearly order the resources and request of resources should follow this order, i.e., a transaction after requesting $\text{i}^{\text{th}}$ resource can request $\text{j}^{\text{th}}$ resource if $j > i$. This type of allocation guarantees no cyclic dependencies among the transactions.
+
+![](images/2023-07-10-15-44-08.png)
+
+### Deadlock avoidance/mitigation
+
+Pre-declare all necessary resources and allocate in a single request.
+
+Periodically check the resource dependency graph for cycles. If a cycle exists - rollback (i.e., terminate) one or more transaction to eliminate cycles (deadlocks). The chosen transactions should be cheap (e.g. they have not consumed too many resources).
+
+> Allow waiting for a maximum time on a lock then force Rollback. Many successful systems (IBM, Tandem) have chosen this approach.
+
+Many distributed database systems maintain only local dependency graphs and use tiem outs for global deadlocks.
+
+Deadlocks are rare, however, they do occur and the database has to deal with them when they occur.
+
+> What is the probability of a deadlock occurence?
