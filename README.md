@@ -182,6 +182,9 @@
     - [Select the most suitable index for the following data and query – The data is the location (latitude and longitude) of all 5G antennas in Melbourne. The most common query in this database is, given any particular location in Melbourne, find the 5G antenna nearest to that location.](#select-the-most-suitable-index-for-the-following-data-and-query--the-data-is-the-location-latitude-and-longitude-of-all-5g-antennas-in-melbourne-the-most-common-query-in-this-database-is-given-any-particular-location-in-melbourne-find-the-5g-antenna-nearest-to-that-location)
     - [A company stores the records of its employees, where the employee IDs are between 1 to 10000. Assume there is a B+ tree index on the employee IDs. Which of the following statements is false?](#a-company-stores-the-records-of-its-employees-where-the-employee-ids-are-between-1-to-10000-assume-there-is-a-b-tree-index-on-the-employee-ids-which-of-the-following-statements-is-false)
     - [Which one of the following is not a property of an R-tree (or not true for an R-tree)?](#which-one-of-the-following-is-not-a-property-of-an-r-tree-or-not-true-for-an-r-tree)
+  - [Semaphores](#semaphores)
+    - [Implementation of Exclusive mode Semaphore](#implementation-of-exclusive-mode-semaphore)
+    - [Convoy avoding semaphore](#convoy-avoding-semaphore)
 
 ## Administration Information
 
@@ -1787,7 +1790,9 @@ In its simplest form a bitmap index on an attribute has a bitmap for each value 
 
 <img align=left width=49% src="images/2023-07-02-00-32-21.png" />
 
-<img align=right width=49% src="images/2023-07-02-00-32-38.png" />
+<img align=right width=50% src="images/2023-07-02-00-32-38.png" />
+
+---
 
 ## Indexing for other Data Types
 
@@ -2515,8 +2520,6 @@ while (!cs(&counter, &temp, &new));
 - [ ] R-tree
 - [x] Bitmap
 
-> Bitmap:
-
 ### Select the most suitable index for the following data and query – The data is the location (latitude and longitude) of all 5G antennas in Melbourne. The most common query in this database is, given any particular location in Melbourne, find the 5G antenna nearest to that location.
 
 - [ ] Bitmap
@@ -2539,3 +2542,102 @@ while (!cs(&counter, &temp, &new));
 - [x] Each node of an R-tree has 4 children
 
 ---
+
+## Semaphores
+
+Semaphores derive from the corresponding mechanism used for trains: a train may proceed through a section of track only if the semaphore is clear. Once the train passes, the semaphore is set until the train exists that section of track.
+
+Computer semaphores have a get() routine that acquuires the semaphore (perhaps waiting until it is free) and a dualt give() routine that returns the semaphore to the free state, perhaps signaling (waking up) a waiting process.
+
+Semaphores are very simple locks, indeed, they are used to implement general-purpose locks.
+
+### Implementation of Exclusive mode Semaphore
+
+Pointer to a queue of processes.
+
+If the semaphore is busy but there are no waiters, the pointer is the address of the process that owns the semaphore.
+
+If some processes are waiting, the semaphore points to a linked list of waiting processes. The process owning the semphore is at the end of this list
+
+```c
+type long PID
+type struct Process {
+  PID pid; // process ID
+  PCB * sem_wait // waiting process are put in the queue
+ } PCB;
+typedef PCB *Xsemaphore
+void initialise (Xsemaphore *sem) {*sem = NULL; return;}
+
+PID MyPID (void); // return the caller's process ID
+PCB * MyPCB (void); // return pointers to caller's process descriptor
+
+void wait (void); // suspends calling process
+void wakeup (PCB * him) wakes him
+
+void lock (Xsemaphore *sem) {
+  PCB * new = myPCB()
+  PCB * old = NULL;
+  // put the process in the semWait queue
+  do {
+    new -> semWait = old;
+  } while (!cs(sem, &old, &new));
+
+  // if queue not null then must wait for a wakeup from the semaphore owner
+  if (old != NULL) wait() return;
+}
+
+void unlock(Xsemphore *sem) {
+  PCB * new = NULL;
+  PCB * old = myPCB();
+
+  if (cs(sem, &old, &new)) return; // no one waiting
+  while (old -> semWait != myPCB()) old = old -> semWait;
+
+  // wakeup the oldest process (first in, first out scheduler)
+  wakeup(old);
+}
+```
+
+### Convoy avoding semaphore
+
+The previous implememntation may result a long list of waiting processes - called convoy.
+
+To avoid convoys, a process may simply free the semaphore (set the queue to null) and then wake up every process in the list after usage.
+
+In that case, each of those processes will have to re-execute the routine for acquiring semaphore.
+
+```c
+void lock(Xsemphore *sem) {
+  PCB * new = myPCB();
+  PCB * old = NULL;
+
+  do {
+    new -> semWait = old;
+  } while (!cs(sem, &old, &new));
+
+  if (old != NULL) {
+    wait();
+    lock(sem);
+  }
+
+  return;
+}
+```
+
+```c
+void unlock(Xsemphore *sem) {
+  PCB * new = NULL;
+  PCB * old = myPCB();
+
+  while (!cs(sem, &old, &new));
+
+  while (old -> semWait != myPCB()) {
+    new = old -> semWait;
+    old -> semWait = NULL;
+    wakeup(old);
+    old = new;
+  }
+
+  return;
+}
+```
