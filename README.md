@@ -199,6 +199,15 @@
     - [Actions in Transactions](#actions-in-transactions)
     - [Well-formed transactions](#well-formed-transactions)
     - [Two phase transactions](#two-phase-transactions)
+  - [Isolation Theorems](#isolation-theorems)
+    - [Locking Theorem](#locking-theorem)
+    - [Locking Theorem (Converse)](#locking-theorem-converse)
+    - [Rollback Theorem](#rollback-theorem)
+  - [Degrees of Isolation](#degrees-of-isolation)
+    - [Degree 3](#degree-3)
+    - [Degree 2](#degree-2)
+    - [Degree 1](#degree-1)
+    - [Degree 0](#degree-0)
 
 ## Administration Information
 
@@ -2826,3 +2835,63 @@ A transaction is well formed if all READ, WRITE and UNLOCK operations are covere
 ### Two phase transactions
 
 A transaction is two phased if all LOCK operations precede all its UNLOCK operations.
+
+## Isolation Theorems
+
+A transactions is a sequence of READ, WRITE, SLOCK, XLOCK actions on objects ending with COMMIT or ROLLBACK.
+
+A transaction is well formed if each READ, WRITE, and UNLOCK operation is covered ealier by a corresponding lock operation.
+
+A history is legal if it does not grant conflicting grants.
+
+A transactions is two phase if its all lock operations precede its unlock operations.
+
+### Locking Theorem
+
+If all transactions are well formed (READ, WRITE, and UNLOCK operation is covered ealier by a corresponding lock operation) and two-phased (locks are released only at the end), then any legal (does not grant conflicting grants) history will be isolated.
+
+### Locking Theorem (Converse)
+
+If a transaction is not well-formed or is not two phase, then it is possible to write another transaction such that it is a wormhole.
+
+### Rollback Theorem
+
+Rollback theorem: An update transaction that does an UNLOCK and then does a ROLLBACK is not two phase.
+
+## Degrees of Isolation
+
+### Degree 3
+
+Three degree isolated Transaction has no lost updates, and has repeatable reads. This is "true" isolation.
+
+_Lock protocol is two phase and well formed. It is sensitive to the following conflicts: write -> write; write -> read; read -> write._
+
+![](images/2023-07-11-18-05-52.png)
+
+### Degree 2
+
+A Two degree isolated transaction has no lost updates and no dirty reads.
+
+_Lock protocol is two phase with respect to exclusive locks and well formed with respect to Reads and Writes. (May have Non repeatable reads)_
+
+It is sensitive to the following conflicts: write -> write; write -> read;
+
+![](images/2023-07-11-18-08-00.png)
+
+### Degree 1
+
+A One degree isolated transaction has no lost updates.
+
+_Lock protocol is two phase with respect to exclusive locks and well formed with respect exclusive locks and well formed with respect to writes_.
+
+write -> write.
+
+![](images/2023-07-11-18-09-19.png)
+
+### Degree 0
+
+A Zero transaction does not overwrite another transactions dirty data if the other transaction is at least One degree.
+
+_Lock protocol is well-formed with respect to writes_.
+
+![](images/2023-07-11-18-09-26.png)
