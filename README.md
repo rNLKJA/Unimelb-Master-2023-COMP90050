@@ -192,6 +192,13 @@
   - [Formal definition of Dependency](#formal-definition-of-dependency)
     - [Dependency Relations](#dependency-relations)
     - [Dependency relations - equivalence](#dependency-relations---equivalence)
+    - [Isolated history](#isolated-history)
+    - [Isolation Concepts](#isolation-concepts)
+  - [SLOCK (shared lock)](#slock-shared-lock)
+  - [To grant lock or not to ..](#to-grant-lock-or-not-to-)
+    - [Actions in Transactions](#actions-in-transactions)
+    - [Well-formed transactions](#well-formed-transactions)
+    - [Two phase transactions](#two-phase-transactions)
 
 ## Administration Information
 
@@ -2769,3 +2776,53 @@ DEP(H2) = {<T1, O1,T3>, <T1,O3,T5>, <T3,O2,T4>, <T5,O4,T6> }
 ```
 
 <img src="images/2023-07-11-16-45-18.png" width=500px />
+
+### Isolated history
+
+A history is said to be isolated if it is equivalent to a serial history (as if all transactions are executed senrially/sequentially).
+
+A serial history is a history that is resulted as a consequence of running transactions sequentially one by one. N transactions can result in a maximum of N! serial histories.
+
+### Isolation Concepts
+
+A transaction T' is called a wormhole transaction if
+
+$$
+T' \in \text{Before}(T) \cap \text{After}(T)
+$$
+
+That is T << T' << T. This implies there is a cycle in the dependency graph of the history. Presence of a wormhole transaction imples it is not isolated ( => not a serial schedule).
+
+> A history is serial if it runs one transaction at a time sequentially, or equivalent to a serial history.
+> A serial history is an isolated history.
+> Wormhole theorem: A history is isolated if and only if it has no wormholes.
+
+## SLOCK (shared lock)
+
+It allows other transactions to read, but not write/modify the shared resource.
+
+## To grant lock or not to ..
+
+A lock on an object should not be granted to a transaction while that object is locked by another transaction in an incompatible mode.
+
+| Lock Compatibility Matrix                                                   | Mode of Lock                                                                    |                                                                                    |                                                                                       |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Current Mode**                                                            | **Free**                                                                        | **Shared**                                                                         | **Exclusive**                                                                         |
+| Shared request (SLOCK) used to block others writing/modifying               | Compatible _Request granted immediately_. Changes Mode from Free to _Shared_    | Compatible _Request granted immediately_. Mode stayes _Shared_                     | Conflict _Request delayed until the state becomes compatible_. Mode stays _Exclusive_ |
+| Exclusive request (XLOCK) used to block others reading or writing/modifying | Compatible _Request granted immediately_. Changes Mode from Free to _Exclusive_ | Conflict _Request delayed until the state becomes compatible_. Mode stays _Shared_ | Conflict _Request delayed until the state becomes compatible_. Mode stays _Exclusive_ |
+
+### Actions in Transactions
+
+READ, WRITE, XLOCK, SLOCK, UNLOCK, BEGIN, COMMIT, ROLLBACK
+
+BEGIN, END, SLOCK, XLOCK can be ignored as they can be automatically inserted in terms of the corresponding operations.
+
+WRITE operation needs to granted an XLOCK on the object.
+
+### Well-formed transactions
+
+A transaction is well formed if all READ, WRITE and UNLOCK operations are covered by appropriate LOCK operations.
+
+### Two phase transactions
+
+A transaction is two phased if all LOCK operations precede all its UNLOCK operations.
