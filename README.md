@@ -187,6 +187,11 @@
     - [Convoy avoding semaphore](#convoy-avoding-semaphore)
   - [Deadlocks](#deadlocks)
     - [Deadlock avoidance/mitigation](#deadlock-avoidancemitigation)
+  - [Isolation Concepts - I in ACID](#isolation-concepts---i-in-acid)
+    - [Dependency Model](#dependency-model)
+  - [Formal definition of Dependency](#formal-definition-of-dependency)
+    - [Dependency Relations](#dependency-relations)
+    - [Dependency relations - equivalence](#dependency-relations---equivalence)
 
 ## Administration Information
 
@@ -2671,3 +2676,96 @@ Many distributed database systems maintain only local dependency graphs and use 
 Deadlocks are rare, however, they do occur and the database has to deal with them when they occur.
 
 > What is the probability of a deadlock occurence?
+
+## Isolation Concepts - I in ACID
+
+ACID stands for Atomicity, Consistency, Isolation, Durability.
+
+> Isolation ensures that the concurrent transactions leaves the database in the same state as if the transactions were executed separately.
+
+Isolation guarantees consistency, provided each transaction itself its consistent.
+
+We can achieve isolation by sequentially processing each transaction - generally not efficient and provides poor response times.
+
+We need to run transactions concurrently with the following goals:
+
+- Concurrent execution should not cause application programs (transactions) to malfunction.
+- Concurrent execution should not have lower throughput or bad response times than serial execution.
+
+To achieve isolation we need to understand dependency of operations.
+
+### Dependency Model
+
+$I_i$: set of inputs (objects that are read) of a transaction $T_i$
+$O_i$: set of outputs (objects that are written) of a transaction $T_i$
+
+Note: $O_j$ and $I_j$ are not necessarily disjoint that is $O_j \cap I_j \neq \emptyset$
+
+Given a set of transaction $\tau$, Transaction $T_j$ has no dependency on any transaction $T_i$ in $\tau$ if $O_i \cap (I_j \cup O_j) = \emptyset, \forall i \neq j$
+
+This approach cannot be planed ahead as in many situation inputs and outputs may be state dependant/not known in prior.
+
+<img src="images/2023-07-11-16-27-58.png" width=500px>
+
+If the inputs and outputs of the concurrent transactions are not disjoint, the following dependencies can occurs.
+
+![](images/2023-07-11-16-28-56.png)
+
+Read-Read dependency do not affect isolation.
+
+When dependency graph has cycles then there is a violation of isolation and a possibility of inconsistency.
+
+![](images/2023-07-11-16-35-10.png)
+
+## Formal definition of Dependency
+
+Let $H$ be a history sequence of tuples of the form ($T$, action, object).
+
+Let $T_1$ and $T_2$ are transactions in $H$. If $T_1$ performs an action on an object $O$, then $T_2$ performs an action on the same $O$, and there is no write action in between by another transaction on $O$ - then $T_2$ depends on $T_1$.
+
+Formally, the dependency of $T_2$ on $T_1$ ($T_1$, $O$, $T_2$) exists in history $H$ if there are indexes $i$ and $j$ such that $i < j$, $H[i]$ involves action $a_1$ on $O$ by $T_1$, (i.e., $H[i] = (T_1, a_1, O)$) and $H_j$ involves action $a_2$ on $O$ by $T_2$ (i.e., $H[j] = (T_2, a_2, O)$) and there is no $k$ such that $i < k < j$ and $H[k] = (T, a, O)$ for some transaction $T$ and action $a$.
+
+### Dependency Relations
+
+We focus on the dependency in three scenarios:
+
+- $a_1$ = WRITE & $a_2$ = WRITE
+- $a_1$ = WRITE & $a_2$ = READ
+- $a_1$ = READ & $a_2$ = WRITE (dependency as $T_1$ may read again after $a_2$)
+
+### Dependency relations - equivalence
+
+$DEP(H) = \{(T_i, O T_j) | T_j \text{ depends on } T_i \}$
+
+Given two histories $H_1$ and $H_2$ contain the same tuples, $H_1$ and $H_2$ are equivalent if $DEP(H_1) = DEP(H_2)$
+
+This imples that a given database will end up in exactly the same final state by executing either of the sequence of operations in $H_1$ or $H_2$.
+
+For example:
+
+```
+R = READ, W = WRITE
+
+H1 = <(T1, R, O1), (T2, W, O5), (T1, W, O3), (T3, W, O1), (T5, R, O3), (T3, W, O2), (T5, R, O4), (T4, R, O2), (T6, W, O4)>
+
+DEP(H1) = {<T1, O1, T3>, <T1, O3, T5>, <T3, O2, T4>, <T5, O4, T6>}
+```
+
+```
+H2 = <(T1,R,O1), (T3,W,O1), (T3,W,O2),(T4,R,O2),(T1,W,O3), (T2, W, O5), (T5,R,O3), (T5,R,O4), (T6,W,O4)>
+
+DEP(H2) = {<T1, O1,T3>, <T1,O3,T5>, <T3,O2,T4>, <T5,O4,T6> }
+```
+
+> DEP(H1) = DEP(H2)
+
+```
+H1 = <(T1,R,O1), (T2, W, O5), (T1,W,O3), (T3,W,O1), (T5,R,O3),  (T3,W,O2), (T5,R,O4), (T4,R,O2), (T6,W,O4)>
+
+H2 = <(T1,R,O1), (T3,W,O1), (T3,W,O2),(T4,R,O2),(T1,W,O3), (T2, W, O5), (T5,R,O3), (T5,R,O4), (T6,W,O4)>
+
+DEP(H1) = {<T1, O1,T3>, <T1,O3,T5>, <T3,O2,T4>, <T5,O4,T6> }
+DEP(H2) = {<T1, O1,T3>, <T1,O3,T5>, <T3,O2,T4>, <T5,O4,T6> }
+```
+
+<img src="images/2023-07-11-16-45-18.png" width=500px />
