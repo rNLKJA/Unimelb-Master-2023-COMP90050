@@ -208,6 +208,12 @@
     - [Degree 2](#degree-2)
     - [Degree 1](#degree-1)
     - [Degree 0](#degree-0)
+  - [Concurrent transactions - Conflicts and Performance issues](#concurrent-transactions---conflicts-and-performance-issues)
+  - [Granularity of Locks](#granularity-of-locks)
+    - [Actual granular locks in practice](#actual-granular-locks-in-practice)
+    - [Isolation Concepts ...](#isolation-concepts-)
+    - [Isolocation Concepts ... Tree locking and Intent Lock Modes](#isolocation-concepts--tree-locking-and-intent-lock-modes)
+    - [Compatibility Mode of Granular Locks](#compatibility-mode-of-granular-locks)
 
 ## Administration Information
 
@@ -2895,3 +2901,80 @@ A Zero transaction does not overwrite another transactions dirty data if the oth
 _Lock protocol is well-formed with respect to writes_.
 
 ![](images/2023-07-11-18-09-26.png)
+
+## Concurrent transactions - Conflicts and Performance issues
+
+Multiple concurrently running transactions may cause conflicts - still we try to allow concurrent runs as much as possible for a better performance, while avoiding conflicts as much as possible.
+
+A new solution: use granular locks - we need to build some hierachy, then locks can be taken at any level, which will automatically grant the locks on its descendants.
+
+## Granularity of Locks
+
+Idea:
+
+- Pick a set of column values (predicates)
+- They form a graph/tree structure
+- Lock the nodes in this graph/tree
+
+Simple Example: It allows locking on whole DB, whole file, or just one key value.
+
+![](images/2023-07-11-21-46-20.png)
+
+![](images/2023-07-11-21-46-38.png)
+
+**Lock the whole DB**: less confidents, but poor performance
+
+**Lock at individual records level**: more locks, better performance
+
+> _How can we allow both granularities?_
+> Intention mode locks on coarse granules.
+>
+> - granted
+>
+> * delayed
+
+![](images/2023-07-11-21-48-48.png)
+
+### Actual granular locks in practice
+
+X - e**X**clusive lock
+S - **S**hared lock
+U - **U**pdate lock -- intention to update in the future
+IS - **I**ntent to set **S**hared locks at finer granularity
+IX - **I**ntent to set **S**hared or eXclusive locks at finer granularity
+SIX - a coarse granularity **S**hared lock with an **I**ntent to set finer granularity e**X**clusive locks
+
+### Isolation Concepts ...
+
+- Acquire locks from root to leaf
+- Release locks from leaf to root
+- IS: intend to set finder S locks
+- IX: intend to set finer S or X locks
+- SIX: S + IX
+
+To acquire an S mode or IS mode lock on a non-root node, one parent must be held in IS mode or higher (one of {IS, IX, S, SIX, U, X}).
+
+To acquire an X, U, SIX, or IX mode lock on a non-root node, all parents must be held in IX mode or higher (one of {IX, SIX, U, X}).
+
+### Isolocation Concepts ... Tree locking and Intent Lock Modes
+
+- None: no lock is taken all requests are granted.
+- IS (Intention to have shared lock at finer level) allows IS and S mode locks at finer granularity and prevents others from holding X on this node.
+- IX (Intention to have exclusive lock at finer level) allows to set IS, IX, S, SIX, U and X mode locks at finer granularity and prevents others holding S, SIXX, X, U on this mode.
+- S (shared) allows read authority to the node and its descendants and a finer granularity and prevents others holding IX, X, SIX on this node.
+- SIX (shared and intension exclusive) allows reads to the node and its descendants as in IS and prevents others holding X, U, IX, SIX, S on this node or its descendants but allows the holder IX, U, and X mode locks at finer granularity. SIX = S + IX.
+- U (Update lock) allows read to the node and its descendants and prevents others holding X, U, SIX, IX and IS locks on this node or its descendants.
+- X (exclusive lock) allows writes to the node and prevents others holding X, U, S, SIX, IX locks on this node and all its descendants.
+
+### Compatibility Mode of Granular Locks
+
+Request: +|- -> (next mode), + (granted), - (delayed)
+
+| Current | None   | IS     | IX    | S    | SIX    | U    | X    |
+| ------- | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
+| IS      | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
+| IX      | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S       | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| SIX     | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| U       | +(U)   | +(U)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| X       | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
