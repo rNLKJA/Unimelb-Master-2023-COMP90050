@@ -83,6 +83,9 @@
     - [Join Operations](#join-operations)
   - [How data are stored](#how-data-are-stored)
   - [Query plans and optimisation](#query-plans-and-optimisation)
+    - [Searching/Enumerating all the plans and choose the best one.](#searchingenumerating-all-the-plans-and-choose-the-best-one)
+    - [Using a heuristic approach.](#using-a-heuristic-approach)
+    - [Steps in cost-based query optimisation](#steps-in-cost-based-query-optimisation)
     - [How to estimate the cost of a query plan?](#how-to-estimate-the-cost-of-a-query-plan)
     - [View an actual execution plan?](#view-an-actual-execution-plan)
       - [Step 1: Result size calculation/estimation using Reduction Factor](#step-1-result-size-calculationestimation-using-reduction-factor)
@@ -210,7 +213,7 @@
     - [Degree 0](#degree-0)
   - [Concurrent transactions - Conflicts and Performance issues](#concurrent-transactions---conflicts-and-performance-issues)
   - [Granularity of Locks](#granularity-of-locks)
-      - [Intention mode locks](#intention-mode-locks)
+    - [Intention mode locks](#intention-mode-locks)
     - [Actual granular locks in practice](#actual-granular-locks-in-practice)
     - [Isolation Concepts ...](#isolation-concepts-)
     - [Isolocation Concepts ... Tree locking and Intent Lock Modes](#isolocation-concepts--tree-locking-and-intent-lock-modes)
@@ -1108,6 +1111,19 @@ B0, B1, B2, B3 are bytes of data of file.
 
 ## Fault Tolerance by Voting
 
+When we receive inconsistent readins from different disks, what action should be taken?
+
+- A subset of disks read 2, while the rest read 5.
+
+Majority voting is the solution to inconsistent reads or any other actions where there is not a consensus.
+
+Two types of majority voting;
+
+- Failvote: majority of all systems need to commit
+- Failfast: only a majority of working systems need to commit
+
+In both cases, define majority intuitively, as half plus one or: $\frac{n}{2} + 1$.
+
 > Use more than one module, voting for higher reliability
 
 ![](images/2023-06-26-18-20-12.png)
@@ -1203,10 +1219,16 @@ There are two nodes in a network that use stable storage and acknowledgment mess
 - Node A: Received message (In7); Transmitted message (Out3); Out:3 Ack:3 In:7
 - Node B: Received message (In3); Transmitted message (Out7); Out:7 Ack:7 In:3
 
+<img src="images/2023-07-12-11-43-08.png" width=500 />
+
+<img src="images/2023-07-12-11-43-27.png" width=500 />
+
 Now Node B sends a new message 7 to Node A. What will change in the stable storage of A and B if the message is received correctly, but the acknowledgment is not received?
 
 - Node A: Received message (In7); Transmitted message (Out3); Out:3 Ack:3 In:7
-- Node B: Received message (In3); Transmitted message (Out7); Out:7 Ack:7 In:3
+- Node B: Received message (In3); Transmitted message (Out7); Out:7 Ack:6 In:3
+
+<img src="images/2023-07-12-11-46-53.png" width=500 />
 
 ---
 
@@ -1406,7 +1428,18 @@ $$
 
 ## Query plans and optimisation
 
-Steps in cost-based query optimisation
+### Searching/Enumerating all the plans and choose the best one.
+
+- Used for queries that require accurate results
+- Well suited for handling complex queries
+
+### Using a heuristic approach.
+
+- Is like using a solution randomly
+- Is a good option when accuracy is not priority
+- Can handle simple and straight-forward cases
+
+### Steps in cost-based query optimisation
 
 1. Generate logically equivalent expression of the query
 2. Annotate resultant expressions to get alternative query plans
@@ -1416,6 +1449,8 @@ Steps in cost-based query optimisation
 <img src="images/2023-06-29-23-34-03.png" width=400 />
 
 3. Choose the cheapest plan based on estimated cost.
+
+---
 
 > The goal is to minmimise the number of disk blocks (e.g. pages) reads.
 >
@@ -1455,6 +1490,45 @@ Query optimisor estimate the cost from the bottom left to the top right.
 > Result size estimation is based on Reduction Factor (RF)
 > For example, if we want to select a employee with salary less than 60,000 with a maiximum value 100,000, we can estimate the result size by:
 > $RF = \cfrac{val - low}{high - low} = \cfrac{60000 - 0}{100000 - 0} = 0.6$
+
+---
+
+Discuss which of the query optimisation approach(es) can be used/more suitable for the following scenarios:
+
+- enumerating all plans
+- heuristic based
+- adaptive plans
+
+1. Secenario A: Given a table with 1000 tuples, run the following query:
+
+```sql
+SELECT customer
+FROM Table
+WHERE spend BETWEEN 100 AND 200
+AND birth_year > 2000;
+```
+
+2. Scenario B: Given 5 tables with 1000 tuples in each table, run the following query:
+
+```sql
+SELECT T1.name, T2.salary, T3.qualification, T4.phone, T5.leader
+FROM Table1 T1
+  INNER JOIN Table2 T2 ON T1.id = T2.id
+  INNER JOIN Table3 T3 ON T1.id = T3.id
+  INNER JOIN Table4 T4 ON T1.id = T4.id
+  INNER JOIN Table5 T5 ON T1.department = T5.department
+WHERE T1.age > 50;
+```
+
+Queries are generally converted to Relational Algebra expressions internally first. Then the system tries to create alternate plans and pick the best plan to execute in terms of execution time. There are two general approaches for this. One is searching/enumerating all the plans and choose the best one. Another approach is using heuristic to choose a plan (or a combination of two can be done as well).
+
+Adaptive plan is executing a part/some parts of a query plan first to re-evaluate the cost of the other parts of the query plan that haven't been executed yet, to have a better overall cost estimation (and hence, choosing a better plan).
+
+For scenario A, the heuristic approach can be suitable due to the simplicity of the query and small size of the table. For Scenario B, the query is more complex and the tables are larger, so the search/enumeration approach can be more suitable.
+
+Adaptive plan is used for better estimation of cost, hence, cannot be used when the query optimiser is purely heuristic based for a query (so cannot be used for scenario A if the plan is heuristic based). Adapative plan can be used for cost-based query optimiser (either exhaustive enumeration of all plans or a combination), hence, can be used for scenario B.
+
+---
 
 ### How to estimate the cost of a query plan?
 
@@ -1516,6 +1590,18 @@ Total number of cost for doing the nested loop join = $b_r + (n_p \times b_s)$
 - Expensive since it examines every pair of tuples in the two relations.
 - Remember that for every retrieval, espcially for a different item from the disk in a nonconsecutive location we pay a seek time as a penalty, this is where it could happen a large number of times.
 - Could be cheap if you do it on two small tables where they fit to main memory though (disk brings the whole tables).
+
+---
+
+> Review the examples on nested-loop join and block nested-loop join given in the lecture. Discuss and calculate why the later one can be more efficient.
+
+After reiterating the examples/calculations, we see that later one is most efficient because each block in the inner relation is read once for each block in the outer relation (instead of once for each tuple in the outer relation).
+
+> A particular query on table A used to run quite efficiently in a DBMS. After inserting many records and deleting many other records from A, that same query is now taking more time to run, even when the total number of records has not changed. What can be the reason for that? What can you do as the user/database administrator of that DBMS to improve the performance of this query?
+
+After insertions and deletions, the statistics of a table may not be updated instantly. As the statistics are used to estimate the cost of a query, wrong statistics are causing wrong cost estimations, and hence the query optimiser is now chosing a query plan that is no longer optimal for that query.
+
+Enforcing statistical recompilation option can be used to update the statistic of the table.
 
 ---
 
@@ -1698,6 +1784,32 @@ Indexing mechanisms used to speed up access to desired data in a similar way to 
 An **index file** consists of records (called index entries) of the form _search-key, pointer to where data is_.
 
 Index files are typically much smaller than the original data files and many parts of it are already in memory.
+
+---
+
+> What indices are more suitable if a table is frequently used for finding records based on the following criteria: users' name, a range of users' birthday, and a spatial region covering users' residence?
+
+- Users' name: Hash index
+- Users' birthday: B+ tree index
+- Users' residence: R-tree index or another spatial index such as a quadtree index
+
+> Review the points on indexing with B+ trees. Assume a database table has 10,000,000 records and the index is built with a B+ tree. The maximum number of children of a node, is denoted as n. How many steps are needed to find a record if n=4? How many steps are needed to find a record if n=100?
+
+When n = 4, the maximum height of the tree is $[\log_{[n/2]}(K)]=[\log_{2}(10,000,000)] = 24$. Therefore, 24 steps are needed.
+
+When n = 100, the maximum height of the tree is $[\log_{[n/2]}(K)] = [\log_{50}(10,000,000)] = 5$. Therefore, 5 steps are needed.
+
+> Given the R-tree below please visit the nodes of the R-tree in a best-first manner as discussed in class to find the 1st nearest neightbour of query "i". Is there anything preculiar that you notice while traversing an R-tree?
+>
+> <img src="images/2023-07-12-13-20-38.png" width=500 />
+
+In this traversal we first visit node BB1 as it overlaps with the query point.
+And find that object B is the closest to query point i.
+The issue here is that we cannot stop at this point in the traversal as i overlaps with BB3 as well so we need to investigate the data there too.
+We then figure out that G is the closest object overall.
+Due to overlaps in R-tree branches two or more branches of an R-tree need to be investigated in many query types. In addition, as each internal node representes a bounding box thus we are not sure about the position of objects in a bounding box which may necessitiate that we investigate multiple bounding boxes to determine a nearest neighbour in this case.
+
+---
 
 ### What becomes faster?
 
