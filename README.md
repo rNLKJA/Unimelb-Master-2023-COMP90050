@@ -1034,8 +1034,20 @@ Most commonly use raid structure.
 - Half storage utilisation
 - MTTF increases substantially (quadratica improvement, i.e. MTTF)
 
-> A means Block (4K or 8K bytes of storage)
-> MTTF = Mean Time To Failure
+> $A_i$ means Block (4K or 8K bytes of storage)
+> MTTF = Mean Time To Failure = $\frac{1}{p}$
+
+Data is mirrored across the two storages.
+
+Advantages:
+
+- Better fault tolerance
+
+Disadvantages:
+
+- Double storage, low disk space utilisation
+
+The system fails either two disks fail at the same time. The probability that 2 disks fail is $p\times p = p^2$. Mean Time to Failure of the system is $\frac{1}{p^2} = \text{MTTF}^2$
 
 ### RAID 2 (Bit level Striping)
 
