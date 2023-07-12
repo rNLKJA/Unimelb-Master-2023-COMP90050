@@ -1011,6 +1011,19 @@ Example:
 > - Storage utilisation
 > - Price/Number of disks
 
+Advantages:
+
+- Double the throughput compared to one disk
+
+Disadvantages:
+
+- Shorter MTTF
+- Fails if one of the disks fail
+
+$\Pr(\text{failure}) = \Pr(A) + \Pr(B) = 2p; \text{MTTF}(\text{RAID}_0) = \frac{1}{2p}=\frac{1}{2}\times\text{MTTF(disk)}$
+
+Space Utilisation = Disk Utilization = Number of disks / Number of disk storing data = 100% = 1.
+
 ### RAID 1 (mirroing)
 
 ![](images/2023-06-26-18-32-22.png)
