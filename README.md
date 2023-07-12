@@ -210,10 +210,14 @@
     - [Degree 0](#degree-0)
   - [Concurrent transactions - Conflicts and Performance issues](#concurrent-transactions---conflicts-and-performance-issues)
   - [Granularity of Locks](#granularity-of-locks)
+      - [Intention mode locks](#intention-mode-locks)
     - [Actual granular locks in practice](#actual-granular-locks-in-practice)
     - [Isolation Concepts ...](#isolation-concepts-)
     - [Isolocation Concepts ... Tree locking and Intent Lock Modes](#isolocation-concepts--tree-locking-and-intent-lock-modes)
     - [Compatibility Mode of Granular Locks](#compatibility-mode-of-granular-locks)
+  - [Optimistic locking](#optimistic-locking)
+  - [Snapshot Isoloation](#snapshot-isoloation)
+  - [Time stamping](#time-stamping)
 
 ## Administration Information
 
@@ -2929,16 +2933,21 @@ Simple Example: It allows locking on whole DB, whole file, or just one key value
 > _How can we allow both granularities?_
 > Intention mode locks on coarse granules.
 >
-> - granted
->
-> * delayed
+> \- granted \* delayed
 
-![](images/2023-07-11-21-48-48.png)
+![](images/2023-07-11-23-55-03.png)
+
+#### Intention mode locks
+
+Intention mode locks are used to indicate that a transaction intends to lock a finer granularity object.
 
 ### Actual granular locks in practice
 
 X - e**X**clusive lock
 S - **S**hared lock
+
+-- intention type of locks
+
 U - **U**pdate lock -- intention to update in the future
 IS - **I**ntent to set **S**hared locks at finer granularity
 IX - **I**ntent to set **S**hared or eXclusive locks at finer granularity
@@ -2968,13 +2977,52 @@ To acquire an X, U, SIX, or IX mode lock on a non-root node, all parents must be
 
 ### Compatibility Mode of Granular Locks
 
-Request: +|- -> (next mode), + (granted), - (delayed)
+Request: +|- -> (next mode), +(granted), -(delayed)
 
-| Current | None   | IS     | IX    | S    | SIX    | U    | X    |
-| ------- | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
-| IS      | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
-| IX      | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| S       | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| SIX     | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| U       | +(U)   | +(U)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| X       | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| Current Mode | None   | IS     | IX    | S    | SIX    | U    | X    |
+| ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
+| IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
+| IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | -(U) | -(SIX) | -(U) | -(X) |
+| X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+
+> Column: type of locks request by other transactions
+
+Order: IS $\rightarrow$ IX $\rightarrow$ S $\rightarrow$ SIX $\rightarrow$ U $\rightarrow$ X.
+
+## Optimistic locking
+
+<span style="color:green">When conflicts are rare, transactions can execute operations without managing locks and without waiting for locks - higher throughput.</</span>
+
+- Use data without locks
+- Before commiting, each transaction verifies that no other transaction has modified the data (by taking appropriate locks) - <span style="color:green">duration of locks are very short</span>
+- If any conflict found, the transaction repeats the attempt
+- If no conflict, make changes and commit
+
+![](images/2023-07-12-10-04-18.png)
+
+## Snapshot Isoloation
+
+Snapshot Isolation method is used in Oracle but it will not guarantee Serializability (consistency). However, its transaction throughput is very high compared to two phase locking scheme.
+
+Consistency issue may arise when transactions execute concurrently.
+
+![](images/2023-07-12-10-06-45.png)
+
+One or both transactions can commit but when both are commited, it is not serializable as only one should be able to commit.
+
+## Time stamping
+
+These are a special case of optimistic concurrency control. At commit, time stamps are examined. If time stamp is more recent than the transaction read time the transaction is aborted.
+
+> Time Domain Versioning
+> Data is never overwritten a new version is created on update.
+> <$o$, $V_1$, [$t_1$, $t_2$}>, <$V_2$, [$t_2$, $t_3$)>, <$V_3$, $[t_3, *)$>
+
+At the commit time, the system validates all the transaction's updates and writes updates to durable media. This model of computation unifies concurrency, recovery and time domain addressing.
+
+<img src="images/2023-07-11-22-11-59.png" width=500/>
+
+If transaction $T_1$ commences first and holds a read lock on a employee record with salary < \$40000, $T_2$ will be delayed untile $T_1$ finishes. But with time stamps $T_2$ does not have to wait for $T_1$ to finish.
