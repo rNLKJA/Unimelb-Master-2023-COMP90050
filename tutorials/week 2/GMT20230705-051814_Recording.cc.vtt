@@ -1,0 +1,1607 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.000
+So let me also start recording on the cloud. Okay, so welcome everyone to the second tutorial.
+
+00:00:06.000 --> 00:00:18.000
+We have a material in between we cover 3 parts. And in each part we cover you know the exercises It has been released earlier on Canvas.
+
+00:00:18.000 --> 00:00:27.000
+Okay. So the first part is about rate systems, payload and also message passing. Yeah, so let's just.
+
+00:00:27.000 --> 00:00:36.000
+Asking to the first question. So the first question. He's asking about fish of the following rate configurations.
+
+00:00:36.000 --> 00:00:44.000
+F has the lowest disk space utilizing. Your answer needs to have explanation with the calculation for each case.
+
+00:00:44.000 --> 00:00:59.000
+Okay. So about the This get space utilization before we jump into that we need to know what do we mean by rate 0 rate one and what is the architecture of each of these you know.
+
+00:00:59.000 --> 00:01:06.000
+Configurations. And then we can talk about, okay, so what is the disk space utilization?
+
+00:01:06.000 --> 00:01:15.000
+What is the meaning of the And how can we calculate that? Okay. And in the cases that. And architecture has a lower.
+
+00:01:15.000 --> 00:01:29.000
+Discuss visualization where does that lack of utilization do. Okay. So We will start with, reviewing the concept of Ray.
+
+00:01:29.000 --> 00:01:39.000
+And different and then we will talk about the discus specificization as well. So let's pass into.
+
+00:01:39.000 --> 00:01:52.000
+There's the concept of meantime to failure, what is mean time to failure? So by definition, mean time to failure is the time laps before a failure occurs.
+
+00:01:52.000 --> 00:02:03.000
+So if you draw the graph of this status of the machine. You can see that we have some down the status and we also have some offices.
+
+00:02:03.000 --> 00:02:13.000
+So let's assume that. The machine is in upper status. So the time to see that is lapse, up until the first time.
+
+00:02:13.000 --> 00:02:26.000
+That the machine goes into the downer status. It's called mean times failure. And if you average over all of these times, like here, it will give you 30 people the mean times failure.
+
+00:02:26.000 --> 00:02:40.000
+But if the. Use P to denote the probability of the machine. Then we define each time we are based on the and it would be one over p.
+
+00:02:40.000 --> 00:02:53.000
+Okay. So let's start with the baseline. So based on is a single disk in which we you know, store the data in a sequential way on it.
+
+00:02:53.000 --> 00:03:06.000
+So we have Plugs of Tata. So all the data is stored in one disk. So we know that if we show, the probability of failure of this disk with p, which is the baseline architecture.
+
+00:03:06.000 --> 00:03:20.000
+Then the mean time failure of the baseline will be one over p which is you know the basically the definition of meantime Okay, so now from this point you're going to extend the baseline by adding these disks.
+
+00:03:20.000 --> 00:03:22.000
+And when we are adding this. So we want to decide how we are going to use the other day we are adding.
+
+00:03:22.000 --> 00:03:37.000
+Okay, so sometimes. Then we are adding a new disk. We want to copy the data that we already have in the First desk or we want to split the Data.
+
+00:03:37.000 --> 00:03:50.000
+And each of these you know decisions will have a consequence we have an impact many you know features of the architecture.
+
+00:03:50.000 --> 00:04:02.000
+So let's start with the first, architecture, which is rate 0. Or also called, So in this case, We'd have 2 disks.
+
+00:04:02.000 --> 00:04:04.000
+But the data is actually Split it or separated between the 2 days. So half of the data is stored in this one.
+
+00:04:04.000 --> 00:04:14.000
+The other half is stored in these 2.
+
+00:04:14.000 --> 00:04:24.000
+So what's the advantage of this architecture? So basically you will have The higher 2 port or to be a specific you will have double triple.
+
+00:04:24.000 --> 00:04:33.000
+Because you can. Read simultaneously from 2 disks or you can write some simultaneously to 2 disks.
+
+00:04:33.000 --> 00:04:47.000
+Okay. And what is the disadvantage? So you are actually adding Another disk. And you know, if you assume that the 2 discs are identical.
+
+00:04:47.000 --> 00:05:00.000
+Then if any of these fail Yeah, whole architecture with no angle board. Okay. Why? Because You know, if you lose any of the disks.
+
+00:05:00.000 --> 00:05:07.000
+Half of the data is gone and you will not be able to retrieve Well, you know, in whole.
+
+00:05:07.000 --> 00:05:17.000
+Okay, so that's why that We can say that, you know, Compared to the baseline.
+
+00:05:17.000 --> 00:05:38.000
+This architecture is like less reliable. Because we expect a shorter mean time to failure okay but how can we analyze the mean time to failure of this architecture So we can do that by Doing some.
+
+00:05:38.000 --> 00:05:50.000
+Probabilistic analysis. On the probability of the failure of these applications. So what is the probability of failure of this architecture.
+
+00:05:50.000 --> 00:06:04.000
+So. This architecture will fail in the events when either this fails and the other one is right for this discs fail and the other one is right.
+
+00:06:04.000 --> 00:06:08.000
+Okay, in each of these scenarios
+
+00:06:08.000 --> 00:06:16.000
+You will have a failure for the whole architecture. Okay.
+
+00:06:16.000 --> 00:06:24.000
+But how would you, characterize this? It, I mean, more formally and using the probability theory language.
+
+00:06:24.000 --> 00:06:39.000
+So we can say the whole architecture will fail if this one fails or These 2 fails. Okay, so the event of failure of this architecture.
+
+00:06:39.000 --> 00:06:49.000
+Is an or between the occurrence of The event the failure of this disk for The event of failure of business.
+
+00:06:49.000 --> 00:06:57.000
+Okay, and we know that in probability theory we actually model this all between 2 events with the addition.
+
+00:06:57.000 --> 00:07:07.000
+Okay. So if you show P of A or P of one to show the penalty failure of the first disk.
+
+00:07:07.000 --> 00:07:18.000
+Then the probability of failure in overall will be the sum of the probability of failure of the first one plus The probability of failure.
+
+00:07:18.000 --> 00:07:23.000
+Okay, because of the or between the 2 events.
+
+00:07:23.000 --> 00:07:31.000
+And since we assume that the 2 disks are identical, so both of them have a probability of failure of P.
+
+00:07:31.000 --> 00:07:40.000
+Okay and this will give us is 2 p. So the overall probability of failure will be to be. But that is only the probability of fear.
+
+00:07:40.000 --> 00:07:48.000
+That is not the mean time to failure. How can we get The mean time to failure that's simple by reversing They probably have failure.
+
+00:07:48.000 --> 00:07:57.000
+So one over 2 p. Would be. That mean time to build you, but you already know that One over p.
+
+00:07:57.000 --> 00:08:06.000
+Okay, based on piece that we know this as The mean time failure of a disc, okay? So this is the mean times failure for this.
+
+00:08:06.000 --> 00:08:21.000
+And then we have one over 2. It goes here. Okay, so in overall The meantime the failure of the rate 0 is how Of the meantime to failure of the baseline.
+
+00:08:21.000 --> 00:08:33.000
+Okay, so it, it appears that we are actually getting double. I the cost of having half meantime to failure.
+
+00:08:33.000 --> 00:08:41.000
+Okay, or short term in time. And also.
+
+00:08:41.000 --> 00:08:45.000
+Any questions here? So this is
+
+00:08:45.000 --> 00:08:56.000
+Right, Zoom. How can we calculate the Discus based utilization here? So usually the A space utilization for SU we can show.
+
+00:08:56.000 --> 00:09:07.000
+Is the, you know. The size of the data. That is not copy or the size of the original data.
+
+00:09:07.000 --> 00:09:16.000
+Oh where the total size of that. Okay, so here what is the size of original delta?
+
+00:09:16.000 --> 00:09:23.000
+So we can. Write it in terms of the number of these. So we have 2 disks. Most of them are storing original data, right?
+
+00:09:23.000 --> 00:09:38.000
+We are not storing any copy data on any of these. So both of these, for instance, you have A 0 only here we don't have a 0 copy anywhere else right So both of these disks are actually storing original data.
+
+00:09:38.000 --> 00:09:50.000
+So then 2 disks we have that are storing original data and in overall we have 2 discs which means You have 100% This can space utilization, right?
+
+00:09:50.000 --> 00:09:58.000
+Space utilization. So you are not actually wasting any space. But, you know, we are actually risking it.
+
+00:09:58.000 --> 00:10:06.000
+We are risking because of a short, short term meeting time.
+
+00:10:06.000 --> 00:10:12.000
+Any questions here?
+
+00:10:12.000 --> 00:10:21.000
+Cool. Now let's pass into the next slide.
+
+00:10:21.000 --> 00:10:41.000
+The other idea is instead of separating the dot between the 2 so we can copy the data. Okay, from one disk to another this so it's like exact copy of the one disk to another piece Okay.
+
+00:10:41.000 --> 00:10:49.000
+We also call, the Metropolitan. So this is, that's also called.
+
+00:10:49.000 --> 00:10:58.000
+Okay, what is the advantage of, the
+
+00:10:58.000 --> 00:11:10.000
+The advantage would be that it should be more 12 tolerance so you'll have a better both tolerance Compared to the whole case.
+
+00:11:10.000 --> 00:11:24.000
+Compared to the separate storage. Okay, but the disadvantage would be on you know probably low Hey.
+
+00:11:24.000 --> 00:11:37.000
+Because of, you know, copying to the Okay. But how would be the meantime? What would be the meantime to fail you mean time to failure?
+
+00:11:37.000 --> 00:11:41.000
+How would you calculate that?
+
+00:11:41.000 --> 00:11:48.000
+So again, for any mean time to failure. We need to start with.
+
+00:11:48.000 --> 00:12:00.000
+Characterizing the probability of failure. Yeah. For this architecture.
+
+00:12:00.000 --> 00:12:11.000
+So you said probability of failure will be So this event of failure will depend on the failure of these 2 discs, but how?
+
+00:12:11.000 --> 00:12:18.000
+So let's assume that this is fair while this is okay.
+
+00:12:18.000 --> 00:12:27.000
+Do we have a problem here? Or is it okay?
+
+00:12:27.000 --> 00:12:35.000
+Okay, so we're having some input from the crowd. Thank you very much. Or faster reading as well.
+
+00:12:35.000 --> 00:12:38.000
+Yes.
+
+00:12:38.000 --> 00:12:43.000
+You're talking about
+
+00:12:43.000 --> 00:12:55.000
+The previous one, the separated store is yes, but this one now. Okay, so let's assume that one of the disks fail like this case And the other one is right.
+
+00:12:55.000 --> 00:13:00.000
+Let me still.
+
+00:13:00.000 --> 00:13:07.000
+Me should be able to receive the data because we have a copy. Okay, so everything should be fine here.
+
+00:13:07.000 --> 00:13:13.000
+And the same should be when the other one is failing one of them is present. So this is also fun.
+
+00:13:13.000 --> 00:13:25.000
+So the bad thing happens when both of them. Actually stay on none of them are available. In that case, we cannot proceed because there is no disc to retrieve.
+
+00:13:25.000 --> 00:13:38.000
+Okay, but what is the probability of this case? That both of the Both of these one and this too fair.
+
+00:13:38.000 --> 00:13:50.000
+Any ideas?
+
+00:13:50.000 --> 00:13:59.000
+So if you show the probability of failure of each of the
+
+00:13:59.000 --> 00:14:17.000
+Then the event of the event of failure of the All architecture. Will be triggered if Both of these days fail at the same time, which means these days fail and This is also fails.
+
+00:14:17.000 --> 00:14:32.000
+Okay, and in probability theory you know the add between 2 events is shown by the multiplication between the 2 Let me know that the policies are failure at this point is P.
+
+00:14:32.000 --> 00:14:44.000
+The probability of failure is also So the probability of, failure of the whole thing would be p to power of 2.
+
+00:14:44.000 --> 00:14:48.000
+And about the meantime to failure.
+
+00:14:48.000 --> 00:15:00.000
+So if of the Check with the means time. You reverse of the probability of failure is one over p 2 part of 2.
+
+00:15:00.000 --> 00:15:07.000
+So we know that this alone is meantime failure of the baseline, right? So you can say means fine.
+
+00:15:07.000 --> 00:15:14.000
+Failure of baseline. Then this is going to be meantime.
+
+00:15:14.000 --> 00:15:20.000
+The failure of the baseline to power up to.
+
+00:15:20.000 --> 00:15:30.000
+But what values this mean times failure can get? So we already said that means time to failure. Is equal to one over p.
+
+00:15:30.000 --> 00:15:36.000
+Okay, so now let's say that p is equal to 0 which means
+
+00:15:36.000 --> 00:15:49.000
+Probability of failure is 0. Which means the machine is very liable. In that case, the mean time to failure will go to infinity.
+
+00:15:49.000 --> 00:15:57.000
+Right. Okay. And if P is equal to one, which means.
+
+00:15:57.000 --> 00:16:05.000
+If, the system is very unreliable, then The mean time to failure will be equal to one.
+
+00:16:05.000 --> 00:16:14.000
+Which is mean time, which means means time to fill the air. He's always greater, equal than one.
+
+00:16:14.000 --> 00:16:28.000
+Okay, so the Power of that should be greater. Equal then Meantime to failure of the baseline itself.
+
+00:16:28.000 --> 00:16:32.000
+Okay.
+
+00:16:32.000 --> 00:16:36.000
+Any questions?
+
+00:16:36.000 --> 00:16:43.000
+So you're actually getting a higherings and failure by the same time you're you know losing some space here.
+
+00:16:43.000 --> 00:16:54.000
+So now let's calculates that this case based utilization. Utilization. So you said he size of the.
+
+00:16:54.000 --> 00:17:03.000
+One you know so you can assume that That idea is original. This pattern is copied. What is the size of the original?
+
+00:17:03.000 --> 00:17:11.000
+So you can say one out of 2 disks is saving the original. We have 2 next in. 2 days in overall.
+
+00:17:11.000 --> 00:17:18.000
+So we have 50%. Disc, space utilization.
+
+00:17:18.000 --> 00:17:28.000
+But where does the other 50% go? That's other 50% is actually being used to, you know, create some.
+
+00:17:28.000 --> 00:17:38.000
+Copy of the Data. A save copy that can help us. Retrieved the outside in the case of So that is the price that you pay for.
+
+00:17:38.000 --> 00:17:43.000
+With their model
+
+00:17:43.000 --> 00:17:54.000
+Any questions here?
+
+00:17:54.000 --> 00:17:57.000
+So.
+
+00:17:57.000 --> 00:18:07.000
+We also have R 2 which is the beat level And separation of the data.
+
+00:18:07.000 --> 00:18:13.000
+It's totally same as grade one and the mean times fellow you're also
+
+00:18:13.000 --> 00:18:27.000
+But people came up with this idea that, okay, so in rate, 0 we actually had double triple In great one, he had high pop currency.
+
+00:18:27.000 --> 00:18:37.000
+We can be combined with 2. To achieve something in the middle. That is both fast and at the same time reliable.
+
+00:18:37.000 --> 00:18:44.000
+And then people came up with the idea of Rachel. So what's his great tree?
+
+00:18:44.000 --> 00:18:58.000
+So, right tree has a bit of bows in it. I mean, the idea for creating rate free was, you know, combination of the ideas of right 0 How come?
+
+00:18:58.000 --> 00:19:06.000
+So we have we are actually having data separated between 2 disks. So we are having like separated storage here.
+
+00:19:06.000 --> 00:19:20.000
+And then we also having, disk that is storing party bits. So, And, Good, the 2 things.
+
+00:19:20.000 --> 00:19:42.000
+Okay. The bits of this one, or pizza of these 2 will give you the And then since this is a then you lose one of these, bloods or whatever is this you can still use hard to be to retrieve what you have lost.
+
+00:19:42.000 --> 00:19:46.000
+Okay.
+
+00:19:46.000 --> 00:19:57.000
+So the idea of Power to be similar to the idea of MERRISTORY, so it's not like original data that is stored here, but it's, you know, some sort of copy.
+
+00:19:57.000 --> 00:20:07.000
+Of the that we have so that we can use it to retrieve. That's how you make a Okay, so this part is like rate 0.
+
+00:20:07.000 --> 00:20:13.000
+And this part is like rate one.
+
+00:20:13.000 --> 00:20:24.000
+But together. It's actually very great. Okay. So however, it's not like very widely used.
+
+00:20:24.000 --> 00:20:32.000
+So it's rarely used. And Yeah, you can see that so we can cheap, you know.
+
+00:20:32.000 --> 00:20:44.000
+The good of the growth. Okay. So what is the mean time failure of this one? You kind of steal start with characterizing the probability of failure.
+
+00:20:44.000 --> 00:20:54.000
+Using probability of trouble security. What is the probability of failure?
+
+00:20:54.000 --> 00:21:02.000
+So use the event of failure of these disks here and each of them should fail in order for the whole application to fail.
+
+00:21:02.000 --> 00:21:11.000
+The whole architecture will fail if we are unable to retrieve the dot anymore.
+
+00:21:11.000 --> 00:21:24.000
+Okay, so when does that happen if One of the disk like this 3 fails and the other 2 are working, they still have the original dozen and you should be fine.
+
+00:21:24.000 --> 00:21:35.000
+If one of the original disks fail. And one of one of the other original along with the Yeah, I still okay.
+
+00:21:35.000 --> 00:21:47.000
+Because we can use Patty information to retrieve what was lost. So the heck happens when we have 2 disks.
+
+00:21:47.000 --> 00:21:58.000
+Failing and the other one is okay. Let me lose both of the original like the original data disks.
+
+00:21:58.000 --> 00:22:04.000
+Then we can no longer retrieve the data and that's a failure for the architecture.
+
+00:22:04.000 --> 00:22:09.000
+Okay.
+
+00:22:09.000 --> 00:22:17.000
+But how would you characterize these cases and how many of these cases existed?
+
+00:22:17.000 --> 00:22:23.000
+Any ideas? Use probability theory to characterize. Maybe 2 min. Think about this.
+
+00:22:23.000 --> 00:22:53.000
+And then we'll get back here to see your thoughts
+
+00:25:02.000 --> 00:25:10.000
+Okay, so we have some inputs from William, you have some inputs from Jenin.
+
+00:25:10.000 --> 00:25:22.000
+Really I'm saying 2 to 3. These eights. The whole tree.
+
+00:25:22.000 --> 00:25:37.000
+Shoot you tomorrow. She's actually all the possible cases that they can fail. That's not the Chase the failure.
+
+00:25:37.000 --> 00:25:47.000
+Janet is saying one over P 1.2 times P. What is that? One over 2 times p.
+
+00:25:47.000 --> 00:25:58.000
+One over 2 times. P to our time stream.
+
+00:25:58.000 --> 00:26:28.000
+Okay, what's the logic? Can you maybe be more more specific about your logic? How do you calculate this many times failure?
+
+00:26:34.000 --> 00:26:41.000
+Well, your rate is 2 p to the power 2 p times 3.
+
+00:26:41.000 --> 00:26:44.000
+Okay.
+
+00:26:44.000 --> 00:26:58.000
+Not sure where that's coming from, but yeah, if you can explain, maybe we can discuss why you're getting this.
+
+00:26:58.000 --> 00:27:06.000
+So we said. If 2 disks out of the tree fail, the whole art feature fails, okay?
+
+00:27:06.000 --> 00:27:11.000
+So then you can capture as a bubble
+
+00:27:11.000 --> 00:27:15.000
+As you know the probability of
+
+00:27:15.000 --> 00:27:25.000
+You know these cases. These events. Input from Jenin. He's saying, what he was saying.
+
+00:27:25.000 --> 00:27:35.000
+Choice any 2 disks from 3 disk. Yes, that's right. And to this failure at the same time is 2 p.
+
+00:27:35.000 --> 00:27:43.000
+Okay, that makes sense. The first part makes very sense. So. Yannin is saying.
+
+00:27:43.000 --> 00:27:49.000
+If 2 out of 3 fail, then the whole architecture fails, right?
+
+00:27:49.000 --> 00:27:57.000
+Which is right. But how can we get the number of All the cases that 2 out of 3 fails because we know that these are different, right?
+
+00:27:57.000 --> 00:28:02.000
+So we have this one, is to this thing. What are all the cases that 2 out of 3?
+
+00:28:02.000 --> 00:28:10.000
+It can be either this one, this 2, it can be this one is 3. Can be this to this trip.
+
+00:28:10.000 --> 00:28:17.000
+But how can we count all the number of cases you need? Like in this area.
+
+00:28:17.000 --> 00:28:28.000
+We say we want to Discs out of tree to fail, right? And if we do selection of 3, center of 2 out of 3.
+
+00:28:28.000 --> 00:28:32.000
+It will give you
+
+00:28:32.000 --> 00:28:45.000
+The probability of. Sorry, it will give you all the number of cases. No, we need to multiply that to the probability of Failure of the 2 discs at the same time.
+
+00:28:45.000 --> 00:28:54.000
+What is the probability that this one and this 2 for instance or any 2 disks? Any 2 identical disks fail at the same time.
+
+00:28:54.000 --> 00:28:59.000
+What's the
+
+00:28:59.000 --> 00:29:15.000
+So this is like, Failure of these 2. And we always model and make multiplication. So if
+
+00:29:15.000 --> 00:29:26.000
+Yeah, if that's you know, both of them have a probability of failure p. So it would be multiplication of p times key.
+
+00:29:26.000 --> 00:29:40.000
+This will be 2, Right. So then we have all the chases that are out of 3. The fail times the probability that 2.
+
+00:29:40.000 --> 00:29:46.000
+This, well, together, this is P 2. He's part of 2.
+
+00:29:46.000 --> 00:29:51.000
+Okay, and this will give us
+
+00:29:51.000 --> 00:29:59.000
+So 2 out of 3 would be 2 times. 2 over 2. This will be 3 and p 2.
+
+00:29:59.000 --> 00:30:09.000
+So this will be the probability of building.
+
+00:30:09.000 --> 00:30:18.000
+And if we Yeah, if you reverse that, it will give us meantime failure. So mean time to failure.
+
+00:30:18.000 --> 00:30:23.000
+Will be one over TREE,
+
+00:30:23.000 --> 00:30:36.000
+So we know that one of and mean time to fill up the baseline. So it mean time to failure of the baseline
+
+00:30:36.000 --> 00:30:45.000
+In power of 2. Over tree.
+
+00:30:45.000 --> 00:30:53.000
+Cool. So 2 questions.
+
+00:30:53.000 --> 00:31:01.000
+So what about she fails at the same time? Okay, so that is more than enough.
+
+00:31:01.000 --> 00:31:14.000
+And the only count for the minimum. Probability I mean the minimum quality of failure that is like more than I mean if 2 out of 3 fair, that's enough.
+
+00:31:14.000 --> 00:31:27.000
+We don't need the third one. Okay, so we only need to count for Cases been 2 out of 3 fail because that is a failure and we don't need even the third one.
+
+00:31:27.000 --> 00:31:42.000
+That will I mean the failure of 2 days in characterize the failure of the whole architecture. We don't need to worry about the Okay, counting that one into.
+
+00:31:42.000 --> 00:32:12.000
+The characterization Cool. Okay, so this will be the meantime failure. But what about the DC space utilization?
+
+00:32:13.000 --> 00:32:20.000
+Any idea about the
+
+00:32:20.000 --> 00:32:38.000
+William is saying 66.6.
+
+00:32:38.000 --> 00:32:47.000
+Okay, how do we get that? Okay, so for this case based utilization. Disk space.
+
+00:32:47.000 --> 00:32:54.000
+Utilization we know that Besides that the original data So here 2 out of the 3 disks are starting.
+
+00:32:54.000 --> 00:33:02.000
+We're John Lotel. One is staring back to it, which is some sort of Wow.
+
+00:33:02.000 --> 00:33:14.000
+Fall to run. So it's not only job that's also in general we have Emotional we have previous 2 out of that He's storing, which will give us 60.
+
+00:33:14.000 --> 00:33:18.000
+6 points.
+
+00:33:18.000 --> 00:33:27.000
+6 of This case based utilization.
+
+00:33:27.000 --> 00:33:30.000
+6 6.7.
+
+00:33:30.000 --> 00:33:33.000
+Any questions here?
+
+00:33:33.000 --> 00:33:50.000
+Cool. So now we have also some similar rate architecture. Each one called. So let me.
+
+00:33:50.000 --> 00:33:58.000
+We'll do next start. We also have Raid 4. Which is the same idea only Is that the block level?
+
+00:33:58.000 --> 00:34:07.000
+We also have, in which the party disk is, you know. Distributed them on all the disks.
+
+00:34:07.000 --> 00:34:12.000
+Is still the same thing. So the mean time's fairly operate 4 and 8 5 will be similar to.
+
+00:34:12.000 --> 00:34:24.000
+Sounds like very serious improvement, but there are still improvements. And then finally we have RID 6 in RID 6 we have 5 disks instead of 3.
+
+00:34:24.000 --> 00:34:28.000
+And
+
+00:34:28.000 --> 00:34:40.000
+And yeah, and here we have 3. You know, at each row we have 3 blocks of original lots of parity information.
+
+00:34:40.000 --> 00:34:49.000
+Now we want to see what the Meantime for failure of this one.
+
+00:34:49.000 --> 00:34:55.000
+Okay, any ideas?
+
+00:34:55.000 --> 00:35:25.000
+The mean time to fill your 3, 2, 3 min. Think of this.
+
+00:37:04.000 --> 00:37:11.000
+Okay, any ideas?
+
+00:37:11.000 --> 00:37:14.000
+So William.
+
+00:37:14.000 --> 00:37:18.000
+The Michelle.
+
+00:37:18.000 --> 00:37:21.000
+Saying
+
+00:37:21.000 --> 00:37:29.000
+She had a 5. He's a power of tree.
+
+00:37:29.000 --> 00:37:36.000
+Okay, and Jennings also. As health William to get to this answer. Okay, why is that?
+
+00:37:36.000 --> 00:37:47.000
+So it should be like, very quick to you know extend the previous logic here So here, if you have 2 of the disks failing.
+
+00:37:47.000 --> 00:37:56.000
+And the other 3 working. Everything should still be okay. Okay, so we need at least 2 of the disks failing.
+
+00:37:56.000 --> 00:38:01.000
+And 2 working to have the
+
+00:38:01.000 --> 00:38:13.000
+Okay, so we can say all the possible cases that she out of 5 can fail, all the possible cases, the number of all possible cases that 3 out of 5 can fail.
+
+00:38:13.000 --> 00:38:20.000
+That is a solution of 3 other 5. Fine. The probability that she is at the same time.
+
+00:38:20.000 --> 00:38:31.000
+Which is add between these 3 events. And each event has a double TFP right so PPP It should be please 4 or 3.
+
+00:38:31.000 --> 00:38:34.000
+Okay, that should be the answer.
+
+00:38:34.000 --> 00:38:43.000
+Cool. So well done, Michelle. I'm sorry, William D. Michelle.
+
+00:38:43.000 --> 00:38:48.000
+So you know, all of you should be like William, right? So. This is part of the learning.
+
+00:38:48.000 --> 00:39:00.000
+So you start to think differently. You start to write something down. And then you will get feedback and then you will then like this.
+
+00:39:00.000 --> 00:39:11.000
+But if you stay silent you know. It's like less likely that you, you know, when you challenge yourself.
+
+00:39:11.000 --> 00:39:22.000
+There's a higher probability that you will end up learning. Then the case then you just. Okay, so.
+
+00:39:22.000 --> 00:39:30.000
+Thank you very much. Everyone. Contributing and, putting their tasks sharing their tasks with us.
+
+00:39:30.000 --> 00:39:34.000
+So.
+
+00:39:34.000 --> 00:39:42.000
+We are just screening.
+
+00:39:42.000 --> 00:39:55.000
+Cool. Question one. We talk to following this configuration, great configurations that we saw previously. As the lowest Right, 0, rate one, rate 3.
+
+00:39:55.000 --> 00:40:06.000
+Please compared to this specialization of these tree. And where does this specific utilization go? Maybe 2 to 3 min to take and this guys everyone please.
+
+00:40:06.000 --> 00:40:11.000
+Go ahead and think on this. Who's 3 min?
+
+00:40:11.000 --> 00:40:20.000
+We just discussed all of the rate different rate architecture so you should be you should be able to solve it and they also solve the displacement for different ones.
+
+00:40:20.000 --> 00:40:50.000
+So please approach this problem. And see what you can get.
+
+00:43:39.000 --> 00:43:47.000
+Okay, so we have some inputs from William. And also from Roar.
+
+00:43:47.000 --> 00:43:52.000
+So those system are pretty much saying the same thing.
+
+00:43:52.000 --> 00:44:06.000
+Improve reliability from Roar. Rade 0 lowest space utilization as half is going to the
+
+00:44:06.000 --> 00:44:16.000
+It's going to look to get, mirroring of the dot. Just full, where the data disk is likely to be.
+
+00:44:16.000 --> 00:44:22.000
+Correct. Yes, that's right. So we also have, thank you very much. Saying.
+
+00:44:22.000 --> 00:44:29.000
+Hey, one in a sense, is right, 15% 66.7. As one this is used to store. That's all good.
+
+00:44:29.000 --> 00:44:38.000
+So yeah, so where does
+
+00:44:38.000 --> 00:44:59.000
+So this is the lack of space utilization go as your friends Alright, you mentioned, it's these spent to you know, improve the reliability of the system or to help us when the failure happens so we can retrieve the data easier.
+
+00:44:59.000 --> 00:45:12.000
+Cool. The question is about the meantime failure of different great architectures that we have covered together so far Now.
+
+00:45:12.000 --> 00:45:23.000
+Part is about, voting in the presence of failure. So we have machines. Hey, in a network in a great, let's assume that we have a great network.
+
+00:45:23.000 --> 00:45:35.000
+So of many machines. And we want to, you know, make a decision based on the votes that machines You know actually provide or the notes provide.
+
+00:45:35.000 --> 00:45:42.000
+Well, the thing is that some of these machines may fail. In the middle of the job. Okay.
+
+00:45:42.000 --> 00:45:50.000
+So now when you're doing the voting. There can be 2 approaches. In the first approach, we calculate the majority.
+
+00:45:50.000 --> 00:46:04.000
+Based on all of the systems. And in the other which is called fail vote and in the other case which is called the calculate the majority based on only the working system.
+
+00:46:04.000 --> 00:46:10.000
+And this is how we, and this is how we define, and over to the floor of that plus one.
+
+00:46:10.000 --> 00:46:23.000
+Which is n over which is n is always the number of systems in the first case and available. And is the number of all the systems in the second case and is the number only voting system.
+
+00:46:23.000 --> 00:46:40.000
+Okay, so now. Assuming a failed vote for which all systems should be considered. Can you, can you please quickly say what should be the decision in each of these scenarios.
+
+00:46:40.000 --> 00:46:47.000
+So when we have 10, systems and 6 of them are agreeing should we accept this decision or not.
+
+00:46:47.000 --> 00:46:54.000
+You will accept only if majority are agreed. Should be accepting this case or not.
+
+00:46:54.000 --> 00:47:01.000
+Any ideas? They should see. Yes, okay. Thank you very much.
+
+00:47:01.000 --> 00:47:08.000
+Yes, it should be accepted. Yeah, that also says accept. And the other case, it's 5.
+
+00:47:08.000 --> 00:47:19.000
+1010 over 2. The floor of that plus one is 6 so anything below 6 is not the majority.
+
+00:47:19.000 --> 00:47:27.000
+So this is not a majority. This is not a majority. She is a majority of 5. But again, anything below tree is not the majority.
+
+00:47:27.000 --> 00:47:33.000
+Let's interject.
+
+00:47:33.000 --> 00:47:38.000
+Then make sure.
+
+00:47:38.000 --> 00:47:51.000
+Let me have. F, in And we defined a majority based on the number of working systems and we don't care about the number of system in general.
+
+00:47:51.000 --> 00:48:00.000
+So what is the decision in each of these cases? So. We didn't take care. We don't actually care about the number of.
+
+00:48:00.000 --> 00:48:06.000
+The total number of devices, you only care about the number of working devices. So we have 6 and 4.
+
+00:48:06.000 --> 00:48:16.000
+So is for a majority of 6, yes. He's dreaming of 6. No, his team, you're, fine.
+
+00:48:16.000 --> 00:48:23.000
+Yes. This team is already have 5. So while we are repeating because the number of total extensions changed but we don't care.
+
+00:48:23.000 --> 00:48:36.000
+That's a still. Let me routine form now. To a majority of 2 yes 0 is one no Cool.
+
+00:48:36.000 --> 00:48:50.000
+Cool. There is one more person remaining from first part, but since, we need a 10 min break, we'll probably end the next part, question 5 of the, first part we'll cover in the next part.
+
+00:48:50.000 --> 00:49:01.000
+So for now please everyone go and take a 10 min drink then we'll get back here. To see the answers sorry, to see the rest of that.
+
+00:49:01.000 --> 00:49:06.000
+Yeah.
+
+00:49:06.000 --> 00:49:17.000
+Yeah, person 5, we'll get back to that. So for now, please take it. Rest for 10 min and then we will get back here.
+
+00:49:17.000 --> 00:49:21.000
+See you in.
+
+00:49:21.000 --> 00:49:51.000
+4 15.
+
+00:59:59.000 --> 01:00:06.000
+Okay, we'll come back everyone. So let's start with the question 5 of the previous part.
+
+01:00:06.000 --> 01:00:18.000
+This is about message passing. So in this question we are having 2 nodes in a network. And we use the stable storage message.
+
+01:00:18.000 --> 01:00:23.000
+Okay.
+
+01:00:23.000 --> 01:00:34.000
+So yeah, stable storage and acknowledgement message. Okay. This is the status, this is the current stance.
+
+01:00:34.000 --> 01:00:47.000
+So for note A. We have the following year courts. So this note A has received message. I 6.
+
+01:00:47.000 --> 01:00:59.000
+Okay, these, note A has transmitted message tree. And, you know, the status of these nodes will be out 3 because it has sense.
+
+01:00:59.000 --> 01:01:06.000
+This is tree and it has also received the acknowledgment for message tree so the act would be 3.
+
+01:01:06.000 --> 01:01:14.000
+And then it has received message 6 so that in of the stable stage will be 6. Okay, then.
+
+01:01:14.000 --> 01:01:26.000
+Destable storage of node B. How's the following? Information? So first of all, Node B has received a message tree.
+
+01:01:26.000 --> 01:01:48.000
+Okay, so then the in of, mode these 3 and it has sent out message 6 so the out of this note being in the stables 36 and also the acknowledgement of these 6 because it has received Now, you want to assume that we'll note B sends a new message 7 to note
+
+01:01:48.000 --> 01:01:55.000
+A. And you want to see what view, this, how build this stable storage of node A and B change.
+
+01:01:55.000 --> 01:02:06.000
+If you assume that the transmission of a message 7. Problem with B to note A was successful, including receiving a an acknowledgement message
+
+01:02:06.000 --> 01:02:10.000
+Okay.
+
+01:02:10.000 --> 01:02:21.000
+So here's this. We have no B, it has sense message 6.
+
+01:02:21.000 --> 01:02:28.000
+So the out of this node has 6 and then this is like for the previous message that you had sent.
+
+01:02:28.000 --> 01:02:52.000
+The act of these notes also. And then since it has received message tree. The is 3 here on the other side this node has sent Message 3 so the add-on is 3 and receive message 6 from the node so the innocent I want to see what happens if node B sends message 7.
+
+01:02:52.000 --> 01:02:56.000
+To know the head.
+
+01:02:56.000 --> 01:03:12.000
+And we assume that everything goes fine. So no. To me wants to transmit message 7 so then the transmitted will change to 7 I'm gonna be 7.
+
+01:03:12.000 --> 01:03:21.000
+And then here you receive message that in will change to 7 and then in here we also change to 7.
+
+01:03:21.000 --> 01:03:40.000
+And we also assume that everything was successful, including receiving it. An acknowledgment message so this act will also change the Okay, this is what happens if no, these successfully sends and receives the ad.
+
+01:03:40.000 --> 01:03:55.000
+From Yeah, there, no. Now the second part. We say that, okay, so soon the same, same scenario, but this time the act is not successful.
+
+01:03:55.000 --> 01:04:01.000
+And how will this stable surge of the notes will change?
+
+01:04:01.000 --> 01:04:14.000
+Okay, so maybe 2 to the Germans do think on this. So the same scenario. Not be sending message 7, but this time the AK is not being transmitted successfully back to B.
+
+01:04:14.000 --> 01:04:44.000
+How should we change the Stable storage of node
+
+01:06:56.000 --> 01:07:15.000
+Okay, thank you again. William for sending your That's fantastic. So, no pay, the transmitted is tree to receive is 7.
+
+01:07:15.000 --> 01:07:26.000
+You're trying to speed it is 7 out to 7 but actually 6 y IP 6 because Yeah, it has not been received by
+
+01:07:26.000 --> 01:07:38.000
+No B, which is right. Okay. So the thing that will happen is that we know that we'll have 7 here because we are not receiving the So the Act will change into 6.
+
+01:07:38.000 --> 01:07:48.000
+Change back since it will actually not change the 7, you know, in the first place. So it will remain as the Thank you very much.
+
+01:07:48.000 --> 01:08:13.000
+Any questions here?
+
+01:08:13.000 --> 01:08:20.000
+Okay, so we can pass into the next part.
+
+01:08:20.000 --> 01:08:23.000
+It can just.
+
+01:08:23.000 --> 01:08:31.000
+Oh sharing this.
+
+01:08:31.000 --> 01:08:40.000
+Okay. Cool. The next part is about, query optimization and also nested book join.
+
+01:08:40.000 --> 01:08:48.000
+So we start the query optimization. So we have 2 plans for query optimization.
+
+01:08:48.000 --> 01:09:00.000
+The first plan is Searching or enumerating all the plans, which is like a brute force type of strategy, which you check everything.
+
+01:09:00.000 --> 01:09:09.000
+And make sure that. You're choosing the best plan. So it's only doable when the size of the data is not that big.
+
+01:09:09.000 --> 01:09:18.000
+Or when you know the query is actually very complex. And you need to choose the best plan. Okay.
+
+01:09:18.000 --> 01:09:32.000
+So at the same time, yeah, so when query is very complex, you need accurate results and the data is also not that big because if the data is big then searching or when I'm writing all the plans may not be.
+
+01:09:32.000 --> 01:09:40.000
+Feasible thing to do. Then we have the heuristic approach. Which is, you know.
+
+01:09:40.000 --> 01:09:48.000
+An approach that is like appears to be more clever so it's not like in everything everything. It's tries to pick.
+
+01:09:48.000 --> 01:10:01.000
+The solution is Good. But without doing a comprehensive search. Okay. So it's good when Hiacre is not a priority.
+
+01:10:01.000 --> 01:10:12.000
+Then the size of the is very big so that you cannot use the, And also Ben the title of the queries simple.
+
+01:10:12.000 --> 01:10:22.000
+So let's check first question here. So you want to see each of the query optimization approaches is suitable for the following
+
+01:10:22.000 --> 01:10:38.000
+So we have a table with 10 million records. You want to run the following query and see what happens.
+
+01:10:38.000 --> 01:10:51.000
+Any ideas? Which approach should we use?
+
+01:10:51.000 --> 01:11:06.000
+Means Shan, thank you very much for your inputs, heuristic. How come? Why?
+
+01:11:06.000 --> 01:11:20.000
+Because data is big. Yes, that's right. That's like a sufficient reasoning for using the heuristic because we 10 million suppose you probably cannot use the But query is also simple.
+
+01:11:20.000 --> 01:11:24.000
+Yeah, that's right. Very simple.
+
+01:11:24.000 --> 01:11:34.000
+You should be able to get the results. Using the USC approach.
+
+01:11:34.000 --> 01:12:04.000
+Bye.
+
+01:13:53.000 --> 01:14:04.000
+Okay for this scenario William is saying now ratings search as related to the small, Yes, I agree with that.
+
+01:14:04.000 --> 01:14:14.000
+So, that's not that big, it's only a thousand. And the queries having some video joins in sign.
+
+01:14:14.000 --> 01:14:25.000
+With some other conditions. So it's not that easy. As before. So it appears to be perfect for
+
+01:14:25.000 --> 01:14:42.000
+You know, enumerating all the plants because you know given the You want risk doing the, you still have time and resources to do it like, Nominating.
+
+01:14:42.000 --> 01:14:55.000
+Now let's move to Neston, you join. And like, So question number 8 is asking about Review the examples of Nest and Duchy.
+
+01:14:55.000 --> 01:15:04.000
+And discuss why, the blackness of do join is better than this at the join. So what is Nest that you join?
+
+01:15:04.000 --> 01:15:13.000
+So you're familiar with join. In relational tables, right? So what is join your relational tables again?
+
+01:15:13.000 --> 01:15:16.000
+So we have 2 tables.
+
+01:15:16.000 --> 01:15:23.000
+So table one has This key, let's say Q one.
+
+01:15:23.000 --> 01:15:30.000
+Then we have another table table 2.
+
+01:15:30.000 --> 01:15:38.000
+She again has another You know, this is the primary too, right? Yeah. Thank you. So we are joining these 2 tables, the rows of these 2 tables based on the key.
+
+01:15:38.000 --> 01:15:59.000
+How come? So we compare the keys. Where did 2 cheese are the same? We add the content of This role to destroy and that is the you know the joint operation
+
+01:15:59.000 --> 01:16:05.000
+So, Anissa to join is what about how to implement this.
+
+01:16:05.000 --> 01:16:15.000
+So these, you know, comparison between the keys in the 2 tables and making sure that we are joining the rows if The keys are the same.
+
+01:16:15.000 --> 01:16:22.000
+You can call it as the joint condition, which is shown by Teta.
+
+01:16:22.000 --> 01:16:27.000
+Okay, now assuming that we have
+
+01:16:27.000 --> 01:16:38.000
+Like a number of Rose here. Let's say we have. N sub R number of rows in the face table.
+
+01:16:38.000 --> 01:16:50.000
+And A number of rows here as well. But if we look at that block wise. So, and say that B one, block one.
+
+01:16:50.000 --> 01:16:58.000
+Me too, log 2 in the memory and totally we have These sub are blocks. Of the second table.
+
+01:16:58.000 --> 01:17:10.000
+Okay, so now. One approach is by iterating. Over each row. Of the first table.
+
+01:17:10.000 --> 01:17:19.000
+And matching it with every row and the next step on the other table. So it's like matching the first throw with the other row matching this with this role.
+
+01:17:19.000 --> 01:17:25.000
+This room with this row, I mean the first, the first, with every other row.
+
+01:17:25.000 --> 01:17:38.000
+And joining then it's Right, so it's like. And double for. The outer fair loop is actually on
+
+01:17:38.000 --> 01:17:49.000
+The rows of the first table as you can see TR is a row in the first table. And then checking against the rules of the the next day.
+
+01:17:49.000 --> 01:18:02.000
+Okay. What is the number of log transfers that we need to do? If we follow the nested group join.
+
+01:18:02.000 --> 01:18:23.000
+Brute force or the You know, naive way of doing the loop joint.
+
+01:18:23.000 --> 01:18:28.000
+Okay, so what is the
+
+01:18:28.000 --> 01:18:40.000
+What should be the Number of plug transfers. So here we have and Number of rooms. And for each row, we need to bring.
+
+01:18:40.000 --> 01:18:43.000
+All of the
+
+01:18:43.000 --> 01:18:50.000
+The other table. All the blocks of the other table into the memory. So. Well, each show we need to do that.
+
+01:18:50.000 --> 01:19:03.000
+We have 10. So our number of rows And we also need to eventually bring all the blocks of He's table is built in memory which takes piece of our blood transfer.
+
+01:19:03.000 --> 01:19:10.000
+So this is a total number of blog, right? For each row, bring all the dots up.
+
+01:19:10.000 --> 01:19:18.000
+Off the other table into memory. This is the number of total black transfer for one transfer of the table for each row.
+
+01:19:18.000 --> 01:19:25.000
+And this is the total number of blood transfer plus B sub R, which is not required for transferring all the blocks of this table.
+
+01:19:25.000 --> 01:19:42.000
+Into the network. Okay. And about the number of 6 So, times you need to do the sick because Each time you need to read the whole data here.
+
+01:19:42.000 --> 01:19:48.000
+Of the other table that is one sick for each read here.
+
+01:19:48.000 --> 01:19:56.000
+And also one sick for each block transfer that you do of the first day.
+
+01:19:56.000 --> 01:20:09.000
+Okay, but can we do that? Or not.
+
+01:20:09.000 --> 01:20:20.000
+So instead of. Comparing all this Like, You know, we can do it block by block.
+
+01:20:20.000 --> 01:20:29.000
+Okay, so we can each way over the blocks of the first table and then we match block against the block.
+
+01:20:29.000 --> 01:20:39.000
+Okay, so previously we had And so are times. Peace of S plus. This a lot, right?
+
+01:20:39.000 --> 01:20:51.000
+This was the number of roads. Now if we do it block by block You see the tensor we will have times B sub S and this piece of art will be the same.
+
+01:20:51.000 --> 01:21:02.000
+So The new blockchain will be this. And previously we also had But if we do the black transfer, we will have the power here.
+
+01:21:02.000 --> 01:21:06.000
+Which means we will have to be
+
+01:21:06.000 --> 01:21:20.000
+Okay, since N subar is much much more bigger than Misavar. If you do it with Bizarre, you will have Fewer number of blood transfers and also lower number of seats.
+
+01:21:20.000 --> 01:21:45.000
+Which you know means huge improvements. In your joint operation.
+
+01:21:45.000 --> 01:22:06.000
+Any questions here?
+
+01:22:06.000 --> 01:22:11.000
+Okay, so let's.
+
+01:22:11.000 --> 01:22:21.000
+Move to the next part. Let me just create this.
+
+01:22:21.000 --> 01:22:26.000
+Okay, so the final question.
+
+01:22:26.000 --> 01:22:37.000
+Is a particular query we have on table A. That is used run quite efficiently in a Other race management system.
+
+01:22:37.000 --> 01:22:43.000
+After inserting and waving.
+
+01:22:43.000 --> 01:22:54.000
+So many more records, the same query is now taking more time to run. Even then the total number of free calls has not changed.
+
+01:22:54.000 --> 01:23:02.000
+Okay, so what can be the reason? And what can you do as the user to improve the performance?
+
+01:23:02.000 --> 01:23:32.000
+Maybe 3 to 4 min on this question.
+
+01:29:40.000 --> 01:29:53.000
+Okay, so we have lots of inputs from the audience, which is perfect.
+
+01:29:53.000 --> 01:30:00.000
+So. Starting with Roar, I think the admin should compact the underlying B 3.
+
+01:30:00.000 --> 01:30:10.000
+Because the actual delete on B 3 may not Thank you. Okay, thank you very much.
+
+01:30:10.000 --> 01:30:16.000
+The
+
+01:30:16.000 --> 01:30:20.000
+I think that is to the point that much.
+
+01:30:20.000 --> 01:30:29.000
+Might be more specification. He makes it have become fragmented, okay, need to be rebuilt the indexes.
+
+01:30:29.000 --> 01:30:38.000
+Okay. Statistics of the query optimizing maybe, okay. TV should updates. Yes, that's also very to the point.
+
+01:30:38.000 --> 01:30:47.000
+Thank you. William means Shen. For this particular query. It may be efficient on the original table.
+
+01:30:47.000 --> 01:30:52.000
+But it gets more on the new table.
+
+01:30:52.000 --> 01:31:03.000
+For this particular query may be efficient. In the original table. Yeah, you may need to choose another credit plan.
+
+01:31:03.000 --> 01:31:22.000
+Also the statistics, may need to update. To handle the new table. Okay, so all of the tree will like pointing to the same direction which was right So the statistics of the table after doing some additional deletion.
+
+01:31:22.000 --> 01:31:32.000
+Will change and you cannot rely on the all the statistics to choose. A plan for the new. Okay, that is the problem.
+
+01:31:32.000 --> 01:31:37.000
+How can we? Improve it. We can force.
+
+01:31:37.000 --> 01:31:50.000
+Statistics are recompilation. Okay, for a statistical recompilation so that when a certain number of changes happen in the database.
+
+01:31:50.000 --> 01:32:04.000
+The statistics of the table. Is being recalculated so that we are up to date with these statistics and we can always rely on that and choose the best plan based on that.
+
+01:32:04.000 --> 01:32:13.000
+This marks the end of the second part of this material. It will take about 15 min of break.
+
+01:32:13.000 --> 01:32:21.000
+And then we will get back here. To discuss the rest of the material. So we'll get back here.
+
+01:32:21.000 --> 01:32:33.000
+5. 5, 5. 5 pm 5 min okay after 15 min.
+
+01:32:33.000 --> 01:33:03.000
+Talk to you soon.
+
+01:51:40.000 --> 01:51:54.000
+Okay, we'll come back everyone to the third part of today's material. So in the third part we're going to talk about and we're going to run some different examples of other structures.
+
+01:51:54.000 --> 01:52:02.000
+So. We talked about heuristic and enumerating all the plans options, you know, options for.
+
+01:52:02.000 --> 01:52:15.000
+Optimizing the query. And also optimizing the query processing time. But is it like the bottom line or is it like the end of the story?
+
+01:52:15.000 --> 01:52:30.000
+The answer is no. So You know, instead of going with the classical way of storing data in relational tables and then looking for And you know heuristic.
+
+01:52:30.000 --> 01:52:50.000
+Plans to minimize the you know, the time of retreating the answers We can still, we can, you know, change the way that we, Okay and one way is to the indices or the
+
+01:52:50.000 --> 01:52:59.000
+So instead of just storing data in a file with no order, we can use order indices, we can use hash indices.
+
+01:52:59.000 --> 01:53:18.000
+Did you know each of them have a concept behind it? That helps to retrieve the So we have ordered indices in which we save the data in some order that helps us with you know, fetching the delta later down the road.
+
+01:53:18.000 --> 01:53:29.000
+And you know helps us to face the And then we have the hash indices which is Another idea for mapping the value directly.
+
+01:53:29.000 --> 01:53:42.000
+To add and you know place the memory so that each time that you need to read specific value you don't need to go and says for it you just do the hash and then you know which cell to look for.
+
+01:53:42.000 --> 01:53:53.000
+And then you go and read the dial. Okay. So the impact of using these indices. Is faster is access time.
+
+01:53:53.000 --> 01:54:03.000
+Okay, so instead of. A long time for the query to achieve answers. We will have past, this access time.
+
+01:54:03.000 --> 01:54:06.000
+But you know the
+
+01:54:06.000 --> 01:54:19.000
+In session, delusion can be a problem. How come? Because, you know, when you are actually keeping the data in it in an ordered fashion.
+
+01:54:19.000 --> 01:54:27.000
+So making, I mean keeping it as ordered. Is, you know, a problem. Because you cannot add the data anywhere.
+
+01:54:27.000 --> 01:54:44.000
+You need to add it in in a place. That keeps the And deletion. Would also be, you know, important so when you're deleting the data you need to make sure that the remaining is such as stay in.
+
+01:54:44.000 --> 01:54:51.000
+Okay, so now we are going to review some of the, indices. The first one is B plus 3.
+
+01:54:51.000 --> 01:55:10.000
+So the idea of people, IS coming from the classical, binary search tree. So the way that we, we're creating binary search tree, so let's assume that we have the dots out this is the dots and this is the you know the values so the values are all sorted so in a you
+
+01:55:10.000 --> 01:55:19.000
+know, ascending order. So if you assume that this is the meet. Elements that has you know, a value at the middle of these.
+
+01:55:19.000 --> 01:55:35.000
+Then we will be of the binary search tree like this. So we will put the value in the middle as the roots of the tree.
+
+01:55:35.000 --> 01:55:39.000
+Okay, this is the mean.
+
+01:55:39.000 --> 01:55:58.000
+And then anything that is behind, anything that is on the left hand side. In the array so this is the array this is the meet value of array painting it's on the left hand side will The on the left hand side of the tree so it will come here.
+
+01:55:58.000 --> 01:56:03.000
+And anything that is on the right hand side.
+
+01:56:03.000 --> 01:56:15.000
+Will come on the right hand side of the tree. So maybe this one is going here. And This phone is coming here.
+
+01:56:15.000 --> 01:56:19.000
+Okay.
+
+01:56:19.000 --> 01:56:24.000
+So anything that is here is less than me.
+
+01:56:24.000 --> 01:56:32.000
+Anything that is here is greater than me.
+
+01:56:32.000 --> 01:56:54.000
+Okay, and then, you want to search for a specific key. You only need to compared with the meet with the route if the key is greater than the rules you know that you need to search for it here you do not need to search for it here and that will eliminate half of the Search a space for you and it
+
+01:56:54.000 --> 01:56:58.000
+will you know result in very fast searching time.
+
+01:56:58.000 --> 01:57:03.000
+And yeah, and if the she is less than the main, you only need to search the other half.
+
+01:57:03.000 --> 01:57:10.000
+Okay, so this is the idea of the binary. So in a binary history, each node can have at least one value in it.
+
+01:57:10.000 --> 01:57:18.000
+But we have people as 3 in which you know, the notes can have multiple values in them.
+
+01:57:18.000 --> 01:57:25.000
+Okay.
+
+01:57:25.000 --> 01:57:38.000
+So let's assume that we have. Hey binary, a B plus 3. With K Okay, This the keys that are inside the notes.
+
+01:57:38.000 --> 01:57:52.000
+Then the height of the tree, which is also equal to the number of steps. Required for finding a search key will be Log of the number of says she is in the base of 10 over 2.
+
+01:57:52.000 --> 01:58:02.000
+There is the number of notes that you can store in each, sorry, the number of, search keys that you can store in each note.
+
+01:58:02.000 --> 01:58:09.000
+For instance here, and is equal to 2 because you can store at most 2. Se, is in one note.
+
+01:58:09.000 --> 01:58:22.000
+Okay and then the number of children is always N plus one. The number of, Okay, so People are perfect for range queries.
+
+01:58:22.000 --> 01:58:30.000
+Then you need to find like the values or the you know the Search keys that are between 10 and 15.
+
+01:58:30.000 --> 01:58:40.000
+Okay, so you want to set you want to find all of these values We can use. .
+
+01:58:40.000 --> 01:59:00.000
+So range, is the Perfect. Then we also have hash indices. So the idea of hashing this is is you know, eliminating the need for any search.
+
+01:59:00.000 --> 01:59:11.000
+So you have a high function. This has function will take a value. Okay, and it will map this value.
+
+01:59:11.000 --> 01:59:19.000
+To a place in memory. So memory address.
+
+01:59:19.000 --> 01:59:27.000
+Okay, so this is the main idea of the hashing function so you don't need to stitch for anything.
+
+01:59:27.000 --> 01:59:33.000
+Just the hash function will do the search, you know, in an indirect way for you.
+
+01:59:33.000 --> 01:59:44.000
+So the best hash function is uniform has function. Okay, that uniform that uniformly distribute the data between all the memory addresses.
+
+01:59:44.000 --> 01:59:52.000
+And Ideal hash function is a random one.
+
+01:59:52.000 --> 02:00:04.000
+So the hash function, yeah, even the valuable map that value to an address in the memory. So we hope that You know, in a good hash function.
+
+02:00:04.000 --> 02:00:12.000
+Not 2 different. Values should be mapped to the same memory address. Otherwise we'll have some problems.
+
+02:00:12.000 --> 02:00:25.000
+Okay, and then if 2 different values will have the same over address. Then we need to. Conflict using some training methods or other name.
+
+02:00:25.000 --> 02:00:39.000
+Okay, but this is also very good. Method then you only want to find records based on their names or based on Just their says you don't want to do some search queries.
+
+02:00:39.000 --> 02:01:01.000
+You don't want to do some range queries. What a stuff like that you only wants to find the records based on their name or based on the not based on the range of decisions as well.
+
+02:01:01.000 --> 02:01:06.000
+Then we also have the B, mapping this is.
+
+02:01:06.000 --> 02:01:21.000
+You know, is being used then the size of the Table is small so you have a small distinct values So, for instance, when you have gender for the records.
+
+02:01:21.000 --> 02:01:28.000
+Or country for the records for gender or country based on the number of records that you have. It can come up with the code.
+
+02:01:28.000 --> 02:01:43.000
+So the code in that code, you will create zeros. For each element that is in your table so for instance if your table has 5 records, you can create 5 zeros.
+
+02:01:43.000 --> 02:01:53.000
+And if you want to create a. The code for the agenda. Only for the indices that the gender for instance is male You will put those in.
+
+02:01:53.000 --> 02:01:57.000
+This is one, the rest will remain 0, right?
+
+02:01:57.000 --> 02:02:02.000
+So let me give you a quick example maybe here.
+
+02:02:02.000 --> 02:02:15.000
+So let's assume that you have This table. 4 indices. So main email. May email and you want to create the feedback, right?
+
+02:02:15.000 --> 02:02:21.000
+So the way that you do it, you say, okay, so I have 4 records. 4 zeros goes here.
+
+02:02:21.000 --> 02:02:31.000
+And then I want to create a . So index one and 3 should change to one So this will be 1, 3 also will be one.
+
+02:02:31.000 --> 02:02:42.000
+So 0 1 0 1 0. We'll be the for male and for female. Similarly, it will be 0.
+
+02:02:42.000 --> 02:02:48.000
+The second index is one. And also the forcing, this is one. Female would be 0.
+
+02:02:48.000 --> 02:03:05.000
+1 0 one. Okay. And it's simply an array of bits that you change some of the digits to Cool.
+
+02:03:05.000 --> 02:03:18.000
+And then we have the art trees which are And dimensional extension of P plus trees. Which is very useful for Indexing.
+
+02:03:18.000 --> 02:03:32.000
+Okay, so actually people S 3 was in one dimension so the inputs to a B plus C is a one dimensional array, but part trees is an extension of the B plus trees to more than one dimensional.
+
+02:03:32.000 --> 02:03:40.000
+Alright, so it's suitable. Then you have let's say.
+
+02:03:40.000 --> 02:03:50.000
+Then you want to search in n dimensional intervals or in dimensional spaces. Such as when you are doing some spatial search.
+
+02:03:50.000 --> 02:04:02.000
+Or essentially in a you know coordinate space, space and so on. Okay, so anything more than one dimensional will involve Cool.
+
+02:04:02.000 --> 02:04:15.000
+Now for this question. We are asking. What in this is our suitable in each of the following scenarios if we frequently use the following information.
+
+02:04:15.000 --> 02:04:24.000
+To retrieve the records. Okay. So in the first scenario, we the wants to be frequently used users name.
+
+02:04:24.000 --> 02:04:34.000
+The name of the users to retrieved the records in the second Scenario, the frequency you receive the records.
+
+02:04:34.000 --> 02:04:45.000
+Using a range of users, And third one, we frequently retrieve the records using the special region covering users.
+
+02:04:45.000 --> 02:04:51.000
+Okay, so every 3 to 4 min to think on this problem.
+
+02:04:51.000 --> 02:05:21.000
+What is the best index to be used for each of these
+
+02:09:55.000 --> 02:10:01.000
+Okay, so I can see lots of responses that's very interesting.
+
+02:10:01.000 --> 02:10:10.000
+So whether suitable.
+
+02:10:10.000 --> 02:10:20.000
+Yeah, suitable in the situation of these scenarios. So, Hey Hash. B plus 3 CR 3.
+
+02:10:20.000 --> 02:10:34.000
+William was saying B plus 3 question mark B plus 3 arteries. Means Shen, Ash, Meeting the hash people as tree.
+
+02:10:34.000 --> 02:10:49.000
+Then, is saying, put users names, sort of politically, make it suitable for And the mention is saying I think names and queries.
+
+02:10:49.000 --> 02:10:58.000
+Okay, the query may be random but B plus 3 is not so just follow down the appropriate pass.
+
+02:10:58.000 --> 02:11:13.000
+Definitely agree with the hash map. I'm curious as to why before I and literally says I think can be put into a D plus tree but we might not Looking for a range of names.
+
+02:11:13.000 --> 02:11:36.000
+The list of users names so you're still finding each one individually yes that's right very good point For example, we could have The names as a BCD, but we are more likely to be creating something like Hey CD rather than Yes.
+
+02:11:36.000 --> 02:11:45.000
+So all of you are right, guys. So we can for the first case, we can both use B plus 3 and a half stream.
+
+02:11:45.000 --> 02:11:56.000
+And hashtag. But which one has an advantage? So we said that B plus 3.
+
+02:11:56.000 --> 02:12:09.000
+As a. You know, retrieval time of or of LG of the number of keys in the base of children, right?
+
+02:12:09.000 --> 02:12:22.000
+This is the B plus 3. It's time to reach you all time. Well, what about the hash tree?
+
+02:12:22.000 --> 02:12:26.000
+You has table.
+
+02:12:26.000 --> 02:12:36.000
+But a good hash table, it can be of one. Okay, which is that you know far less than the B plus 3 access time.
+
+02:12:36.000 --> 02:12:48.000
+But while we are not using hash, because Whereas if you want to get a hash of one You too have a bigger space.
+
+02:12:48.000 --> 02:12:59.000
+And it's only suitable for when you All the records. Buy their key. So on a hash table, you cannot do some ranging queries.
+
+02:12:59.000 --> 02:13:10.000
+That is why Hih table is only suitable for when you, you know, retrieve the codes by their name or by meeting.
+
+02:13:10.000 --> 02:13:21.000
+Okay, so compared to B plus 3, Hash is better because of a faster access time. Bye we cannot use hash in this case.
+
+02:13:21.000 --> 02:13:36.000
+Because You know, instead of, let's assume that. You want to take a query that will cover and over 2 of
+
+02:13:36.000 --> 02:13:45.000
+Their employees, right? In that case, if you do it using hash, You need to do n over 2 times.
+
+02:13:45.000 --> 02:14:00.000
+Of one. Which will be of off. And. But if you do it through B plus 3, it will still be of all of LG of Okay, this will be changed.
+
+02:14:00.000 --> 02:14:10.000
+L you have Kane. Basis of end. Okay. Which means that this is actually more suitable for run Ranchbury.
+
+02:14:10.000 --> 02:14:20.000
+The overall access is good for But
+
+02:14:20.000 --> 02:14:26.000
+This one is only suitable for single accesses.
+
+02:14:26.000 --> 02:14:36.000
+Okay. And that's why this is suitable for here. But not here and B plus 3 is suitable for here but nothing.
+
+02:14:36.000 --> 02:14:45.000
+But for the special, spatial region current users business, I think There was no disagreement between any of you.
+
+02:14:45.000 --> 02:15:02.000
+So all we're saying are tree. Is the best because archery is suitable for multi-dimensional search and the special regions are multi-dimensional
+
+02:15:02.000 --> 02:15:16.000
+Okay, any questions here?
+
+02:15:16.000 --> 02:15:26.000
+Okay, in the next question. You want to compare the steps required to find a key. In a B plus 3.
+
+02:15:26.000 --> 02:15:35.000
+In 2 scenarios. So first of all, we assume that the number of keys, the number of SESPs in the, in the B plus 3 is 10 million.
+
+02:15:35.000 --> 02:15:48.000
+And then the number of children. Off a note. He said differently. So in one time we said as 10 equal to 4, the other time we say that's any.
+
+02:15:48.000 --> 02:16:04.000
+You want to compare the number of steps required to find the record in each of these scenario. Okay, so in order to do that, I'm just going to bring the slide for B plus 3 again.
+
+02:16:04.000 --> 02:16:15.000
+So maybe take a picture in 4 s. 1, 2, 3 4. Then everyone please focus on this.
+
+02:16:15.000 --> 02:16:21.000
+Question.
+
+02:16:21.000 --> 02:16:51.000
+How do you compare the number of steps? See to 4 min. Just ask question. Everyone please attend it. Thank you very much.
+
+02:20:37.000 --> 02:20:44.000
+Okay, so we have some inputs from William and Minchin.
+
+02:20:44.000 --> 02:20:54.000
+So. Basically for the number of steps when number of children is in you go to 4. We need to calculate.
+
+02:20:54.000 --> 02:21:05.000
+This one So a lot of K in the basis of 10 over 2. Okay, 10 million and over 2, then n is equal to 4 will be 2.
+
+02:21:05.000 --> 02:21:15.000
+This will give us 24. And then n is equal to 100 this will give us 1050 10 million, the basis of 50 will be fine.
+
+02:21:15.000 --> 02:21:25.000
+So when you are actually increasing the number of children, you're reducing them of the steps. Required.
+
+02:21:25.000 --> 02:21:33.000
+Okay. Now, searching our trees, so want to quickly talk about session arteries and then we will.
+
+02:21:33.000 --> 02:21:41.000
+Go ahead and So thank you also, Close if you were right.
+
+02:21:41.000 --> 02:21:53.000
+So searching our trees is a little bit different from Sashi B. First trees. We were, you know, at each node you were choosing one of the children and you were going down with that children.
+
+02:21:53.000 --> 02:22:01.000
+So you were not. Searching the other branch. But maybe people are trees.
+
+02:22:01.000 --> 02:22:09.000
+It is a little bit different. So in D. Leaf nodes and there are building boxes.
+
+02:22:09.000 --> 02:22:21.000
+So you start from the leaf node. Sorry, you start from the root note if that's a bonding box you check If that hasn't intersection with the query points.
+
+02:22:21.000 --> 02:22:30.000
+Then you will go to and you know the children until you reach a different leaf note and then you reach that leaf note.
+
+02:22:30.000 --> 02:22:40.000
+Then you will. Calculate the distance. Of that rectangle or that area video query point.
+
+02:22:40.000 --> 02:22:50.000
+Okay, so since you may go down into more than one branch and you're doing your search.
+
+02:22:50.000 --> 02:22:58.000
+It cannot be as efficient as the search that you were doing used in B plus trees.
+
+02:22:58.000 --> 02:23:15.000
+Okay. So let's jump into question 12. So we have these points I. And want to find it I mean find the Nearest rectangle to this point I.
+
+02:23:15.000 --> 02:23:27.000
+This is how we stored in, So as you can see, this is the Roots. In the root we have 3 bonding boxes.
+
+02:23:27.000 --> 02:23:34.000
+So the way that we start the search, we first check if the bonding box. For instance, this bonding box.
+
+02:23:34.000 --> 02:23:43.000
+As an intersection with the query point, which bonding box one has. So you go down into that branch.
+
+02:23:43.000 --> 02:23:50.000
+And you will check each of the rectangles to save each one is the closest to this point.
+
+02:23:50.000 --> 02:23:59.000
+In this case, after a calculating distance of A, B and C. I'll be thought you will see that fee is the closest to high.
+
+02:23:59.000 --> 02:24:09.000
+But we cannot conclude the search here. Because this point also has intersection with another bonding box which is bonding box tree.
+
+02:24:09.000 --> 02:24:15.000
+Okay, and then there we have Another 3 rectangles.
+
+02:24:15.000 --> 02:24:19.000
+So when we compare
+
+02:24:19.000 --> 02:24:27.000
+You see that. So again, we need to go down in this branch as well and Check what's the closest.
+
+02:24:27.000 --> 02:24:33.000
+Rectangle to this point 5, you will see that G is the closest.
+
+02:24:33.000 --> 02:24:44.000
+And we also compare like the best, or the closest. Take, from this branch with this branch and you see that she is the best.
+
+02:24:44.000 --> 02:24:49.000
+And we will pick the G as the
+
+02:24:49.000 --> 02:25:00.000
+We'll pick the G. As the closest points to all I have that concludes the search being archery so as you can see events down in more than one branch.
+
+02:25:00.000 --> 02:25:10.000
+Unlike the classic search in binary surgery or B plus tree. And that's why. That is the special thing about arches.
+
+02:25:10.000 --> 02:25:19.000
+And that's why it's not as efficient as, that we do in B.
+
+02:25:19.000 --> 02:25:26.000
+Okay. Any questions here?
+
+02:25:26.000 --> 02:25:32.000
+So this concludes to this material so if you don't have any questions.
+
+02:25:32.000 --> 02:25:49.000
+Have a great evening and see you. Next week, otherwise, please feel free to ask your question.
+
+02:25:49.000 --> 02:26:19.000
+Thank you everyone.
+
+02:26:34.000 --> 02:26:38.000
+Any questions?
+
+02:26:38.000 --> 02:27:08.000
+Yeah, team. Tianji, you have any questions?
+

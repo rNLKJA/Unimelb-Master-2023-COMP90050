@@ -1,0 +1,59 @@
+00:22:57	William De Michele:	Parallel faster reading as well?
+00:23:12	Zixuan Guo:	1/p^2
+00:33:53	William De Michele:	2^3=8?
+00:33:58	Zhenning TANG:	1/2p
+00:35:25	Zhenning TANG:	(1/2p)*3
+00:36:35	William De Michele:	Thought you said num of cases my bad
+00:36:42	William De Michele:	Yep ^
+00:37:35	Zhenning TANG:	soz, failure  rate is 2p*3
+00:38:22	Zhenning TANG:	choice any 2 disk from 3 disk, and two disk failure at same time is 2p, so 2p*3
+00:40:17	William De Michele:	2p
+00:40:41	William De Michele:	p^2
+00:40:54	Ror:	what about 3 fails at the same time?
+00:40:57	Zhenning TANG:	p^2yep, this is right
+00:41:04	William De Michele:	Reacted to "what about 3 fails a..." with 👍
+00:41:47	William De Michele:	what about 3 fails at the same time?^^
+00:42:36	Zhenning TANG:	what about 3 fails at the same time?too small can be ignore I think
+00:43:29	William De Michele:	66.6%
+00:43:40	Zhenning TANG:	Reacted to "66.6%" with 👍
+00:46:20	William De Michele:	(5 2) p^2
+00:46:51	Zhenning TANG:	(5 2) p^2P^3
+00:47:08	William De Michele:	(5 3) p^3 **
+00:48:49	William De Michele:	Reacted to "(5 2) p^2
+P^3" with 👍
+00:52:14	Zhenning TANG:	a: 2 disk space, b: 1 disk space, c: 2disk space. so choice B
+00:52:17	William De Michele:	a) SU = 2/2b) SU = 1/2c) SU = 2/3RAID0 lowest space utilisation, as half  is going to the duplicate mirroring of the data
+00:53:27	William De Michele:	Useful where the data disk is likely to be corrupted as this mirroring will give the lowest probability of failure
+00:53:52	Ror:	a. 100%, b.50% c. 66.7%
+00:55:01	Ror:	imprive of reliability
+00:55:16	Lily Li:	a) 100% b) 50% as half is duplicated c) 66.7% as one disk is used to store parity bytes
+00:58:10	Guixian Li:	yes
+00:58:10	Zhenning TANG:	accept
+00:58:11	William De Michele:	AcceptNoNoAcceptNo
+01:16:48	William De Michele:	Node A:Transmited (Out 3)- Out (3)- Ack (3)Received (In 7)- In (7)Node B:Transmitted (Out 7)- Out(7)- Ack(6)Received (In 3)- In (3)
+01:17:31	William De Michele:	As it was received but acknowledgement wasn't received by B, only the Ack of B changes from success answer
+01:21:59	Min Shen:	heuristic
+01:22:18	Min Shen:	data is big
+01:22:31	Min Shen:	Query is simple
+01:23:40	William De Michele:	Enumerating search as relatively small data and complex query
+01:35:31	Ror:	I think the admin should compact the underlying bTree, because the actual delet on Btree may do not happen.
+01:35:33	William De Michele:	Indexes may have become fragmented. Need to rebuild the indexesstatistics of the query optimiser may be out of date, DB admin should update
+01:39:44	Min Shen:	For this particular query, it may be efficient on the original table, but it gets worse on the new table. We may need to choose another query plan. Also the statistics may need to update to handle the new table.
+02:16:19	Ror:	a.hash b. B+ tree c. R tree
+02:16:43	William De Michele:	B+ Tree?B+ TreeR-Trees
+02:17:14	Min Shen:	Hash,b+,R
+02:17:15	Lily Li:	hash, b+ tree, r tree
+02:17:55	William De Michele:	Could user's name sorted alphabetically make it suitable for B+ Tree?
+02:18:28	Min Shen:	I think the names in query is random
+02:19:45	William De Michele:	The query may be random but the B+ Tree is not, so will just follow down the appropriate pathDefinitely agree with hash map, curious as to why B+ Tree wouldn't be suitable
+02:20:18	Lily Li:	I think it can be put into a b+ tree but we might not be looking for a range of names in the list of users’ names so we’re still finding each one individually
+02:21:10	Lily Li:	For example we could have the names a b c d e but we’re more likely to be querying something like a c d rather than all the names between a-d
+02:22:53	William De Michele:	Reacted to "For example we could..." with 👍
+02:24:02	William De Michele:	I see
+02:30:09	William De Michele:	log_4/2 (10,000,000) ~= 23.25 = 24log_100/2 (10,000,000) ~= 4.12 = 5??
+02:30:45	Min Shen:	Same,maybe you can add the assumption for search keys
+02:36:58	Ibrahim Ibrahim:	Thanks ahmad
+02:36:59	Lily Li:	Thank you!
+02:37:00	William De Michele:	Thank you
+02:37:03	Min Shen:	thx
+02:37:03	Yeting Wu:	thx!

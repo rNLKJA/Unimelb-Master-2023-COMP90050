@@ -953,6 +953,40 @@ Bits (b), Bytes (B), Blocks (4K or 8K bytes of storage)
 - bit: 1 0 1 0 1 1 0 0 1 0 1 1 1 0 0 0
 - bytes: **1010 1100** 1011 1100, bytes are 8 bits
 
+---
+
+> Which of the following RAID configurations that we saw in class has the lowest disk space utilization? Your answer needs to have explanations with calculations for each case.
+> a. RAID 0 with 2 disks
+> b. RAID 1 with 2 disks
+> c. RAID 3 with 3 disks
+>
+> Where does this lack of utilization of space, i.e., where we can use such a configuration as it has some benefits gained due to the loss of space utilization?
+
+1. In case 1, the space utilization is 100% because the two disks store contiguous blocks of a file in RAID 0.
+2. In case 2, the space utilization is 50% because RAID 1 uses mirroring (same data on both disks). MTTF increases, so for cases where a disk ca nfail easily - this setting is good. The system operates even when a disk fails.
+3. In case 3, the space utilization is (3-1)/3 = 66.7% because RAID 3 uses one disk for storing parity data.
+
+Case 2 has the lowest disk space utilization with explanation as given underlined above as a part of the answer.
+
+---
+
+> What is the Mean Time to Failure values of different RAID systems?
+
+Assume the probability of one disk failure is $p$, and the MTTF of one individual disk is MTTF.
+
+| RAID Level | Number of Disks | Expected MTTF                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| RAID 0     | 2 disks         | RAID 0 with RAID 2 with 2 disks - the system fails is one disks fails. The probability that one of the two disk fails (disk A or disk B) is p + p = 2p. So the Mean Time to Failure of the system is $\frac{1}{2p} = \frac{1}{2} \times \frac{1}{2} = \frac{1}{2} \times \text{MTTF}$                                                                                                                                                                                                                                                |
+| RAID 2     | 2 disks         | RAID 0 with RAID 2 with 2 disks - the system fails is one disks fails. The probability that one of the two disk fails (disk A or disk B) is p + p = 2p. So the Mean Time to Failure of the system is $\frac{1}{2p} = \frac{1}{2} \times \frac{1}{2} = \frac{1}{2} \times \text{MTTF}$                                                                                                                                                                                                                                                |
+| RAID 1     | 2 disks         | The system fails is both of the disks fail at the same time. The probability that both disks fail (disk A and disk B) is $p \times p = p^2$. So, Mean Time to Failure of the system is $\frac{1}{p^2} = \text{MTTF} \times \text{MTTF} = \text{MTTF}^2$                                                                                                                                                                                                                                                                              |
+| RAID 1     | 3 disks         | They system fails is three of the disks fail at the same time. The probability that all disks fail (disk A and disk B and disk C) is $p\times p\times p = p^3$. So, Mean Time to Failure of the system is $\frac{1}{p^3} = \text{MTTF} \times \text{MTTF} \times \text{MTTF} = \text{MTTF}^3$                                                                                                                                                                                                                                        |
+| RAID 3     | 3 disks         | The system fails if 2 of the 3 disks fail at the same time. The probability that 2 disks fail is $p\times p = p^2$. There are 3 different possible combinations of 2 disks failures (A,B; or A,C; or B,C disks), so the probability that any of the 2 disks out of these 3 disks fail is $3\times p^2$. Mean Time to Failure of the system is $\frac{1}{3p^2} = \frac{1}{3}\times\frac{1}{p^2} = \frac{1}{3}\times\text{MTTF}^2$                                                                                                     |
+| RAID 4     | 3 disks         | The system fails if 2 of the 3 disks fail at the same time. The probability that 2 disks fail is $p\times p = p^2$. There are 3 different possible combinations of 2 disks failures (A,B; or A,C; or B,C disks), so the probability that any of the 2 disks out of these 3 disks fail is $3\times p^2$. Mean Time to Failure of the system is $\frac{1}{3p^2} = \frac{1}{3}\times\frac{1}{p^2} = \frac{1}{3}\times\text{MTTF}^2$                                                                                                     |
+| RAID 5     | 3 disks         | The system fails if 2 of the 3 disks fail at the same time. The probability that 2 disks fail is $p\times p = p^2$. There are 3 different possible combinations of 2 disks failures (A,B; or A,C; or B,C disks), so the probability that any of the 2 disks out of these 3 disks fail is $3\times p^2$. Mean Time to Failure of the system is $\frac{1}{3p^2} = \frac{1}{3}\times\frac{1}{p^2} = \frac{1}{3}\times\text{MTTF}^2$                                                                                                     |
+| RAID 6     | 5 disks         | The system fails if 3 of the 5 disks fail at the same time. The probability that 3 disks fail is $p\times p\times p = p^3$. There are 10 different possible combinations of 3 disks failures out of 5 disks (A,B,C; or A,B,D; or A,B,E; or A,C,D; or A,C,E; or A,D,E; or B,C,D; or B,C,E; or B,D,E; or C,D,E disks), so the probability that any of the 3 disks out of these 5 disks fail is $10p^3$. Mean Time to Failure of the system is $\frac{1}{10p^3} = \frac{1}{10} \times \frac{1}{p}^3 = \frac{1}{10}\times \text{MTTF}^3$ |
+
+---
+
 ### RAID 0 (Block Level Stripping)
 
 ![](images/2023-06-26-18-15-55.png)
@@ -1097,6 +1131,34 @@ Typical values for recent disks:
 
 Probability of a particular module is not available = $\cfrac{\text{MTTR}}{\text{MTTF + MTTR}} \approxeq \cfrac{\text{MTTR}}{\text{MTTF}}$ if MTTF >> MTTR.
 
+---
+
+In a failvote system, which of the following cases we can accept an action?
+
+| Total number of devices | Number of agreeing devices | Accept ? |
+| ----------------------- | -------------------------- | -------- |
+| 10                      | 6                          | Yes      |
+| 10                      | 5                          | No       |
+| 10                      | 4                          | No       |
+| 5                       | 3                          | Yes      |
+| 5                       | 2                          | No       |
+
+---
+
+In a failfast system, which of the following cases we can accept an action?
+
+| Total number of devices | Number of working devices | Number of agreeing devices | Accept ? |
+| ----------------------- | ------------------------- | -------------------------- | -------- |
+| 10                      | 6                         | 4                          | Yes      |
+| 10                      | 6                         | 3                          | No       |
+| 10                      | 5                         | 3                          | Yes      |
+| 5                       | 5                         | 3                          | Yes      |
+| 5                       | 4                         | 2                          | No       |
+| 5                       | 2                         | 2                          | Yes      |
+| 5                       | 1                         | -                          | No       |
+
+---
+
 ## Fault Tolerance with Supermodule
 
 Probabiliyt of a particular module is not available = $P = \cfrac{1}{\text{MTTF}}$
@@ -1108,6 +1170,20 @@ Probability that a particular $i^{\text{th}}$ moduel fails, $P_i = \cfrac{i}{\te
 Probability that the system fails with a particular $i^{\text{th}}$ module failing last = $P_f\times P_{n-1} = \cfrac{i}{\text{MTTF}}\cfrac{\text{MTTR}}{\text{MTTF}}^{n-1}$
 
 Probability that a supermodule fails due to any one of the n modules failing last, when other (n-1) modules are unavailable = $\cfrac{n}{\text{MTTF}}\cfrac{\text{MTTR}}{\text{MTTF}}^{n-1}$
+
+---
+
+There are two nodes in a network that use stable storage and acknowledgment message passing for reliable communication. The stable storage of Node A contains the following record - Received message (In6); Transmitted message (Out3); Out:3 Ack:3 In:6. The stable storage of Node B contains the following record - Received message (In3); Transmitted message (Out6); Out:6 Ack:6 In:3. Now Node B sends a new message 7 to Node A. What will be in the stable storage of A and B if the message is received correctly, including a correctly received acknowledgment?
+
+- Node A: Received message (In7); Transmitted message (Out3); Out:3 Ack:3 In:7
+- Node B: Received message (In3); Transmitted message (Out7); Out:7 Ack:7 In:3
+
+Now Node B sends a new message 7 to Node A. What will change in the stable storage of A and B if the message is received correctly, but the acknowledgment is not received?
+
+- Node A: Received message (In7); Transmitted message (Out3); Out:3 Ack:3 In:7
+- Node B: Received message (In3); Transmitted message (Out7); Out:7 Ack:7 In:3
+
+---
 
 ## Communication Reliability
 
