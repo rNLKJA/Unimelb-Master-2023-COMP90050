@@ -86,12 +86,14 @@
     - [Searching/Enumerating all the plans and choose the best one.](#searchingenumerating-all-the-plans-and-choose-the-best-one)
     - [Using a heuristic approach.](#using-a-heuristic-approach)
     - [Steps in cost-based query optimisation](#steps-in-cost-based-query-optimisation)
+    - [Are Heuristic and Enumierating the only options?](#are-heuristic-and-enumierating-the-only-options)
     - [How to estimate the cost of a query plan?](#how-to-estimate-the-cost-of-a-query-plan)
     - [View an actual execution plan?](#view-an-actual-execution-plan)
       - [Step 1: Result size calculation/estimation using Reduction Factor](#step-1-result-size-calculationestimation-using-reduction-factor)
       - [Step 2: Different options for retrieving data and calculating cost (estimation)](#step-2-different-options-for-retrieving-data-and-calculating-cost-estimation)
   - [Joins Continued](#joins-continued)
     - [Nested-loop join](#nested-loop-join)
+    - [Block Nested Loop Join](#block-nested-loop-join)
     - [Page-Oriented Nested Loop Join](#page-oriented-nested-loop-join)
   - [Why it's important to have a good query optimiser](#why-its-important-to-have-a-good-query-optimiser)
   - [Better estimation of reduction factors](#better-estimation-of-reduction-factors)
@@ -116,12 +118,14 @@
       - [Range Queries on B+ Trees](#range-queries-on-b-trees)
       - [B+ Trees Insertion and Deletion](#b-trees-insertion-and-deletion)
       - [B+ Tree File Organization](#b-tree-file-organization)
+    - [Most Popular Index in DBMS: B+ Tree](#most-popular-index-in-dbms-b-tree)
   - [Hash Indices](#hash-indices)
   - [Bitmap Indices](#bitmap-indices)
     - [Bitmap Indices Example](#bitmap-indices-example)
   - [Indexing for other Data Types](#indexing-for-other-data-types)
   - [How do we create buckets then? - Quadtrees](#how-do-we-create-buckets-then---quadtrees)
     - [How to run a Nearest Neighbor (NN) query?](#how-to-run-a-nearest-neighbor-nn-query)
+      - [Nearest Neighbor in R-Trees](#nearest-neighbor-in-r-trees)
     - [More on Quadtrees](#more-on-quadtrees)
   - [R-Trees](#r-trees)
     - [R-Trees Example](#r-trees-example)
@@ -196,7 +200,7 @@
     - [Dependency Relations](#dependency-relations)
     - [Dependency relations - equivalence](#dependency-relations---equivalence)
     - [Isolated history](#isolated-history)
-    - [Isolation Concepts](#isolation-concepts)
+  - [Isolation Concepts](#isolation-concepts)
   - [SLOCK (shared lock)](#slock-shared-lock)
   - [To grant lock or not to ..](#to-grant-lock-or-not-to-)
     - [Actions in Transactions](#actions-in-transactions)
@@ -221,6 +225,26 @@
   - [Optimistic locking](#optimistic-locking)
   - [Snapshot Isoloation](#snapshot-isoloation)
   - [Time stamping](#time-stamping)
+  - [Quiz 5](#quiz-5)
+    - [](#)
+    - [](#-1)
+    - [](#-2)
+    - [](#-3)
+  - [Crach Recovery](#crach-recovery)
+    - [Review the ACID properties](#review-the-acid-properties)
+    - [Assumptions](#assumptions)
+    - [Motivation](#motivation)
+    - [Buffer Caches (pool)](#buffer-caches-pool)
+    - [Handling the Buffer Pool (cache)](#handling-the-buffer-pool-cache)
+    - [Basic Idea: Logging](#basic-idea-logging)
+    - [Write-Ahead Logging (WAL)](#write-ahead-logging-wal)
+    - [WAL \& the Log](#wal--the-log)
+    - [Other Log-Related State](#other-log-related-state)
+    - [Normal Execution of an Xact](#normal-execution-of-an-xact)
+    - [Checkingpointing](#checkingpointing)
+    - [The Big Picture: What's stored where](#the-big-picture-whats-stored-where)
+    - [Simple Transaction Abort](#simple-transaction-abort)
+    - [Transaction Commit](#transaction-commit)
 
 ## Administration Information
 
@@ -1528,6 +1552,19 @@ For scenario A, the heuristic approach can be suitable due to the simplicity of 
 
 Adaptive plan is used for better estimation of cost, hence, cannot be used when the query optimiser is purely heuristic based for a query (so cannot be used for scenario A if the plan is heuristic based). Adapative plan can be used for cost-based query optimiser (either exhaustive enumeration of all plans or a combination), hence, can be used for scenario B.
 
+### Are Heuristic and Enumierating the only options?
+
+Systems may use heuristics to reduce the number of choices that must be made in a cost-based fashioin.
+
+However, DBMS admin generally creates indices to allow almost direct access to individual items.
+
+Two basic kinds of indices:
+
+- Ordered indices: search keys are stored in some order
+- Hash indices: search keys are distributed uniformly across "buckets" using a hash function
+
+The impact: faster disk access; but insertion and deletion is also important.
+
 ---
 
 ### How to estimate the cost of a query plan?
@@ -1573,13 +1610,19 @@ Several different algorithms to implement joins exist that the optimizer can loo
 ![](images/2023-06-30-14-22-24.png)
 
 ```
-for each tuple t, in r do begin
-  for each tuple t, in s do begin
-    test pair (t_p, t_s) to see if they satisfy the join condition theta
+for each tuple t_r, in r do begin
+  for each tuple t_s, in s do begin
+    test pair (t_r, t_s) to see if they satisfy the join condition theta
     if they do, add t_r • t_s to the result
   end
 end
 ```
+
+> The number of block transfers is $n_r \times b_s + b_r$.
+> The number of seeks is $n_r + b_r$.
+>
+> $n_r$ is the number of tuples in $r$.
+> $b_r$ is the number of blocks in $r$.
 
 The cost is calculated by the number of pages being retrieved from disk. The relation could be represented by $P_r$ or $b_r$.
 
@@ -1618,6 +1661,23 @@ We have two options:
 2. with customer as the outer relation: $400 + (10000 * 100) = 1,000,400$ page access
 
 If you had 1,000,000 customers, then you would wait several hours for one simple join.
+
+---
+
+### Block Nested Loop Join
+
+```
+for each block B_r of r do begin
+  for each block B_s of s do begin
+    for each tuple t_r in B_r do begin
+      for each tuple t_s in B_s do begin
+        check if (t_r, t_s) satisfy the join condition,
+        if they do, add t_r • t_s to the result
+      end
+    end
+  end
+end
+```
 
 ---
 
@@ -1789,8 +1849,8 @@ Index files are typically much smaller than the original data files and many par
 
 > What indices are more suitable if a table is frequently used for finding records based on the following criteria: users' name, a range of users' birthday, and a spatial region covering users' residence?
 
-- Users' name: Hash index
-- Users' birthday: B+ tree index
+- Users' name: Hash index ($O(1)$)
+- Users' birthday: B+ tree index ($O(\log_n k)$)
 - Users' residence: R-tree index or another spatial index such as a quadtree index
 
 > Review the points on indexing with B+ trees. Assume a database table has 10,000,000 records and the index is built with a B+ tree. The maximum number of children of a node, is denoted as n. How many steps are needed to find a record if n=4? How many steps are needed to find a record if n=100?
@@ -2001,6 +2061,14 @@ B+ Tree File Organisation
 - Hleps keep data records clustered (ordered) even when there are insertions/deletions/updates.
 - Insertion and deletion or records are handled in the same way as insertion and deletion of entires in a B+ tree index.
 
+### Most Popular Index in DBMS: B+ Tree
+
+- Keeps the data in order
+- Enables binary search
+- Maintained by periodic organization
+- If there are K search-key values in the file, the height of the tree is no more than $\log_{n/2}(K)$ and it would be balanced.
+- Perfect for range queries
+
 ## Hash Indices
 
 - A hash index organizes the search keys, with their associated record pointers, into a hash file structure. Order is not important.
@@ -2015,11 +2083,25 @@ B+ Tree File Organisation
 
 <img align=right src="images/2023-07-02-00-26-13.png" width=48% />
 
+- Unordered, but record pointers are used with search keys.
+- Given a key the aim is to find the related record on file in one shot which is important.
+- An good hash function is uniform (same per bucket)
+- Ideal hash function is random
+
 ## Bitmap Indices
 
 Records in a relation are assumed to be numbered sequentially from, say, 0
 
 Applicable on attributes that take on a relatively small number of distinct values
+
+- e.g. gender, country, state, ...
+- e.g. income-level (income broken up into a small number of levels such as 0-9999, 10000-19999, 20000-50000, 50000-infinity)
+
+A bitmap is simply an array of bits.
+
+Records in a relation are assumed to be numbered sequentially from, say, 0.
+
+Applicable on attributes that take on a relatively small number of distinct values:
 
 - e.g. gender, country, state, ...
 - e.g. income-level (income broken up into a small number of levels such as 0-9999, 10000-19999, 20000-50000, 50000-infinity)
@@ -2066,6 +2148,16 @@ Bascially the same approach, as any other tree does, e.g. Best First Search.
 
 Just order acess with respect to distance to point.
 
+#### Nearest Neighbor in R-Trees
+
+To find the nearest neighbour of a given query point/region, do the following, starting from the root node:
+
+- use a sorted priority queue of the R-tree nodes based on the minimum distance from the query
+- traverse the node that is the top of the priority queue, and put its elements in the queue. Continue
+- Stop when the top node is a data object (first NN has been found)
+
+This algorithm is a best-first search algorithm.
+
 ### More on Quadtrees
 
 - Each node of a quadtree is associated with a rectangular region of space; the top node is associated with the entire target space.
@@ -2079,6 +2171,8 @@ Just order acess with respect to distance to point.
 ## R-Trees
 
 R-Trees are an N-dimensional extension of B+ trees, useful for indexing sets of rectangles and other polygons.
+
+> Idea: genearlize the notion of a one-dimensional interval associated with each B+ tree node to an N-dimensional interval, that is, an N-dimensional rectangle.
 
 Supported in many modern database systems, along with variants like R+ trees and R\* trees.
 
@@ -2547,10 +2641,14 @@ DCApplication(){
     exec sql COMMIT WORK;
   }
 }
-
 ```
 
 ### Limitations of Flat Transactions
+
+- If a rollback occurs, all work performed in the transaction will be lost, which is inefficient.
+- It's not efficient to have a single transaction for a large number of actions. (main limitation)
+
+> Can have a loop in flat transaction.
 
 Flat transactions do not model many real applications.
 e.g. airline booking
@@ -2579,7 +2677,6 @@ IncreaseSalary()
   exec sql COMMIT WORK;
   return
 }
-
 ```
 
 ### Flat Transactions with Savepoints
@@ -2591,6 +2688,8 @@ IncreaseSalary()
 <!-- TODO: Reading: Chained transactions  -->
 
 ### Nested Transaction
+
+Nested transaction does not encounter the problem with ACID properties. If one transaction has problems, just roll back the transaction and the parent transaction can continue.
 
 <img src="images/2023-07-06-16-58-26.png" width=350px />
 
@@ -2618,9 +2717,13 @@ Changes made by a subtransaction are visible to the parent only when the subtran
 
 The main function of a TP monitor is to investigate other system components and manage resources.
 
+Integrates other system components and manages resources.
+
 - TP monitors manage the transfer of data between clients and servers.
 - breaks down applications or code into transactions and ensures that all databases are updated properly.
 - It also takes appropriate actions if any error occurs.
+
+<img src="images/2023-07-13-22-18-21.png" width=350 />
 
 ### TP monitor services
 
@@ -2649,6 +2752,25 @@ E.g. maintaining the sessions, etc.
 There is no difference between start and restart in TP based system.
 
 ## Concurrency Problems
+
+> ![](images/2023-07-13-22-30-15.png)
+> Concurrent transactions can cause issues in Database - need concurrency control.
+> In database, some file may be used by multiple transactions. If one transaction is updating the file, other transactions should not be able to read the file.
+>
+> ![](images/2023-07-13-22-32-24.png)
+> C,D is fine.
+
+Multiple concurrently running transactions may cause conflicts. Still we try to allow concurrent runs as much as possible for a better performance, while avoiding conflicts as much as possible.
+
+What we need to know:
+
+- What are the possible conflicts/dependencies
+- Given a set of concurrent transactions, can we determine whether there will be any conflict or not?
+- Is there nay way to re-order the execution of transactions to avoid conflicts (without making any change to the intended final output/final state) of the database?
+
+---
+
+Aim of concurrency control:
 
 - To resolve conflicts
 - To preserve database consistency
@@ -2894,6 +3016,10 @@ In a deaklock, each process in the deadlock is waiting for another member to rel
 
 ![](images/2023-07-10-15-41-05.png)
 
+> Deadlocks are rare, however, they do occur and the database has to deal with them when they occur.
+>
+> Probability of deadlock happening increases with $O(r^4)$ with respect to the number of locks taken and $O(n^2)$ with the number of concurrent transactions and inversely proportional to $O(R^2)$ with the number of records in the database.
+
 Solutions:
 
 - Have enough resources so that no waiting occurs - not practical
@@ -2956,6 +3082,17 @@ When dependency graph has cycles then there is a violation of isolation and a po
 
 ![](images/2023-07-11-16-35-10.png)
 
+- Lost update: $T_1$ reads $O$ and $T_2$ reads $O$ and $T_1$ writes $O$ and $T_2$ writes $O$ - $T_1$'s update is lost.
+- Dirty read: $T_1$ reads $O$ and $T_2$ reads $O$ and $T_2$ writes $O$ and $T_1$ reads $O$ - $T_1$ reads a value that is not yet committed.
+- Unrepeatable read: $T_1$ reads $O$ and $T_2$ reads $O$ and $T_2$ writes $O$ and $T_1$ reads $O$ - $T_1$ reads a value that is not yet committed.
+
+> _Given the following two concurrent transactions, is there any dependency among them? Read A, Write B; T2 - Read B, Write A, Read B._
+>
+> - [x] Yes
+> - [ ] No
+>
+> Unrepeatable read, T2 will read B twice and get different values.
+
 ## Formal definition of Dependency
 
 Let $H$ be a history sequence of tuples of the form ($T$, action, object).
@@ -2976,7 +3113,7 @@ We focus on the dependency in three scenarios:
 
 $DEP(H) = \{(T_i, O T_j) | T_j \text{ depends on } T_i \}$
 
-Given two histories $H_1$ and $H_2$ contain the same tuples, $H_1$ and $H_2$ are equivalent if $DEP(H_1) = DEP(H_2)$
+\_Given two histories $H_1$ and $H_2$ contain the same tuples, $H_1$ and $H_2$ are equivalent if $DEP(H_1) = DEP(H_2)$ $\rightarrow$ execution order doesn't matter.
 
 This imples that a given database will end up in exactly the same final state by executing either of the sequence of operations in $H_1$ or $H_2$.
 
@@ -3015,7 +3152,15 @@ A history is said to be isolated if it is equivalent to a serial history (as if 
 
 A serial history is a history that is resulted as a consequence of running transactions sequentially one by one. N transactions can result in a maximum of N! serial histories.
 
-### Isolation Concepts
+If the transaction are running sequentially one after another (serial history) - there won't be any conflict.
+
+Can we run transactions concurrently, but still have the same final output/state of the database as if the transactions are serially executed?
+
+A history is called isolated if it is equivalent to a serial history.
+
+Given a history, how can we determine whether it is equivalent to a serial history? There are maximum N! possible serial executions.
+
+## Isolation Concepts
 
 A transaction T' is called a wormhole transaction if
 
@@ -3027,7 +3172,7 @@ That is T << T' << T. This implies there is a cycle in the dependency graph of t
 
 > A history is serial if it runs one transaction at a time sequentially, or equivalent to a serial history.
 > A serial history is an isolated history.
-> Wormhole theorem: A history is isolated if and only if it has no wormholes.
+> **Wormhole theorem**: A history is isolated if and only if it has no wormholes.
 
 ## SLOCK (shared lock)
 
@@ -3118,6 +3263,24 @@ A Zero transaction does not overwrite another transactions dirty data if the oth
 _Lock protocol is well-formed with respect to writes_.
 
 ![](images/2023-07-11-18-09-26.png)
+
+---
+
+SET TRANSACTION ISOLATION LEVEL {READ UNCOMMITED | READ COMMITTED | REPEATABLE READ | SERIALIZABLE}
+
+Slight difference with the four degrees of isolation:
+
+- SERIALIZEABLE: no lost updates, no dirty reads, no non-repeatable reads, no phantom reads, degree 3
+- REPEATABLE READ: like degree 3, but other transactions can insert new rows
+- READ COMMITTED: prevents dirty reads like degree 2
+- READ UNCOMMITTED: like degree 0
+
+Options can also be paired with SNAPSHOT on/off.
+
+> In what kind of websites/applications have you experienced dirty reads?
+> Answer: In a bank, when you transfer money from one account to another, the money is deducted from one account, but not yet added to the other account. If you read the balance of the other account, you will see a wrong balance. Another example is when you are booking a flight ticket, and you are in the middle of the booking process, but you have not yet paid. If you search for the same flight, you will see that the flight is still available, but when you try to book it, you will get an error message that the flight is no longer available. One more example is when you are booking a hotel room, and you are in the middle of the booking process, but you have not yet paid. If you search for the same hotel room, you will see that the room is still available, but when you try to book it, you will get an error message that the room is no longer available.
+
+---
 
 ## Concurrent transactions - Conflicts and Performance issues
 
@@ -3226,6 +3389,19 @@ Consistency issue may arise when transactions execute concurrently.
 
 One or both transactions can commit but when both are commited, it is not serializable as only one should be able to commit.
 
+---
+
+SET TRANSACTION ISOLATION LEVEL {READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SERIALIZABLE}
+
+READ_COMMITTED_SNAPSHOT can be set on or off.
+
+If on - shared locks are not used for reading.
+
+- Read committed with READ_COMMITTED_SNAPSHOT off - degree 2 isolation
+- Read committed with READ_COMMITTED_SNAPSHOT on - degree 1 isolation
+
+---
+
 ## Time stamping
 
 These are a special case of optimistic concurrency control. At commit, time stamps are examined. If time stamp is more recent than the transaction read time the transaction is aborted.
@@ -3239,3 +3415,219 @@ At the commit time, the system validates all the transaction's updates and write
 <img src="images/2023-07-11-22-11-59.png" width=500/>
 
 If transaction $T_1$ commences first and holds a read lock on a employee record with salary < \$40000, $T_2$ will be delayed untile $T_1$ finishes. But with time stamps $T_2$ does not have to wait for $T_1$ to finish.
+
+---
+
+## Quiz 5
+
+###
+
+###
+
+###
+
+###
+
+---
+
+## Crach Recovery
+
+Recover from a failure either when a single-instance database crashes or all instances crash.
+
+Crash recovery is the process by which the database is moved back to a consistent and usable state after a crash. This is done by making the commited transactions durable and rolling back incomplete transactions.
+
+### Review the ACID properties
+
+- Atomicity: all actions in the Xact happen, or none happen
+- Consistency: If each Xact is consistent, and the DB starts consistent, it ends up consistent
+- Isolation: Execution of one Xact is isolated from that of other Xacts
+- Durability: If a Xact commits, its effects persist
+- The Recovery Manager guarantees Atomicity & Durability
+
+### Assumptions
+
+Concurrency control is in effect -> strict 2PL (Two Phase Locking), in particular.
+
+Updates are happening "in place". i.e. data is overwritten on (deleted from) the disk.
+
+A simple scheme to guarantee Atomicity & Durability?
+
+### Motivation
+
+Atomicity: Transacctions may abort ("Rollback"). e.g. T6
+
+Durability: What if DBMS stops running? (causes?)
+
+Desired Behavior after system restarts:
+
+- T1, T2 & T3 should be durable as they are commited before the crash.
+- T4, T5, T6 should be aborted (effects not seen).
+
+![](images/2023-07-13-11-33-26.png)
+
+### Buffer Caches (pool)
+
+1. Data is stored on disks
+2. Reading a data item requires reading the whole page of data (typically 4K or 8K bytes of data depending on the page size) from disk to memory containing the item.
+3. Modifying a data item requires reading the whole page from disk to memory containing the item, modifying the item in memory and writing the whole page to disk.
+4. Steps 2 & 3 can be very expensive and we can minimize the number of disk reads and writes by storing as many disk pages as possible in memory (buffer cache) - this means always check in buffer cache for the disk page of interest if not copy the associated page to buffer cache and perform the necessary operation.
+5. When buffer caches is full, we need to evict some pages from the buffer cache in order to fetch the required pages from the disk.
+
+> Anything write into a disk is considered durable.
+
+6. Eviction needs to make sure that no one else is using the page and any modified pages should be copied to the disk.
+7. Since several transactions are executing concucrrently this requires additional locking procedures using lateches. These latches are used only for the duration of the operation (e.g. READ/WRITE) and can be released immediately unlike record locks which have to be kept locked until the end of the transaction.
+8. fix(pageid)
+   - reads pages from disk into the buffer cache if it is not already in the buffer cache
+   - fixed pages cannot be dropped from the buffer cache as transactions are accessing the contents
+9. unfix(pageid)
+   - the page is not in use by the transaction and can be evicted as far as the unifx calling transaction is concerned. (We need to check to see that no one else wants the page before it can be evicted)
+
+### Handling the Buffer Pool (cache)
+
+Force write to disk at commit?
+
+- Poor response time.
+- But provides durability.
+
+No Force leaves pages in memory as long as possible even after commit without modifying the data on the disk.
+
+- Improves response time and efficiency as many reads and updates can take place in main memory rather than on disk.
+- Durability becomes a problem as update may be lost if a crash occurs.
+
+Steal buffer-pool frames from uncommited Xacts?
+
+- If not, poor throughput.
+- If so, how can we ensure atomicity
+
+![](images/2023-07-13-11-53-41.png)
+
+> Tha is a page modified by a transaction is written to disk but the transaction decides to abort.
+
+STEAL (why enforcing Atomicty is hard)
+
+- To steal frame F: Current page in F (say P) is written to disk; some Xact holds lock on P.
+  - What if the Xact with the lock on P aborts?
+  - Must remember the old value of P at steal time (to support UNDOing the write to page P)
+
+NO FORCE (why enforcing Durability is hard)
+
+- What if the system crashes before a modified page is written to disk?
+- Write as little as possible, in a convenient place, at commit time, to support REDOing modifications.
+
+### Basic Idea: Logging
+
+Reacord REDO (new value) and UNDO (old value) information, for every update, in a log.
+
+- Sequential writes to log (put it on a separate disk)
+- Minimal info (diff) written to log, so multiple updates fit in a single log page
+
+Log: An ordered list of REDO/UNDO actions
+
+- Log record contains: <XID, pageID, offset, length, old data, new data>
+- and additional control info
+
+### Write-Ahead Logging (WAL)
+
+The Write-Ahead Logging Protocol:
+
+1. Must force the log record which has both old and new values for an update before the corresponding data page gets to disk (stolen).
+2. Must write all logs records to disk (force) for a Xact before commit.
+
+3. Guarantees atomicity because we can undo updates perfomed by aborted transactions and redo those updates for commited transactions.
+4. Guarantess durability because we can redo updates for commited transactions.
+
+Exactly how is logging (and recovery) done? -> ARIES algorithm.
+
+### WAL & the Log
+
+Each log record has a uniqe Log Sequence Number (LSN)
+
+- LSNs always increasing.
+
+Each data page contains a pageLSN
+
+- The LSN of the most recent log record for an update to that page.
+
+System keeps track of flushedLSN
+
+- The max LSN flushed so far.
+
+WAL: Before a page is written to disk make sure that the pageLSN is less than the flushedLSN.
+
+### Other Log-Related State
+
+Transaction Table:
+
+- One entry per active Xact.
+- Contains XID, status (running/committed/aborted) and lastLSN.
+
+Dirty Page Table:
+
+- One entry per dirty page in buffer pool.
+- Contains recLSN -- the LSN of the log record which first caused the page to be dirty since loaded into the buffer cache from the disk.
+
+### Normal Execution of an Xact
+
+Series of reads & writes, followed by commit or abort.
+
+- We will assume that write is atomic on disk: In practice, additional details to deal with non-atomic writes. We discussed how we do this earlier.
+
+Strict 2PL (two phase locking).
+
+STEAL, NO FORCE buffer management, with WAL.
+
+### Checkingpointing
+
+Periodically, the DBMS creates a checkpoint, in order to minimize the time taken to recover the event of a system crash. Write to log:
+
+- Begin checkpoint record: Indicates when chkpt began.
+- End checkpoint record: Contains current Xact table and dirty page table. This is a `fuzzy checkpoint`:
+  - Other Xacts continue to run; so these tables accurate only as of the time of the begin checkpoint record.
+  - No attempt to force dirty pages to disk; effectiveness of checkpoint is limited by the oldest unwritten change to a dirty page. (So it's a good idea to periodically flush dirty pages to disk)
+- Store LSN or chkpt record in a safe place (master record)
+
+### The Big Picture: What's stored where
+
+![](images/2023-07-13-15-21-15.png)
+
+### Simple Transaction Abort
+
+For now, consider an explicit abort of a Xact: no crach involved.
+
+We want to "play back" the log in reverse order, UNDOing updates.
+
+- Get lastLSN of Xact from Xact table
+- Can follow chain of log records backward via the prevLSN field
+- Before starting UNDO, write an Abort log record.
+  - For recoving from crash during UNDO.
+
+![](images/2023-07-13-15-23-21.png)
+
+To perform UNDO, must have a lock on data.
+
+Before restoring old value of a page, write a CLR (Compensation Log Record):
+
+- You continue logging while you UNDO.
+- CLR has one extra field: undonextLSN
+- undonextLSN points to the next log record to UNDO
+  - Points to the nextLSN to undo (i.e., the prevLSN of the record we're currently UNDOing)
+- CLRs never undone (but they might be redone when repeating history: guarantees atomicity)
+
+At end of UNDO, write an "end" log record.
+
+> Atomicity: Either all or none of the updates of a Xact are performed.
+
+### Transaction Commit
+
+Write commit record to log.
+
+All log records up to Xact's lastLSN are flushed.
+
+- Guarantees that flushedLSN >= lastLSN
+- Note that log flushes are sequential, synchronous writes to disk - (very fast writes to disk).
+- Many log records per log page - (very efficient due to multiple writes)
+
+Commit() returns
+
+Write end record to log.
