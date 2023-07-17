@@ -226,10 +226,10 @@
   - [Snapshot Isoloation](#snapshot-isoloation)
   - [Time stamping](#time-stamping)
   - [Quiz 5](#quiz-5)
-    - [](#)
-    - [](#-1)
-    - [](#-2)
-    - [](#-3)
+    - [Given the following two transactions, is it possible to have a deadlock situation?](#given-the-following-two-transactions-is-it-possible-to-have-a-deadlock-situation)
+    - [Transaction T2 starts its execution after transaction T1 successfully commits. What conflicts are there between T1 and T2?](#transaction-t2-starts-its-execution-after-transaction-t1-successfully-commits-what-conflicts-are-there-between-t1-and-t2)
+    - [The duration of locks are usually shorter in optimistic locking than two-phase locking, true or false?](#the-duration-of-locks-are-usually-shorter-in-optimistic-locking-than-two-phase-locking-true-or-false)
+    - [What degree of isolation does the following transaction provide?](#what-degree-of-isolation-does-the-following-transaction-provide)
   - [Crach Recovery](#crach-recovery)
     - [Review the ACID properties](#review-the-acid-properties)
     - [Assumptions](#assumptions)
@@ -3370,7 +3370,7 @@ Order: IS $\rightarrow$ IX $\rightarrow$ S $\rightarrow$ SIX $\rightarrow$ U $\r
 
 ## Optimistic locking
 
-<span style="color:green">When conflicts are rare, transactions can execute operations without managing locks and without waiting for locks - higher throughput.</</span>
+<span style="color:green">When conflicts are rare, transactions can execute operations without managing locks and without waiting for locks - higher throughput.</span>
 
 - Use data without locks
 - Before commiting, each transaction verifies that no other transaction has modified the data (by taking appropriate locks) - <span style="color:green">duration of locks are very short</span>
@@ -3420,13 +3420,66 @@ If transaction $T_1$ commences first and holds a read lock on a employee record 
 
 ## Quiz 5
 
-###
+### Given the following two transactions, is it possible to have a deadlock situation?
 
-###
+```
+T1: Xlock (A); Write(A); XLOCK(B); Write(B); Unlock(A); Unlock (B);
+T2: Xlock (B); Write(B); Unlock (B);
+```
 
-###
+- [ ] Yes
+- [x] No
 
-###
+A deadlock situation can occur when two or more transactions are unable to proceed because each is waiting for the other to release a resource. Here, Transaction T2 only begins after Transaction T1 has been fully completed and released all its locks. There is no possibility of deadlock.
+
+### Transaction T2 starts its execution after transaction T1 successfully commits. What conflicts are there between T1 and T2?
+
+```
+T1:
+
+Read(A)
+Write(B)
+Write(C)
+Commit
+---
+T2:
+Read(A)
+Write(B)
+Commit
+```
+
+- [x] T1 and T2 has only write-write conflict
+- [ ] There is no conflict between T1 and T2
+- [ ] T1 and T2 has only read-write conflict
+- [ ] T1 and T2 has both read-write and write-write conflicts
+
+T1 and T2 both write to the same data item B. Hence, there is a write-write conflict between T1 and T2. No other types of conflicts (read-write) exist because T2 starts only after T1 has committed, so there's no case where T1 reads an item that T2 later writes, or vice versa.
+
+### The duration of locks are usually shorter in optimistic locking than two-phase locking, true or false?
+
+- [x] True
+- [ ] False
+
+Optimistic locking assumes no conflict will occur and allows transactions to proceed without locking the resources. Locks are only applied at the end of transaction during the validation phase. If no conflict is found, the transaction is committed, making the duration of locks shorter than in two-phase locking where resources are locked for the entire duration of the transaction.
+
+### What degree of isolation does the following transaction provide?
+
+```
+Slock(A)
+Read(A)
+Xlock(B)
+Write(B)
+Unlock(A)
+Slock(C)
+Read(C)
+Unlock(B)
+Unlock(C)
+```
+
+- [ ] Degree 0
+- [ ] Degree 1
+- [ ] Degree 2
+- [ ] Degree 3
 
 ---
 
