@@ -3735,3 +3735,63 @@ To ensure durability of updates - delay transaction commit until update is logge
   - when only primary active -> one-safe
 
 ## Alternative to Logs: Shadow Paging
+
+Shadow paging is an alternative to log-based recovery.
+
+> Idea: maintain two pageTables during the lifetime of a transaction - the current page table, and the shadow page table
+
+Store the shadow page table in novolatile storage, such that state of the database prior to transaction execution may be recovered.
+
+- Shadow page table is never modified during execution.
+
+To start with, both the page tables are identical. Only the current page table is used for data item accesses during execution of the transaction.
+
+Whenever any page is about to be written (updated):
+
+- A copy of this page is made onto an unused page.
+- The current page table is then made to point to the copy.
+- The update is performed on the copy.
+
+<img src="images/2023-07-25-12-47-38.png" align=left width=50% />
+
+<img src="images/2023-07-25-12-47-52.png" align=right width=50% />
+
+<br clear=all />
+
+To commit a transaction:
+
+1. Flush all modified pages in main memory to disk
+2. Output current page table to disk
+3. Make the current page table the new shadow page table, as follows:
+   - keep a pointer to the shadow page table at fixed (known) location on disk.
+   - to make the current page table the new shadow page table, simply update the pointer to point to current page table on disk.
+
+Once pointer to shadow page table has been written, transaction is commited.
+
+No recovery is needed after a crash - new transactions can start right away, using the shadow page table.
+
+Advantages of shadow-paging over log-based schemes:
+
+- No overhead of writing log records
+- Recovery is trivial
+
+Disadvantages:
+
+- Copying the entire page table is very expensive when the page table is large
+- Pages not pointed to from current/shadow page table should be freed (garbage collected)
+- Commit overhead is high - flush every update page, and page table
+- Hard to extend algorithm to allow transactions to run concurrently
+
+Startegy plan based on:
+
+- Goals and requirement on your organization/task
+- The nature of your data and usage pattern
+- Constraint on resources
+
+Design backup strategy:
+
+- Full disk backup vs. partial - are changes like to occur in only a small part of the database or in a large part of the database?
+- How frequently data changes
+  - If frequent: use differential backup that captures only the changes since the last full database backup
+- Space requirement of the backups - depends on the resource
+- Multiple past instances of backup - useful if point-in-time recovery is needed
