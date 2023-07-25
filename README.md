@@ -247,6 +247,16 @@
     - [Transaction Commit](#transaction-commit)
   - [Remote Considerations: Remote Backup Systems](#remote-considerations-remote-backup-systems)
   - [Alternative to Logs: Shadow Paging](#alternative-to-logs-shadow-paging)
+  - [Distributed](#distributed-1)
+    - [Atomicity in distributed transaction processing](#atomicity-in-distributed-transaction-processing)
+    - [Two phase commit protocol](#two-phase-commit-protocol)
+    - [Currency control in distributed DBs](#currency-control-in-distributed-dbs)
+      - [Other Considerations for Locking-based systems](#other-considerations-for-locking-based-systems)
+      - [Timestamp ordering concurrency control revisited](#timestamp-ordering-concurrency-control-revisited)
+      - [Optimistic concurrency control revisited](#optimistic-concurrency-control-revisited)
+    - [What if objects in different servers are replicas for increased availability](#what-if-objects-in-different-servers-are-replicas-for-increased-availability)
+    - [Transactions with replicated data](#transactions-with-replicated-data)
+  - [The CAP Theorem](#the-cap-theorem)
 
 ## Administration Information
 
@@ -3795,3 +3805,116 @@ Design backup strategy:
   - If frequent: use differential backup that captures only the changes since the last full database backup
 - Space requirement of the backups - depends on the resource
 - Multiple past instances of backup - useful if point-in-time recovery is needed
+
+> ARIES Algorithm: A Transaction Recovery Method Supporting Fine-Granularity Locking and Partial Rollbacks Using Write-Ahead Logging
+
+## Distributed
+
+### Atomicity in distributed transaction processing
+
+Two phases:
+
+1. Voting: Each server asks its local transaction manager whether it can commit the transaction.
+   - Flush `Prepare` log record to disk
+2. Commit: If all servers vote yes, then each server commits the transaction.
+   - Flush `Commit` log record to disk
+
+<img src="images/2023-07-25-15-42-39.png" width=49% />
+
+<img src="images/2023-07-25-15-43-46.png" width=49% />
+
+<img src="images/2023-07-25-15-43-55.png" width=49% />
+
+<img src="images/2023-07-25-15-44-03.png" width=49% />
+
+### Two phase commit protocol
+
+Coordinator or participant can abort transaction.
+
+- If a participant abort, it must inform coordinator
+- If a participant does not respond within a timeout period, coordinator will abort
+  - e.g. participant has crashed due to hardware failure, or network failure, or is very busy
+
+If abort, coordinator asks all participants to roll back.
+
+If abort, abort logs are forced to disk at coordinator and all participants.
+
+### Currency control in distributed DBs
+
+Each server is responsible for applying concurrency control to its own objects.
+
+The members of collection of servers of distributed transactions are jointly responsible for ensuring that they are performed in a serially equivalent manner.
+
+But servers independently acting would not work.
+
+If transaction T is before transaction U in their conflicting access to objects at one of the servers then:
+
+- They must be in that order at all of the servers whose objects are accessed in a conflicting manner by both T and U.
+
+The central Coordinator should assure this.
+
+#### Other Considerations for Locking-based systems
+
+A local lock manager cannot release any locks until it knows that the transaction has been commited or aborted at all the servers involved in the transaction.
+
+The objects remain locked and are unavailable for other transactions during the commit protocol.
+
+- An aborted transaction releases its locks after phase 1 of the protocol.
+
+#### Timestamp ordering concurrency control revisited
+
+The coordinator accessed by a transaction issues a globally unique timestamp.
+
+The timestamp is passed with each object access.
+
+The servers are jointly responsible for ensuring serial equivalence:
+
+- that is if T access an object before U, then T is before U at all objects.
+
+#### Optimistic concurrency control revisited
+
+For distributed transactions to work:
+
+1. Validation takes place in phase 1 of 2 PC protocol at each server
+2. Transaction use a globally unique order for validation
+
+> Optimisitic lock: lock is acquired only after the transaction has validated successfully, and is released after the transaction has committed or aborted.
+
+### What if objects in different servers are replicas for increased availability
+
+![](images/2023-07-25-17-19-55.png)
+
+Initial balance of x and y is $0.
+
+The behaviour above cannot occur if A and B did not exist (that is, if we had only onoe server).
+
+### Transactions with replicated data
+
+The effect of transactions on replicated objects should be the same as if they had been performed one at a time on a single set of objects.
+
+This property is called one-copy serializability.
+
+If all servers are available then no issue - but what if soem severs are not available?
+
+- The available copies of relication scheme is designed to allow some servers to be temporarily unavailable.
+- ![](images/2023-07-25-17-24-20.png)
+  - A server fails when there is a lock on replica managers which may lead to deadlock and then timeout and abort of one transaction.
+- At X, T has read A and has locked it. Therefore, U's deposit is delayed until T finishes. Normally, this leads to good concurrency control only if the servers do not fail.
+- Assume that X fails just after T has performed getBalance and N failing just after U has performed getBalance.
+- ![](images/2023-07-25-17-27-05.png)
+- Therefore, T's deposit will be performed at M and P (all available) and U's deposit will be performed at Y (all available) -> not good because isolation is violated.
+- Before a transaction commits, it checks for failed and available servers it has contacted, the set should not change during execution.
+  - ![](images/2023-07-25-17-29-26.png)
+  - E.g. T would check if X still available among others
+  - We said X fails before T's deposit, in which case, T would have to abort
+  - Thus no harm can come from this execution now
+
+## The CAP Theorem
+
+The limitations of distributed databases can be described in the so called the CAP theorem.
+
+- Consistency: every node always sees the same data at any given instance (i.e., strict consistency)
+- Availability: the system continues to operate, even if nodes crash, or some hardware or software parts are down due to upgrades
+- Partition Tolerance: the system continues to operate in the presence of network partitions
+
+> CAP theorem: any distributed database with shared data, can have at most two of the three desirable properties, C, A or P.
