@@ -245,6 +245,8 @@
     - [The Big Picture: What's stored where](#the-big-picture-whats-stored-where)
     - [Simple Transaction Abort](#simple-transaction-abort)
     - [Transaction Commit](#transaction-commit)
+  - [Remote Considerations: Remote Backup Systems](#remote-considerations-remote-backup-systems)
+  - [Alternative to Logs: Shadow Paging](#alternative-to-logs-shadow-paging)
 
 ## Administration Information
 
@@ -3684,3 +3686,52 @@ All log records up to Xact's lastLSN are flushed.
 Commit() returns
 
 Write end record to log.
+
+## Remote Considerations: Remote Backup Systems
+
+Remote backup systems provide high availability by allowing transaction processing to continue even if the primary site is destoryed.
+
+![](images/2023-07-25-11-11-09.png)
+
+Backup site must detect when primary site has failed.
+
+- To distinguish primary site failure from link failure, maintain several communication links between the primary and the remote backup site.
+- Use heart-beat messages to detect primary site failure.
+
+> Network redundancy: Multiple communication links between primary and backup sites.
+
+Transfer of control:
+
+- (perform recovery) To take over control, backup site first perform recovery using its copy of the database and all the log records it has received from primary are rolled back.
+- (backup -> new primary) When the backup site takes over processing it becomes the new primary.
+
+Time to recover:
+
+- To reduce delay in takeover, backup site periodically proceesses the redo log records
+- In effect, it performs a checkpoint, and can then delete earlier parts of the log
+
+Hot-Spare configuration permits very fast takeover:
+
+- (Continuous Redo) Backup continually process redo log record as they arrive, applying the updates locally
+- (Roll back only when fail detected) When failure of the primary is detected the backup rolls back incomplete transactions, and is ready to process new transactions.
+
+> Efficiently Transfer of Control:
+>
+> 1. Backup site periodically processes the redo log records.
+>
+> - backup don't do undo
+>
+> 2. Backup site periodically performs a checkpoint, and can then delete earlier parts of the log.
+
+To ensure durability of updates - delay transaction commit until update is logged at backup. But we can avoid this delay by permitting lower degrees of durability.
+
+- One-safe: commit as soon as transaction's commit log record is written at primary
+  - Problem: updates may not arrive at backup before it take over.
+- Two-very-safe: commit when transaction's commit log record is written at primary and backup
+  - Reduces availability since transactions cannot commmit if either site fails
+  - more durable than one-safe but lower, need to wait for backup to write log record
+- Two-safe: proceed as in two-very-safe if both primary and backup are active. If only the primary is active, the transaction commits as soon as is commit log record is written at the primary
+  - Better availability than two-very-safe; avoids problem of lost transactions in one-safe
+  - when only primary active -> one-safe
+
+## Alternative to Logs: Shadow Paging
