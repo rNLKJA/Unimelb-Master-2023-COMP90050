@@ -3752,9 +3752,9 @@ Whenever any page is about to be written (updated):
 - The current page table is then made to point to the copy.
 - The update is performed on the copy.
 
-<img src="images/2023-07-25-12-47-38.png" align=left width=49% />
+<img src="images/2023-07-25-12-47-38.png" width=49% />
 
-<img src="images/2023-07-25-12-47-52.png" align=right width=49% />
+<img src="images/2023-07-25-12-47-52.png" width=49% />
 
 <br clear=all />
 
