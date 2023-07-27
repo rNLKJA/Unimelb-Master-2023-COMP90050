@@ -217,7 +217,7 @@
     - [Degree 0](#degree-0)
   - [Concurrent transactions - Conflicts and Performance issues](#concurrent-transactions---conflicts-and-performance-issues)
   - [Granularity of Locks](#granularity-of-locks)
-    - [Intention mode locks](#intention-mode-locks)
+      - [Intention mode locks](#intention-mode-locks)
     - [Actual granular locks in practice](#actual-granular-locks-in-practice)
     - [Isolation Concepts ...](#isolation-concepts-)
     - [Isolocation Concepts ... Tree locking and Intent Lock Modes](#isolocation-concepts--tree-locking-and-intent-lock-modes)
@@ -260,7 +260,7 @@
   - [Large-Scale Databases](#large-scale-databases)
     - [Type of Consistency](#type-of-consistency)
       - [Eventual consistency:](#eventual-consistency)
-    - [Dynamic Tradeofdd between Consistency and Availability](#dynamic-tradeofdd-between-consistency-and-availability)
+    - [Dynamic Tradeoff between Consistency and Availability](#dynamic-tradeoff-between-consistency-and-availability)
     - [Heterogeneity: Segmenting Consistency and Availability](#heterogeneity-segmenting-consistency-and-availability)
     - [Data Partitioning](#data-partitioning)
     - [What if there are no partitions?](#what-if-there-are-no-partitions)
@@ -3979,7 +3979,7 @@ In practice:
 - a number of theses properties can be combined
 - Monotonic reads and read-your-writes are most desriable.
 
-### Dynamic Tradeofdd between Consistency and Availability
+### Dynamic Tradeoff between Consistency and Availability
 
 An airline reservation system:
 
