@@ -257,6 +257,23 @@
     - [What if objects in different servers are replicas for increased availability](#what-if-objects-in-different-servers-are-replicas-for-increased-availability)
     - [Transactions with replicated data](#transactions-with-replicated-data)
   - [The CAP Theorem](#the-cap-theorem)
+  - [Large-Scale Databases](#large-scale-databases)
+    - [Type of Consistency](#type-of-consistency)
+      - [Eventual consistency:](#eventual-consistency)
+    - [Dynamic Tradeofdd between Consistency and Availability](#dynamic-tradeofdd-between-consistency-and-availability)
+    - [Heterogeneity: Segmenting Consistency and Availability](#heterogeneity-segmenting-consistency-and-availability)
+    - [Data Partitioning](#data-partitioning)
+    - [What if there are no partitions?](#what-if-there-are-no-partitions)
+  - [Trading-Off Consistency](#trading-off-consistency)
+  - [The BASE Properties](#the-base-properties)
+  - [CAP $\\rightarrow$ PACELC](#cap-rightarrow-pacelc)
+  - [Types of NoSQL Databases](#types-of-nosql-databases)
+    - [Document Stores](#document-stores)
+    - [Graph Databases](#graph-databases)
+    - [Key-Value Stores](#key-value-stores)
+    - [Colummar Databases](#colummar-databases)
+  - [Data Warehousing](#data-warehousing)
+    - [Data Warehouse Design Issues](#data-warehouse-design-issues)
 
 ## Administration Information
 
@@ -3918,3 +3935,211 @@ The limitations of distributed databases can be described in the so called the C
 - Partition Tolerance: the system continues to operate in the presence of network partitions
 
 > CAP theorem: any distributed database with shared data, can have at most two of the three desirable properties, C, A or P.
+
+Assume two nodes on oppsite sides of a network partition
+
+- Availability + Partition Tolerance forfeit Consistency as changes in place cannot be propagated when the system is portioned.
+- Consistency + Partition Tolerance entails that one side of the partition must act as if it is unavailable, thus forfeiting Availability.
+- Consistency + Availability is only possible if there is no network partition, thereby forfeiting Partition Tolerance.
+
+## Large-Scale Databases
+
+When companies such as Google and Amazon were designing large-scale databases, 24/7 availability was a key requirement. A few minutes of downtime could cost millions of dollars in lost revenue.
+
+With databases in 1000s of machines, the likelihood of a node or network failure increases tremendously.
+
+Therefore, in order to have strong guarantees on Availability and Partition Tolerance, they had to sacrifice "strict" Consistency (implied by the CAP theorem).
+
+### Type of Consistency
+
+Strong consistency: after the update completes, any subsequent access will return the same updated value.
+
+Weak consistency: it is not guaranteed that subsequent accesses will return the updated value.
+
+#### Eventual consistency:
+
+- Specific form of weak consistency
+- It is guaranteed that if no new updates are made to updated value (e.g., propagate updates to replicas in a lazy fashion)
+
+Causal consistency: processes that have causal relationship will see consistent data.
+
+Read-your-write consistency: a process always access the data item after it's update operation and never sees an older value.
+
+Session consistency:
+
+- As long as session exists, system guarantees read-your-write consistency.
+- Guarantees do not overlap sessions.
+
+Monotonic read consistency: if a process has seens a particualr value of data item, any subsequent processes will never return any previous values.
+
+Monotonic write consistency: the system guarantees to serialize the writes by the same process.
+
+In practice:
+
+- a number of theses properties can be combined
+- Monotonic reads and read-your-writes are most desriable.
+
+### Dynamic Tradeofdd between Consistency and Availability
+
+An airline reservation system:
+
+- When most of seats available: it is ok to rely on somewhat out-of-date data, availability is more critical.
+- When the plane is close to be filled; it needs more accurate data to ensure the plane is not overbooked, consistency is more critical.
+
+### Heterogeneity: Segmenting Consistency and Availability
+
+No single uniform requirement:
+
+- Some aspects require strong consistency
+- Others require high availability
+
+Segment the system into different components
+
+- Each provides different types of guarantees
+
+Overall guarantees neither consistency nor availability
+
+- Each part of the service gets exactly what it needs
+
+Can be partitioned along different dimensions.
+
+### Data Partitioning
+
+Different data may require different consistency and availability.
+
+Example:
+
+- shopping cart: high availability, responsive, can sometimes suffer anomalies.
+- Product information need to be available, slight variation in inventory is sufferable.
+- Checkout, billing, shipping records must be consistent.
+
+### What if there are no partitions?
+
+Tradeoff between Consistency and Latency:
+
+- Caused by the possibility of failure in distributed systems:
+  - High availability $\rightarrow$ replicate data $\rightarrow$ consistency problem
+- Basic idea:
+  - Availability and latency are arguably the same thing:
+    - unavailable $\rightarrow$ extreme high latency
+  - Achieving different levels of consistency/availability takes different amount of time.
+
+## Trading-Off Consistency
+
+Maintaining consistency should balance between the strictness on consistency versus availability/scalability.
+
+- Good-enough consistency depens on the application.
+
+![](images/2023-07-25-22-41-18.png)
+
+## The BASE Properties
+
+The CAP theorem proces that it is impossible to guarantee strict Consistency and Availability while being able to tolerate network partitions.
+
+This resulted in databases with relaxed ACID guarantees.
+
+In particular, such databases apply the BASE properties:
+
+- Basically Available: the system guarantees Availability
+- Soft-state: the state of the system may change over time
+- Eventually Consistency: the system will eventually become consistent
+
+## CAP $\rightarrow$ PACELC
+
+A more complete description of the space of potential tradeoffs for distributed system:
+
+- If there is a partition (P), how does the system trade off availability and consistency (A and C); else (E), when the system is running normally in the absence of partitions, how does the system trade off Latency (L) and Consistency (C)?
+
+## Types of NoSQL Databases
+
+Here is a limited taxonomy of NoSQL databases:
+
+![](images/2023-07-25-22-47-14.png)
+
+### Document Stores
+
+Document are stored in some standard format or encoding (e.g. XML, JSON, PDF or Office Documents)
+
+- These are typically referred to as Binary Large Objects (BLOBs)
+
+Documents can be indexed:
+
+- This allows document stores to outperform traditional file systems
+
+> e.g. MongoDB and CouchDB (both can be queried using MapReduce)
+
+### Graph Databases
+
+Data are represented as vertices and edges:
+
+![](images/2023-07-25-22-49-27.png)
+
+Graph databases are powerful for graph-like queries (e.g., find the shortest path between two elements).
+
+> e.g. Neo4j and VertexDB
+
+### Key-Value Stores
+
+Keys are mapped to (possibly) more complex value (e.g., lists)
+
+Keys can be stored in a hash table and can be distributed easily.
+
+Such stores typically support regular CRUD (create, read, update, and delete) operations.
+
+- That is, no joins and aggregate functions
+
+> e.g., Amazon DynamoDB and Apache Cassandra
+
+### Colummar Databases
+
+Columar databases are hybrid of RDBMS and Key-Value stores.
+
+- Values are stored in groups of zero or more columns, but in Column-Order (as opposed to Row-Order)
+- Values are queried by matching keys
+
+![](images/2023-07-25-22-55-10.png)
+
+> e.g., HBase and Vertica
+
+## Data Warehousing
+
+Corporate decision making requires a unified view of all organizational data, including historical data.
+
+A data warehouse is a repository (archive) or information gathered from multiple sources, stored under a unified schema, for analytics and reporting purposes.
+
+- Greatly simplifies querying, permits study of historical trends.
+- Shifts decision support query load load away from transaction processing systems.
+
+![](images/2023-07-25-23-00-02.png)
+
+### Data Warehouse Design Issues
+
+When and how to gather data:
+
+- Source driven architecture: data sources transmit new information to warehouse, either continuously or periodically. (e.g. at night)
+- Destination driven architecture: warehouse periodically requests new information from data sources
+
+Keeping warehouse exactly synchronized with data sources (e.g., using two-phase commit) is too expensive
+
+- usually OK to have slightly out-of-date data at warehouse
+- data/updates are periodically downloaded from online transaction processing (OLTP) systems (most of the DBMS work we have seen so far)
+
+What schema to use
+
+- Depends on purpose
+- Schema integration
+
+Data cleasing
+
+- e.g. correct mistakes in addresses (misspellings, zip code errors)
+- Merge address lists from different sources and purge duplicates
+
+How to propagate updates
+
+- The data stored in a data warehouse is documented with an element of time, either explicitly or implicitly.
+
+What data to summarize
+
+- Raw data may be too large to store
+- Aggregate values (totals/subtotals) often suffice
+- Queries on raw data can often be transformed by query optimizer to use aggregate values
