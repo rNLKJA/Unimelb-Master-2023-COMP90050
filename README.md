@@ -3477,12 +3477,10 @@ Write(B)
 Commit
 ```
 
-- [x] T1 and T2 has only write-write conflict
-- [ ] There is no conflict between T1 and T2
+- [ ] T1 and T2 has only write-write conflict
+- [x] There is no conflict between T1 and T2
 - [ ] T1 and T2 has only read-write conflict
 - [ ] T1 and T2 has both read-write and write-write conflicts
-
-T1 and T2 both write to the same data item B. Hence, there is a write-write conflict between T1 and T2. No other types of conflicts (read-write) exist because T2 starts only after T1 has committed, so there's no case where T1 reads an item that T2 later writes, or vice versa.
 
 ### The duration of locks are usually shorter in optimistic locking than two-phase locking, true or false?
 
@@ -3507,12 +3505,21 @@ Unlock(C)
 
 - [ ] Degree 0
 - [ ] Degree 1
-- [ ] Degree 2
+- [x] Degree 2
 - [ ] Degree 3
 
 ---
 
 ## Crach Recovery
+
+What needs to be recovered if a crash happens?
+
+> ARIES (Algorithms for Recovery and Isolation Exploiting Semantics) is a family of algorithms and techniques for recovery and concurrency control in database systems focus on the volatile storage (buffer cache).
+
+- Has it been made durable - if not, nothing to recover
+- If not durable, what additional information are needed to recover them?
+
+So at first, we need to know what happens during the usual exectuion of a system.
 
 Recover from a failure either when a single-instance database crashes or all instances crash.
 
@@ -4015,7 +4022,7 @@ Example:
 
 ### What if there are no partitions?
 
-Tradeoff between Consistency and Latency:
+Tradeoff between Consistency and Latency (availability):
 
 - Caused by the possibility of failure in distributed systems:
   - High availability $\rightarrow$ replicate data $\rightarrow$ consistency problem
@@ -4031,6 +4038,11 @@ Maintaining consistency should balance between the strictness on consistency ver
 - Good-enough consistency depens on the application.
 
 ![](images/2023-07-25-22-41-18.png)
+
+- Loose consistency: easier to implement and is efficient
+- Strict consistency: generally hard to implement and is efficient
+
+> Eventually conssiency: a form of weak consistency, where the system guarantees that if no new updates are made to a given data item, eventually all accesses to that item will return the last updated value.
 
 ## The BASE Properties
 
@@ -4049,6 +4061,11 @@ In particular, such databases apply the BASE properties:
 A more complete description of the space of potential tradeoffs for distributed system:
 
 - If there is a partition (P), how does the system trade off availability and consistency (A and C); else (E), when the system is running normally in the absence of partitions, how does the system trade off Latency (L) and Consistency (C)?
+
+- PA/EL Systems: Give up both Consistency for availability and lower latency: Dynamo, Cassandra, Riak
+- PC/EC Systems: Refuse to give up consistency and pay the cost of availability and latency: BigTable, HBase, VoltDB/H-Store
+- PA/EC Systems: Give up consistency when a partition happens and keep consistency in normal operations: MongoDB
+- PC/EL System: Keep consistency if a partition occurs but gives up consistency for latency in normal operations: Yahoo PNUTS
 
 ## Types of NoSQL Databases
 
@@ -4116,8 +4133,8 @@ A data warehouse is a repository (archive) or information gathered from multiple
 
 When and how to gather data:
 
-- Source driven architecture: data sources transmit new information to warehouse, either continuously or periodically. (e.g. at night)
-- Destination driven architecture: warehouse periodically requests new information from data sources
+- **Source driven architecture**: data sources transmit new information to warehouse, either continuously or periodically. (e.g. at night)
+- **Destination driven architecture**: warehouse periodically requests new information from data sources
 
 Keeping warehouse exactly synchronized with data sources (e.g., using two-phase commit) is too expensive
 

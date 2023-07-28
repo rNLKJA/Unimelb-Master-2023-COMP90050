@@ -1,0 +1,2015 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:19.000
+Okay, so welcome to. So in the first question of week 4, we are going to discuss given this transaction Which lines are violating you know the properties of a 2 phase lacking protocol.
+
+00:00:19.000 --> 00:00:34.000
+Okay, so we need to highlight like the line numbers. We also need to briefly explain. Why is the case that those lines are, you know, why they think the properties of a two-phase lighting protocol.
+
+00:00:34.000 --> 00:00:45.000
+Okay, so to start with that we first need to explain what is the 2 phase lucky?
+
+00:00:45.000 --> 00:00:58.000
+Yes, what is the 2 phase locking? And why the 2 lines is violating the properties of that so face liking actually as the name suggests as 2 face.
+
+00:00:58.000 --> 00:01:06.000
+The growing phase and the shrinking phase. So in the growing phase we can add like more logs.
+
+00:01:06.000 --> 00:01:10.000
+To the logs that we have already acquired.
+
+00:01:10.000 --> 00:01:16.000
+And the shrinking phase we can only release the logs out of those that we have already acquired.
+
+00:01:16.000 --> 00:01:23.000
+Okay, so in the shrinking phase, As it started, we can no longer get any new.
+
+00:01:23.000 --> 00:01:37.000
+Okay, so with that in mind, want to see which of the following lines is actually violating with the properties of the 2 phase locking.
+
+00:01:37.000 --> 00:01:53.000
+Okay, so maybe the first line that is violating with that. And also the reason why it's like that line is creating problem with having a 2 phase locking.
+
+00:01:53.000 --> 00:01:57.000
+Okay.
+
+00:01:57.000 --> 00:02:04.000
+Cool. So maybe 2 to 4 min to send this question. And then we'll get back here.
+
+00:02:04.000 --> 00:02:11.000
+To see your assets. We already have some input from William D. Michelle. Thank you very much, William, for that.
+
+00:02:11.000 --> 00:02:41.000
+Yeah, everyone please. Think on this 3, 4 min and then look at
+
+00:08:19.000 --> 00:08:22.000
+Okay.
+
+00:08:22.000 --> 00:08:32.000
+So thank you everyone for your inputs. So we have. Input from William. And also from Ming Shan.
+
+00:08:32.000 --> 00:08:41.000
+So William is saying line 3 6 9. Are unlikes that I care about. They are carrying.
+
+00:08:41.000 --> 00:08:50.000
+Okay, these should all be placed after line 10, the final lock. Yep, that's right.
+
+00:08:50.000 --> 00:08:56.000
+Meeting, I say, 34.
+
+00:08:56.000 --> 00:09:05.000
+No 2. Face locking and reading 6 7 no 2 face locking
+
+00:09:05.000 --> 00:09:13.000
+I'm sure 9 10 no 2 phase. L on writing.
+
+00:09:13.000 --> 00:09:21.000
+Alternatively, could snap bring these lines. Okay. Cool. So yeah, so.
+
+00:09:21.000 --> 00:09:32.000
+Basically, we need to first check. You know. Each part of this locking falls into the growing phase.
+
+00:09:32.000 --> 00:09:41.000
+And which part goes into the shrinking phase. Okay, so we start with the based liking here.
+
+00:09:41.000 --> 00:09:54.000
+So it means that. The growing phase is actually starting here. So we have one growing. And then we have the shrinking.
+
+00:09:54.000 --> 00:10:08.000
+Okay. So when shrinking starts after this shrinking. You probably should not have anything in the growing side, but we see that you have one thing at the growing side here.
+
+00:10:08.000 --> 00:10:16.000
+And then again, one thing at the shrinking side here, so that you may be. Just like that.
+
+00:10:16.000 --> 00:10:25.000
+So one thing is the growing side here. One thing at the shrinking side here. And then again, growing.
+
+00:10:25.000 --> 00:10:28.000
+Train King.
+
+00:10:28.000 --> 00:10:31.000
+Growing and shrinking.
+
+00:10:31.000 --> 00:10:43.000
+Okay, so we can say. That the problem is mainly being created by these early shrinking. We have a line tree.
+
+00:10:43.000 --> 00:10:51.000
+Okay, so you have this early shrinking. And then all these growingings. Good part coming here.
+
+00:10:51.000 --> 00:11:03.000
+He's like creating a problem for us. Okay. So we probably need to move these. You know, early shrinking.
+
+00:11:03.000 --> 00:11:15.000
+A little bit down. So that it goes after all the growing operations that we have. Okay, so initially this is line.
+
+00:11:15.000 --> 00:11:31.000
+Tree is creating the problem for us. Okay, and the type of the problem is like interfere interference between the shrinking phase and the growing phase.
+
+00:11:31.000 --> 00:11:35.000
+Because of an early shrinking.
+
+00:11:35.000 --> 00:11:46.000
+Okay. So this is again something that we can say again some. You know, at the same time, it's early shrinking.
+
+00:11:46.000 --> 00:11:57.000
+Again that is interfering with this growing here. But this is you can say at the same time. So probably line 3 along with line.
+
+00:11:57.000 --> 00:12:00.000
+6.
+
+00:12:00.000 --> 00:12:18.000
+And also line. 9 that are like creating the same problem. Shrinking.
+
+00:12:18.000 --> 00:12:23.000
+But in line 10, you are having a different problem.
+
+00:12:23.000 --> 00:12:37.000
+Okay, so the problem that you are having at line 10 is that we are You know putting a like on a resource resource A and which You already had the lock.
+
+00:12:37.000 --> 00:12:43.000
+Okay, so on a resource A, we already had a lock. So we had an S lock on A before.
+
+00:12:43.000 --> 00:12:49.000
+And then we have a X lock on it here.
+
+00:12:49.000 --> 00:12:57.000
+Okay.
+
+00:12:57.000 --> 00:13:10.000
+So this is like a different type of log. So in, the 2 phase locking. Once you have released a resource, you cannot put a lot back on that again because that's again.
+
+00:13:10.000 --> 00:13:23.000
+The 2 phase is lucky. So then line 10. We have a new issue here. Which is obtaining
+
+00:13:23.000 --> 00:13:27.000
+Lock
+
+00:13:27.000 --> 00:13:33.000
+On a resource twice.
+
+00:13:33.000 --> 00:13:46.000
+Which is again something against. The 2 face liking. So if you want to summarize Hey, we can say line 3 and line 10.
+
+00:13:46.000 --> 00:13:57.000
+Are basically creating the main issues. Because line 3 is the first shrinking, the first early shrinking that's creating problem.
+
+00:13:57.000 --> 00:14:10.000
+And then you also have 9 6 and 9. Just off the same type, but yeah. You know, if you only want to system based on the type of problems that we're creating.
+
+00:14:10.000 --> 00:14:18.000
+So line trees, have been And then line 10 is obtaining a lock and a resource to us.
+
+00:14:18.000 --> 00:14:30.000
+Okay. Oh yeah, so the concept is more important. So the way that you explain it, the way that you understand it and yeah.
+
+00:14:30.000 --> 00:14:41.000
+These are like the problems we face. In here. Any questions?
+
+00:14:41.000 --> 00:14:52.000
+Hey questions? Cool. Now let's move with the Okay, so we get something.
+
+00:14:52.000 --> 00:14:59.000
+Okay, so William is asking, is it advisable to bring Lux earlier or release unlocks later?
+
+00:14:59.000 --> 00:15:07.000
+Yep, you know, the question actually didn't ask us. To convert it to a 2 phase.
+
+00:15:07.000 --> 00:15:20.000
+You know, compatible. Okay, so it only asks us to talk about the lines. The is, you know, can that cannot happen with the 2 phase locking.
+
+00:15:20.000 --> 00:15:32.000
+Okay, so But yeah, but if you want to transfer it to something that he's complying with the Two-phase locking, then sure, then.
+
+00:15:32.000 --> 00:15:40.000
+You can do stuff like that, but as long as Go make sure you're making sure. That you're not, you know.
+
+00:15:40.000 --> 00:15:48.000
+You know you're not putting 2 locks on the same resource So whenever you are having like 2 loves here.
+
+00:15:48.000 --> 00:15:59.000
+So you need to go with the more conservative lock. For instance, you have S lock and X lock on the same resource so you can with an X lot and the whole thing.
+
+00:15:59.000 --> 00:16:08.000
+One X lot will do the job. So you don't need to one next slide. Okay, yeah, it depends on what the question asks you.
+
+00:16:08.000 --> 00:16:13.000
+2 questions ask you that you need to be careful of. What type of lock are you putting there? Does that cover all your needs?
+
+00:16:13.000 --> 00:16:21.000
+And if that's the case, for instance, here they're also writing into A.
+
+00:16:21.000 --> 00:16:28.000
+So if you just keep the as the first that's like. You cannot keep the second.
+
+00:16:28.000 --> 00:16:36.000
+Next slide on A. And then it you will have a problem because you cannot have S, right?
+
+00:16:36.000 --> 00:16:43.000
+So you need to convert that S lock to an X lot and then you need to get it of the X log.
+
+00:16:43.000 --> 00:16:56.000
+At the bottom. Hope that answers your question. Is that clear or do I need to explain more?
+
+00:16:56.000 --> 00:17:04.000
+Cool. So now let's move into the next question. Don't have any more questions. So let's move to the next question.
+
+00:17:04.000 --> 00:17:11.000
+So next question is about, 2 phase locking. That's guarantees serializability.
+
+00:17:11.000 --> 00:17:17.000
+So we want to discuss why 2 phase lacking guarantees.
+
+00:17:17.000 --> 00:17:26.000
+Okay. So again, so we pretty much know what 2 phase locking is. Now you need to.
+
+00:17:26.000 --> 00:17:37.000
+Check what is the and why. 2 face lodging is helping with getting serializability in a transaction.
+
+00:17:37.000 --> 00:17:53.000
+So say the ability actually means the ability to. Run 2 transactions at the same time. Without having one impacting the other Okay.
+
+00:17:53.000 --> 00:18:04.000
+So yeah, so maybe. Some 3 4 min on this question again review the concept of serializability.
+
+00:18:04.000 --> 00:18:34.000
+How you can achieve it and see why 2 phase locking can help with that. Maybe 2 to 4 min and then we'll get back here to see the answer.
+
+00:25:45.000 --> 00:25:55.000
+Okay, so any ideas? Bye.
+
+00:25:55.000 --> 00:26:04.000
+So maybe let's jump into the answer. So it's quickly, let me.
+
+00:26:04.000 --> 00:26:13.000
+Being this front lines. So you know that you know, the 2 face locking protocol is a protocol that ensures serializability.
+
+00:26:13.000 --> 00:26:22.000
+Okay, and the as we discussed, we know that Syria was a goal to actually let's like 2 concurrent transaction to run in parallel Avoid the results.
+
+00:26:22.000 --> 00:26:31.000
+They will not be affected. So when you're running to transactions parallel, the results would be same as if you run them separately.
+
+00:26:31.000 --> 00:26:40.000
+We doubt. You know, having the knowledge of someone or another transaction being running at the same time.
+
+00:26:40.000 --> 00:26:54.000
+Okay, so. From the, you know, data sign from the database. Management perspective. If you want to ensure the serializability.
+
+00:26:54.000 --> 00:27:05.000
+So we need to prevent this scenarios where, you know, transactions create a cycle in the dependency graph or in the distance graph.
+
+00:27:05.000 --> 00:27:13.000
+Okay, the type of cycles that you're also referring as phone calls. In the graph, okay.
+
+00:27:13.000 --> 00:27:26.000
+So and the cycles are being created. You know In cases when transactions are dependent. On each other in a circular manner.
+
+00:27:26.000 --> 00:27:34.000
+Okay. So basically, to summarize like the 2 phase locking. What's it call again?
+
+00:27:34.000 --> 00:27:45.000
+Let me say it has 2 phases of growing and shrinking. Be growing be the phase where we are adding more logs and shrinking be the phase that you are releasing the logs.
+
+00:27:45.000 --> 00:27:58.000
+And then you can see how this one, how this process of having growing and shrinking You'll not let, you know, the cycles will happen.
+
+00:27:58.000 --> 00:28:07.000
+Okay, so We can give an example here. So you can consider 2 transactions, T one and T 2.
+
+00:28:07.000 --> 00:28:19.000
+So we can consider a scenario where, there is a Cycle. So in that scenario, T one needs to lock an item XT 2.
+
+00:28:19.000 --> 00:28:39.000
+Needs to like an item why then T one would need to luck. Why as well and then T 2 would need to, Okay, so which you know creates a deadlock and forms a cycle in the dependency graph.
+
+00:28:39.000 --> 00:28:47.000
+So now we can see how the 2 things that came. And prevent this from happening. Okay, so under the 2 phase locking.
+
+00:28:47.000 --> 00:28:57.000
+Once each of the transactions T one or 2 to release a large She is on X or Y. It cannot obtain any new logs.
+
+00:28:57.000 --> 00:29:09.000
+On anything after that okay So therefore, the about scenario cannot happen. Okay, which avoids the possibility of it cycle in the prison.
+
+00:29:09.000 --> 00:29:37.000
+Okay, so this is basically how you know these 2 phase locking you know prevents the creation of a cycle in Okay.
+
+00:29:37.000 --> 00:29:46.000
+Okay. So yeah. So basically Yeah, it only.
+
+00:29:46.000 --> 00:30:01.000
+Let's to. Let's, you know. Transactions to, get the logs in a linear manner so they cannot have like a non-convex form of getting the locks that creates that problem with.
+
+00:30:01.000 --> 00:30:15.000
+The cycles so yeah, you can just get the logs. In a linear manner And once you started to shrink again, you need to linearly shrink.
+
+00:30:15.000 --> 00:30:27.000
+So you cannot go up and down. That creates that cycle problem. Okay. So this is.
+
+00:30:27.000 --> 00:30:42.000
+How the 2 phase locking help with serializability. Any questions here?
+
+00:30:42.000 --> 00:30:47.000
+Any questions?
+
+00:30:47.000 --> 00:30:54.000
+Cool. Let's move to the next question. So this question is about the compatibility of the logs.
+
+00:30:54.000 --> 00:31:09.000
+So maybe you can pick a screenshot of the compatibility. Table so let me also quickly explain what does this compatibility table means so let's assume that We have a resource.
+
+00:31:09.000 --> 00:31:21.000
+And 2 transactions are working on that resource. Okay. So the first transaction first arrives and puts a lot of any of these types on that resource.
+
+00:31:21.000 --> 00:31:30.000
+And then a new transaction is coming. And he's requesting for a luck of these types. To be put onto.
+
+00:31:30.000 --> 00:31:47.000
+These resource that already you know some other transactions has a lot of these types. This table is showing, for instance, if no luck is being held on that resource.
+
+00:31:47.000 --> 00:31:55.000
+And then your request for obtaining and ISIS luck on that resources is coming. Should be granted or should be delayed.
+
+00:31:55.000 --> 00:32:05.000
+Okay. So we see that when there is no like any request would be granted. Then there's an IS log and a request for an IS is coming.
+
+00:32:05.000 --> 00:32:15.000
+That's okay. Then we have IS under and I is locked on the resource, a request for an IX is coming, that's okay and so on and so forth.
+
+00:32:15.000 --> 00:32:23.000
+Okay? For instance, you can see that when we have exclusive lock, which is not compatible with any other log, So when you have that exclusive block on the resource.
+
+00:32:23.000 --> 00:32:33.000
+Any request for any other type of lock should be rejected or should be delayed. Okay, so maybe 3 to 4 s to take a picture of these.
+
+00:32:33.000 --> 00:32:40.000
+It's fine. 1, 2. 3, 4. Then that's jump into these questions.
+
+00:32:40.000 --> 00:32:44.000
+So this question.
+
+00:32:44.000 --> 00:32:51.000
+They have the following transactions are issued in the system. At the same time and we want to answer.
+
+00:32:51.000 --> 00:33:04.000
+You know the following scenarios so you're going to consider any possible concurrent running of these transactions.
+
+00:33:04.000 --> 00:33:13.000
+Okay, and we want to see for reach 2 we can run them in absolute. You know, and currency.
+
+00:33:13.000 --> 00:33:23.000
+Okay. So it depends on whether the you know if 2 transactions want to run in concurrency So they should not have any conflicting luck.
+
+00:33:23.000 --> 00:33:36.000
+Okay, so you may assume some order for the execution of. And then for instance, you can assume that T one is going first, then it will put a S lock on A.
+
+00:33:36.000 --> 00:33:41.000
+Then right after that, T 2 gates the floor. You know, because T one and T 2 is like pretty much going.
+
+00:33:41.000 --> 00:34:00.000
+At the exact same time. So again, when we are saying they are going concurrently, it doesn't mean that they running absolutely at the same time it's like you know one transaction can be, you know, and slides, you know, pointing slides.
+
+00:34:00.000 --> 00:34:07.000
+Point in time can be earlier than the others. Okay, for instance, T one can be.
+
+00:34:07.000 --> 00:34:13.000
+You know, slightly earlier than T 2, but you know, they are almost running concurrently.
+
+00:34:13.000 --> 00:34:20.000
+Okay. So it will put a slap on A, then T 2 comes. It wants to put a you lock on A.
+
+00:34:20.000 --> 00:34:31.000
+So are the 2 compatible if they are compatible. And you know the rest also goes with any other you know, sequence that you can imagine.
+
+00:34:31.000 --> 00:34:51.000
+So is there any conflict with, you know, too large in these 2 transactions or in these 2 transactions or you know in any of the pairs or even the 2 of the transactions if all of them are compatible that's okay so let's see which 2 or 3 of these transactions.
+
+00:34:51.000 --> 00:34:59.000
+And run in parallel. And what should be the sequence of execution? For them to run. Okay.
+
+00:34:59.000 --> 00:35:29.000
+So maybe. 45 min this this question. Or 3 to 4 min to stay on this question and then we'll get back here to CBS.
+
+00:43:46.000 --> 00:43:57.000
+Okay, so thank you everyone for your input, especially William. Before, like the launch input actually.
+
+00:43:57.000 --> 00:44:06.000
+So let's. Read what William is saying So you is compatible with S without delay.
+
+00:44:06.000 --> 00:44:12.000
+IX is compatible with S. Giving a delay. You know, it's very good.
+
+00:44:12.000 --> 00:44:24.000
+That we have someone like me show. Here because you know it actually shows the flow of thinking. Office student when you are dealing with a problem like this.
+
+00:44:24.000 --> 00:44:36.000
+Okay. And that's why I'm always encouraging everyone to please. Contribute because you know.
+
+00:44:36.000 --> 00:44:43.000
+You know, I can help you with up to the flow of your thinking. I can help you to think in the right way.
+
+00:44:43.000 --> 00:45:00.000
+And it's also okay. You know to have your own flow of thinking But once you get more experience with the problems and with the questions so, you can deal with them easily, right?
+
+00:45:00.000 --> 00:45:10.000
+So yeah, so here, William was thinking about Let's check. About the compatibility of the Logs first, which is okay.
+
+00:45:10.000 --> 00:45:21.000
+So. Then he says IX is not compatible with you causing a delay. Or there will be this one this one.
+
+00:45:21.000 --> 00:45:29.000
+With T one T 2 running without delay and T 3 being delayed. Okay. So.
+
+00:45:29.000 --> 00:45:38.000
+About this flow of thinking. So before we worry about the compatibility of the logs, we need to set the sequence of running.
+
+00:45:38.000 --> 00:45:46.000
+Okay, so how do you think the.
+
+00:45:46.000 --> 00:45:53.000
+How do you, you know, what is the sequence of running for your transactions? You need to first set that and then based on that.
+
+00:45:53.000 --> 00:46:00.000
+You can, check like what is the compatibility of the logs. Given that we have this order.
+
+00:46:00.000 --> 00:46:14.000
+Okay. Because the compatibility of the logs can be different if you change your Okay, because for instance, a is being put and a certain resource.
+
+00:46:14.000 --> 00:46:21.000
+The type of the lock is going to matter. On, what other locks can be obtained.
+
+00:46:21.000 --> 00:46:26.000
+Okay. And that's why that the order should go first and then the compatibility.
+
+00:46:26.000 --> 00:46:45.000
+Okay, cool. So I think William is mostly right. So the only thing that I have to say here is let's first think of the order and then they compatible with So let's start with.
+
+00:46:45.000 --> 00:46:52.000
+Setting an order. So we say, let's assume that. T one wants to go first.
+
+00:46:52.000 --> 00:47:02.000
+Okay, and then we'll have T 2. And then we will have T tree. Or you can assume.
+
+00:47:02.000 --> 00:47:14.000
+That T one is going first. Then we have T tree. And then we have T 2. Okay, so let's start with this one.
+
+00:47:14.000 --> 00:47:21.000
+So if T one goes first. It means firstly we are running this. So we are putting an S lock.
+
+00:47:21.000 --> 00:47:25.000
+On to the resource.
+
+00:47:25.000 --> 00:47:32.000
+Right. And then as the second operation, we are assuming that T 2 is going. So then we are.
+
+00:47:32.000 --> 00:47:39.000
+Going to put up U. On the same resource. So this is the point that you need to worry about.
+
+00:47:39.000 --> 00:47:46.000
+The compatibility of the box okay So this is the point that you need to go back. And shake.
+
+00:47:46.000 --> 00:47:55.000
+Okay, so here. We have a S lock on the resource. A request for you lock is coming and that's compatible.
+
+00:47:55.000 --> 00:48:01.000
+Okay, because for a U log, then you have an Okay, so if we go back here. And so good.
+
+00:48:01.000 --> 00:48:10.000
+So these 2 should be good up to this point. And then we assume that, okay, so.
+
+00:48:10.000 --> 00:48:34.000
+In the third operation. These. You know, cross section trees running wants to put an oyster like on the same on the same resource okay so now we need to go back and check the compatibility of with an IS like so we have S like I is coming. It's not compatible.
+
+00:48:34.000 --> 00:48:37.000
+Okay. So meaning that. T 3.
+
+00:48:37.000 --> 00:48:54.000
+In the first step. Doesn't comply or doesn't actually. Come along with T one and T 2 so it needs to be delayed okay Now we go back again here.
+
+00:48:54.000 --> 00:49:06.000
+So up to this point. So we say, okay, so as the force operation. This one is running, then as the FIFTs operation, this one is running.
+
+00:49:06.000 --> 00:49:16.000
+Then before I'm liking, we can say that, okay, so now. We are also running as a 6 operation we are also running the east.
+
+00:49:16.000 --> 00:49:22.000
+And we know that the value of a is equal to 3. So when the value of A is equal to 3.
+
+00:49:22.000 --> 00:49:32.000
+Yeah, when the value of A is equal to 3. Then, this condition is actually satisfied.
+
+00:49:32.000 --> 00:49:41.000
+So we are going to run. These code here so you can assume that as the 7 separation You're running this.
+
+00:49:41.000 --> 00:49:50.000
+Okay. You're running this. And then we need to go back again. So we are having an S lock.
+
+00:49:50.000 --> 00:50:01.000
+Onto the resource and a request from X log on the same resources coming so we need to go and check if that is compatible.
+
+00:50:01.000 --> 00:50:07.000
+So let's go and check.
+
+00:50:07.000 --> 00:50:12.000
+So we have this SLAC request for an X lock is coming and that's not compatible.
+
+00:50:12.000 --> 00:50:25.000
+Okay, so meaning that If. You know, the value of A is equal to 3, we are actually executing these part of the code because this condition is satisfied.
+
+00:50:25.000 --> 00:50:43.000
+The condition is okay. So we are going inside and then we are getting into trouble because we are going to get an X lock on the same resource that you already had a SLACK there and there will be a, the 2 are incompatible.
+
+00:50:43.000 --> 00:50:47.000
+Okay.
+
+00:50:47.000 --> 00:50:55.000
+So then, later down the road we see that T one and T 2 are also not compatible.
+
+00:50:55.000 --> 00:51:06.000
+And so if T one goes first. T one T 2 and T 3 none of them can run in parallel So the one should run.
+
+00:51:06.000 --> 00:51:16.000
+Like in separated manner and then the rest should be. Delayed. And the same will be there if you run T one.
+
+00:51:16.000 --> 00:51:25.000
+Then t 3 then t 2 so we see that again the s lock having an S like an ice light would be a problem.
+
+00:51:25.000 --> 00:51:32.000
+And also so we eventually will have the same problem with T 2. So even in this sequence, they will have this problem.
+
+00:51:32.000 --> 00:51:37.000
+Okay, so, even in this sequence, none can run. No 2 can run in parallel.
+
+00:51:37.000 --> 00:51:43.000
+Now we can assume that T 2 is going first.
+
+00:51:43.000 --> 00:51:52.000
+If you 2 goes first, it means so let me clear this. So now the new thing would be T 2 going first and then also teach free going first.
+
+00:51:52.000 --> 00:52:02.000
+If T 2 goes first, so we can have T one after that and then T 3 or we can have.
+
+00:52:02.000 --> 00:52:15.000
+T 3 and then T one. Okay, so let's check. T 2 going first, then we'll have you, Let's check the compatibility of the you like with any other logs.
+
+00:52:15.000 --> 00:52:27.000
+So if you have a you lock and any other luck is coming. That is not compatible which is very quickly is going to say that in the fair in the case that t 2 goes first.
+
+00:52:27.000 --> 00:52:39.000
+You are not going to have concurrency. And then we have T 3 going first. So and then, T, one going or T 2 going.
+
+00:52:39.000 --> 00:52:48.000
+So we are going to check again the compatibility of I like as the current with the compatibility of a U and S.
+
+00:52:48.000 --> 00:53:01.000
+Okay, so if we. Going to the previous. Slide so we have the Ice log. So with you coming is incompatible and with S coming is also incompatible.
+
+00:53:01.000 --> 00:53:09.000
+So meaning that. Then, Tchi also goes first. They are not going to have.
+
+00:53:09.000 --> 00:53:21.000
+Any sort of concurrency because they are having conflicts in the first in the very first. Okay, so we have some questions from the crowd.
+
+00:53:21.000 --> 00:53:28.000
+So, let me be saying, can we assume the order for ourselves? Yes. You can. This and are not compatible.
+
+00:53:28.000 --> 00:53:45.000
+So T one cannot go with T 2. Without delay. Yes, that's right. And Ibrahim is saying event value of A equal to 3 yes okay so now let's quickly go into the second scenario.
+
+00:53:45.000 --> 00:53:52.000
+Maybe one to 2 min. To check the second scenario. So in the second scenario, the value of A is equal to 2.
+
+00:53:52.000 --> 00:54:06.000
+Now we want to check each of the 2 transactions can run in parallel. So please have a book. One to 2 min.
+
+00:54:06.000 --> 00:54:13.000
+So, Lily is asking for these questions, do we need to go through all the orderings?
+
+00:54:13.000 --> 00:54:19.000
+So you know, as you saw. So we didn't actually go through all the orderings.
+
+00:54:19.000 --> 00:54:29.000
+So for instance, you can say if T 3 goes first, since that's a you like, If T 2 goes first since that's a you lock it's not compatible with any of the other 2.
+
+00:54:29.000 --> 00:54:39.000
+And you can say, the same with, T 3, if T 3 goes first, like that's not come that will be those.
+
+00:54:39.000 --> 00:54:54.000
+Okay, so William, you were not incorrect. You were actually correct. So I was suggesting that, the flow of thinking should be you first need to think of the order and then you need to think of the compatibility.
+
+00:54:54.000 --> 00:55:01.000
+Because thinking of compatibility before thinking of the order is not the right, I mean it's not.
+
+00:55:01.000 --> 00:55:07.000
+The flow of thinking that we should have. Okay, but eventually.
+
+00:55:07.000 --> 00:55:13.000
+Your answer that you got at the end was was right. Yes.
+
+00:55:13.000 --> 00:55:19.000
+Okay.
+
+00:55:19.000 --> 00:55:39.000
+Because it's strongly matters which one we assume first. And that's why we first need to Think of the ordering, then think of Does that make sense?
+
+00:55:39.000 --> 00:55:53.000
+Yep, any further questions?
+
+00:55:53.000 --> 00:55:56.000
+Those are compatible with suggest the order.
+
+00:55:56.000 --> 00:56:05.000
+The order actually suggests the compatibility because it's not always you know.
+
+00:56:05.000 --> 00:56:28.000
+By the regional, you know, relation. So you, you may have one. Rule one, not be compatible with Another log if the first log is in the current and the other one is the incoming status while if you swap the current and incoming the 2 can be incompatible okay
+
+00:56:28.000 --> 00:56:41.000
+So that's why you first need to think of the order. And then the because it's not always by Yeah, cool.
+
+00:56:41.000 --> 00:57:11.000
+Thank you. Once 2 min to think on this question 3 part 2. Please.
+
+00:58:13.000 --> 00:58:23.000
+Okay, thanks everyone for your input. So people I remember having me saying. When A is equal to 2 T one.
+
+00:58:23.000 --> 00:58:36.000
+As goes first and still compatible with t 2 but not compatible with t 3 okay means Shane is saying T one T 2 run concurrently.
+
+00:58:36.000 --> 00:58:46.000
+To delay as is compatible with you then, like I said, this become You then, you will deny all.
+
+00:58:46.000 --> 00:59:00.000
+Okay, so T one T 3 T 2 as we'll deny. The request of IS, but Later you can accept the request of you.
+
+00:59:00.000 --> 00:59:11.000
+Okay, so T one T 2 can run concurrent. Okay. In this scenario.
+
+00:59:11.000 --> 00:59:13.000
+So, so, so, so, so, so, so, but, TRY needs to wait.
+
+00:59:13.000 --> 00:59:22.000
+Okay. Mean Shane is saying and a is equal to 2 so statement is always false yes Okay, yeah, cool.
+
+00:59:22.000 --> 00:59:31.000
+So yeah, so the analysis that we that we did in the previous question should Oh here as well.
+
+00:59:31.000 --> 00:59:35.000
+So we only need to.
+
+00:59:35.000 --> 00:59:51.000
+You know check for the if class So the problem that we had in the previous part was that This if class was creating the problem because assuming that T one is going First and then we have T 2 N.
+
+00:59:51.000 --> 01:00:00.000
+Teach 3. Okay, so we know that, S, Lock and you lock are compatible given that this lot goes first.
+
+01:00:00.000 --> 01:00:21.000
+Then we have this problem with SNX. That was being created because of their executing the if a statement here so if you assume that the if a segment is not triggered because A is equal to 2 so that if a statement is not chicken we are not executing this.
+
+01:00:21.000 --> 01:00:24.000
+Then in that case, hmm.
+
+01:00:24.000 --> 01:00:39.000
+We will have T one. Which is you know we have these liking operation here and only disliking operation here so nothing happens here and the 2 are compatible and actually T one and T 2 can, run.
+
+01:00:39.000 --> 01:00:53.000
+In currency, but T 3 still is conflicting with both you and . That's why the TT cannot run, in currency. Okay.
+
+01:00:53.000 --> 01:00:59.000
+And if you swap to 2, That doesn't matter. So if you if you have See you one t 3.
+
+01:00:59.000 --> 01:01:11.000
+T 2, T 3 cannot run and then. T 2 in one and then 2 went Okay. And then we also know that if T 2 or TC goes first.
+
+01:01:11.000 --> 01:01:26.000
+Everything is, you know, Destroyed because yeah if T 2 or teaching goes first be cannot, you know, not any 2 can run in part because of the compatibility issues to be discussed.
+
+01:01:26.000 --> 01:01:34.000
+Any questions either?
+
+01:01:34.000 --> 01:01:41.000
+Cool. Let's now proceed to the next question.
+
+01:01:41.000 --> 01:01:46.000
+So thank you everyone for your inputs.
+
+01:01:46.000 --> 01:01:54.000
+So the next question is, about the grand rule locks. So here you are having to.
+
+01:01:54.000 --> 01:01:57.000
+Order.
+
+01:01:57.000 --> 01:02:13.000
+Assumed for the running. The first order is T 1 2 2 3 the other order is T 3 T 2 T one Okay, and we want to see whether they are, in which of like these scenarios.
+
+01:02:13.000 --> 01:02:23.000
+I mean in each of these scenarios, which 2 or 3 transactions can run in part. Okay, so we take a annual logs.
+
+01:02:23.000 --> 01:02:30.000
+So how do we, check the compatibility? Of 2 transactions. The I'm the grammar situation.
+
+01:02:30.000 --> 01:02:40.000
+So in general logs, we are actually having logs at different levels. For instance, we have database level, so transactions can put light there.
+
+01:02:40.000 --> 01:02:46.000
+Then we have the file level. And we have the key level, key value level, whatever.
+
+01:02:46.000 --> 01:02:58.000
+Okay, so 2 transactions are compatible. Eve, at the locks of the 2 are compatible at each level.
+
+01:02:58.000 --> 01:03:06.000
+That they are putting log together. Okay. For instance, you can see that T one and T 2 are putting lock at the database.
+
+01:03:06.000 --> 01:03:14.000
+So those 2 blocks should be compatible. Okay, and then they are also putting log at the file to level.
+
+01:03:14.000 --> 01:03:22.000
+So those 2 locks should But the log that we have here, for instance, The lock that T one has at the key level.
+
+01:03:22.000 --> 01:03:30.000
+Needs not to be compatible with luck here. Or with the like here. Okay, it only needs to be compatible with you like here.
+
+01:03:30.000 --> 01:03:39.000
+Okay, so it's like, separate compatibility problems. That we consider. You know.
+
+01:03:39.000 --> 01:03:47.000
+S. Okay. So there is, for instance, if you want to check the compatibility of If you want and t 2, you first need to check this one.
+
+01:03:47.000 --> 01:04:09.000
+Then this one and then this one and make sure that at each separate problem they are compatible. Okay.
+
+01:04:09.000 --> 01:04:20.000
+Okay, so with that in mind. Let's check the compatibility. Of like these transactions given this order of running.
+
+01:04:20.000 --> 01:04:28.000
+Okay. Maybe 2 to 3 min to stand this question. So this is just the same as the compatibility check.
+
+01:04:28.000 --> 01:04:36.000
+That we've done before. So this also gave you the order. So you also, you only need to.
+
+01:04:36.000 --> 01:04:47.000
+Think of. Yeah, the compatibility problems, separate compatibility problems and make sure that All of them are satisfied or not satisfied and based on that you can see which 2 can run.
+
+01:04:47.000 --> 01:05:17.000
+Okay, so 2 3 min to send this question and then. We'll get back here to see the answer.
+
+01:08:47.000 --> 01:08:53.000
+Okay, any ideas?
+
+01:08:53.000 --> 01:08:59.000
+What sort of ideas are coming? Thank you very much. So William as always.
+
+01:08:59.000 --> 01:09:04.000
+It was first and then mention.
+
+01:09:04.000 --> 01:09:16.000
+Okay, so William says. First or the only T one and T 3 can run. Because Ice lock.
+
+01:09:16.000 --> 01:09:23.000
+Prevents T 2 from accessing. 2.
+
+01:09:23.000 --> 01:09:34.000
+Okay. All the all translation is gonna run. As T 2 is able to share its IS with T one.
+
+01:09:34.000 --> 01:09:41.000
+T 2 is able to share it.
+
+01:09:41.000 --> 01:09:46.000
+Okay. Thank you.
+
+01:09:46.000 --> 01:09:54.000
+So mentioned is saying, yeah, fantastic job. William, thank you. I mean, just tell us about what you think.
+
+01:09:54.000 --> 01:10:01.000
+Don't worry about it. Like, there's no wrong go wrong yet. There's no right or wrong answers.
+
+01:10:01.000 --> 01:10:10.000
+So database T one T 2 can run T 3 delay. This is IX. I too.
+
+01:10:10.000 --> 01:10:15.000
+One and run.
+
+01:10:15.000 --> 01:10:27.000
+And then the key file See one, T 2 can run, Okay, yeah, thank you very much.
+
+01:10:27.000 --> 01:10:35.000
+So let's, yeah, as you know, so for each of these, sequences.
+
+01:10:35.000 --> 01:10:42.000
+You need to start from the beginning. So that's start with T one. So we assume that T one is going first.
+
+01:10:42.000 --> 01:10:49.000
+So we are putting, we are having an Oh, it's luck. Okay, the first case.
+
+01:10:49.000 --> 01:11:00.000
+And then we have IS coming. We also have we have S coming. Okay, so this is the first problem at the bottom is that we need to check.
+
+01:11:00.000 --> 01:11:16.000
+So with having IX, okay. Is IS compatible? And if it is compatible, then the next problem would be at actually with having IX and IS then would be S compatible.
+
+01:11:16.000 --> 01:11:24.000
+Okay. So this is the first part. With having IX. Is IS compatible?
+
+01:11:24.000 --> 01:11:31.000
+So it's like a quick check that we can do. So let's go back.
+
+01:11:31.000 --> 01:11:34.000
+So you're having
+
+01:11:34.000 --> 01:11:43.000
+Hi, and then IS coming. That's compatible. That's okay. And then with having IX is S compatible.
+
+01:11:43.000 --> 01:11:53.000
+No, it's not compatible. So meaning that In the first Chase. The first one in the first.
+
+01:11:53.000 --> 01:12:07.000
+Order. Even at the first level, which is the dollar risk level. Only t one and t 2 are okay and T 3 is not compatible with the rest.
+
+01:12:07.000 --> 01:12:13.000
+So probably T one and T 2 for now can run in parallel, but we also need to check the other place.
+
+01:12:13.000 --> 01:12:18.000
+So I the first level, C one and T 2 are okay to run in parallel. Each tree needs to be delayed.
+
+01:12:18.000 --> 01:12:24.000
+Now let's go to file 2. So in file 2 we have IX and IS, which is the same problem as before.
+
+01:12:24.000 --> 01:12:30.000
+So it should be okay. So this one should be okay as well. It's been was okay.
+
+01:12:30.000 --> 01:12:37.000
+And then we also need to check here. So we have SNS. Feature compatible. It's well compatible to share.
+
+01:12:37.000 --> 01:12:45.000
+So meaning that at all the different levels. One and T 2 were compatible. So T one, T 2
+
+01:12:45.000 --> 01:12:53.000
+. One Should be all good to. Run if T one goes first. Okay.
+
+01:12:53.000 --> 01:12:59.000
+Now, in the other order, So we have TT going first, then T 2 then T one.
+
+01:12:59.000 --> 01:13:07.000
+Right. So we T 3 going first. It's like we have an S lock in the current.
+
+01:13:07.000 --> 01:13:15.000
+And then an IS like is I mean, and then we have S slack and Ice log in the current.
+
+01:13:15.000 --> 01:13:25.000
+And then I like this current. Okay. So let's take first this one. Slight with eyes like should be okay.
+
+01:13:25.000 --> 01:13:32.000
+Now, S lock with I slack. And also I like and also IA lot with IK Slack.
+
+01:13:32.000 --> 01:13:39.000
+So we need to check that. So let's go back.
+
+01:13:39.000 --> 01:13:54.000
+So we have S lock. With IX Lock, that's not compatible. So we don't need to check IS like, Because although it's compatible, but S like is not compatible with So we can quickly say.
+
+01:13:54.000 --> 01:14:03.000
+In the first in the second scenario. So, T 3 and T 2 are okay. But T one needs to be delayed.
+
+01:14:03.000 --> 01:14:14.000
+Okay. And since T 3 is not putting any lock on any other resource. It means, anywhere else it's compatible with T 2.
+
+01:14:14.000 --> 01:14:23.000
+And then we can say that in the second. Chase. The second sequence. TT T 2 are okay to run in parallel.
+
+01:14:23.000 --> 01:14:27.000
+T one needs to do that.
+
+01:14:27.000 --> 01:14:35.000
+Okay, any questions?
+
+01:14:35.000 --> 01:14:46.000
+We are taking a 7 min break. Okay, so we are starting 4 45 with the second part of the tutorial.
+
+01:14:46.000 --> 01:14:57.000
+Yeah, and then.
+
+01:14:57.000 --> 01:15:04.000
+Yeah. So, for those of you who don't have a question, so you can go, go ahead for.
+
+01:15:04.000 --> 01:15:12.000
+So in minutes break. Otherwise, if you have person you can stay here. So for mentioned it's saying for T 3 T 2 1.
+
+01:15:12.000 --> 01:15:20.000
+Lower layers first consider t 2 then t one
+
+01:15:20.000 --> 01:15:27.000
+Yes, so we always consider. So the order. Is the order in, you know, all layers.
+
+01:15:27.000 --> 01:15:31.000
+You can assume that that's the order in all the years.
+
+01:15:31.000 --> 01:15:34.000
+So always T 2,
+
+01:15:34.000 --> 01:15:43.000
+Is it possible to go very primarily again during this break? I'm still confused. Yeah.
+
+01:15:43.000 --> 01:15:48.000
+So the granularity.
+
+01:15:48.000 --> 01:15:54.000
+Yes, all layers can be seen independently. Yes, they can be seen in
+
+01:15:54.000 --> 01:16:02.000
+But the order should be, you know, you can assume that the order is same, you know, the order is the same, but they are independent.
+
+01:16:02.000 --> 01:16:08.000
+Cool. So yeah, so the granularity. So it's like. You know it's similar to having some separate Competibility problems.
+
+01:16:08.000 --> 01:16:25.000
+Okay, so this is a separate compatibility problem. This is the best compatible problem. This is a first. Okay, so you when you want to check to, transactions against one of the Receive they are compatible.
+
+01:16:25.000 --> 01:16:30.000
+You need to make sure that they are compatible. In all of these sub problems that we have.
+
+01:16:30.000 --> 01:16:37.000
+Okay, and then all of these are problems we are going to assume an order for the execution. And then it would be just a checking of the compatibility.
+
+01:16:37.000 --> 01:16:49.000
+So for instance, if t one goes first, so you can assume that T one goes first. If you'll get the Iceland, then you will have pipes like as the current like and then the other log coming is IS.
+
+01:16:49.000 --> 01:16:55.000
+So then you need to go and check. Then you have IX, IS coming, whether it's granted or.
+
+01:16:55.000 --> 01:17:12.000
+Projected and then you have like 3 4 of these independent questions. That you need to. Address each of them or check each of them in independently and then 2 transactions are compatible in the grammar logs.
+
+01:17:12.000 --> 01:17:18.000
+If all of those subproblems are compatible.
+
+01:17:18.000 --> 01:17:26.000
+Hope that helps. So for T 3 T 2 T 1. One is delayed in the other race.
+
+01:17:26.000 --> 01:17:31.000
+Will this influence the lower layers?
+
+01:17:31.000 --> 01:17:38.000
+No, it's not as as I said, they are in independents. Okay.
+
+01:17:38.000 --> 01:17:45.000
+So, you know, if, you know, if 2 are going to run in parallel, they need to be they need to be compatible with each layer.
+
+01:17:45.000 --> 01:17:58.000
+So if they are not compatible at one layer it means they cannot join product okay so in the case that you're saying They are, like T one is delayed in the database.
+
+01:17:58.000 --> 01:18:08.000
+It means that T one cannot run in parallel with either and we don't even need to check. We don't even need to check the
+
+01:18:08.000 --> 01:18:23.000
+Yes, for each note just consider them independently. But yeah, if at any note One transaction is delayed, then that's a session count.
+
+01:18:23.000 --> 01:18:32.000
+So did I answer your questions or do you still have more questions? William and Minchin.
+
+01:18:32.000 --> 01:18:38.000
+He's in I is compatible with IX and vice versa?
+
+01:18:38.000 --> 01:18:48.000
+IS compatible with i so it depends on whether which one going first. So if I go first and IS is coming.
+
+01:18:48.000 --> 01:18:56.000
+It's not compatible. But if I think IS goes first. And, IS goes first and now it's coming.
+
+01:18:56.000 --> 01:19:04.000
+I think that's compatible. So that's why we need to change, take you on the first.
+
+01:19:04.000 --> 01:19:11.000
+Why does the ordering change be transaction passed? What do you mean?
+
+01:19:11.000 --> 01:19:20.000
+This is the ordering that we actually assumed the question told us about. So you transaction is delayed in parent node.
+
+01:19:20.000 --> 01:19:31.000
+This transaction in all charge notes will be delayed. So you can say that because we don't even need to check the child note because we know that the 2 are not compatible.
+
+01:19:31.000 --> 01:19:42.000
+If the 2 are compatible, they need to be comfortable at each layer. Independently. Okay.
+
+01:19:42.000 --> 01:19:48.000
+Any more questions?
+
+01:19:48.000 --> 01:19:49.000
+Okay, so, oh, so 4 2 3 2 2 T one just check that over it is fine.
+
+01:19:49.000 --> 01:19:58.000
+Yes, if it's fine, then go and check. So in the database check, which 2 or 3 are fine.
+
+01:19:58.000 --> 01:20:05.000
+If all of them are fine, then check other layers. If you found the first layer, there's only 2 of them are fine.
+
+01:20:05.000 --> 01:20:17.000
+The third, you don't need the third body that you don't need to check, So yes, I'm unsure why going, from back to front change the compatibility.
+
+01:20:17.000 --> 01:20:25.000
+Oh, what do you mean? Going from back to France.
+
+01:20:25.000 --> 01:20:31.000
+This is this is the rules. This is the rules of the compatibility. Okay. So if you want to discuss why.
+
+01:20:31.000 --> 01:20:38.000
+Like Ice going first. Yeah, I mean, these are the rules of the compatibility. Okay.
+
+01:20:38.000 --> 01:20:46.000
+These are the rules. And you don't need to worry about that. So you just need to take a look at the comfortable table and make sure that.
+
+01:20:46.000 --> 01:21:04.000
+You are just, complying with that.
+
+01:21:04.000 --> 01:21:34.000
+Oh good. No more questions.
+
+01:23:31.000 --> 01:23:43.000
+Okay, so on the table, ISIS. And ISIS. Okay, so let's take that.
+
+01:23:43.000 --> 01:23:47.000
+Oh, I.
+
+01:23:47.000 --> 01:23:51.000
+And ISIS.
+
+01:23:51.000 --> 01:24:01.000
+Oh, so having a Okay. So that's fine. That's why. I mean, we don't have any problem with that.
+
+01:24:01.000 --> 01:24:06.000
+Because that's why TM T one and T 2 can run in power, right?
+
+01:24:06.000 --> 01:24:13.000
+Let me say that they are running in parallel.
+
+01:24:13.000 --> 01:24:20.000
+But it's not always the case, but yeah, in this scenario in this case, IS and Ice, it doesn't matter which one goes first.
+
+01:24:20.000 --> 01:24:29.000
+It's not always the case.
+
+01:24:29.000 --> 01:24:36.000
+Okay. So now.
+
+01:24:36.000 --> 01:24:41.000
+Yeah. Yeah. Cool.
+
+01:24:41.000 --> 01:24:46.000
+Let's just.
+
+01:24:46.000 --> 01:24:57.000
+Go with the question 5. That's the first part. So question 5 is saying we 2 face locking we have already seen a successful strategy.
+
+01:24:57.000 --> 01:25:09.000
+It was, solving the concurrency. So now we want to discuss why someone may need. To invent something that optimistic and currency control.
+
+01:25:09.000 --> 01:25:22.000
+Okay, so the question is if the 2 face locking is actually dressing and it's, you know, addressing the concurrency control, why we need other.
+
+01:25:22.000 --> 01:25:30.000
+Mechanisms like optimistic and currency control or any other mechanisms. Thanks to my question. Okay, so maybe 2 to 3 min on this.
+
+01:25:30.000 --> 01:25:40.000
+Please go and check. Anything related to optimistic concurrency control. So we know what 2 phase locking is.
+
+01:25:40.000 --> 01:25:46.000
+But yeah, but let's go and check what he's, the optimistic concurrent control.
+
+01:25:46.000 --> 01:25:54.000
+And. Why? Yeah, while you may need that.
+
+01:25:54.000 --> 01:26:00.000
+So whether the. Differences between the 2.
+
+01:26:00.000 --> 01:26:30.000
+Maybe 2 to 3 min to send this question. And then we will get back here to see your inputs and also the answer.
+
+01:27:57.000 --> 01:28:09.000
+Okay. Minchin is saying want higher efficiency, And William is giving a thumbs up to that.
+
+01:28:09.000 --> 01:28:14.000
+And then you think it's saying reduced waiting time.
+
+01:28:14.000 --> 01:28:24.000
+And I'm giving a clap to Beth. So thank you both for. Your inputs.
+
+01:28:24.000 --> 01:28:38.000
+Yeah, so 2 phase locking, you know, basically, all the time when it comes to you know, dealing with the issues that may rise.
+
+01:28:38.000 --> 01:28:47.000
+Okay. Whether it's like, the transparency issues. Where there's like the recovery issues.
+
+01:28:47.000 --> 01:28:52.000
+We can have 2 approaches. One is pessimistic. The other one is optimistic.
+
+01:28:52.000 --> 01:28:59.000
+Okay, and it's not like That's one of these approaches always better than the other.
+
+01:28:59.000 --> 01:29:06.000
+But it's like, oh, each of these approaches is like fit to certain scenarios.
+
+01:29:06.000 --> 01:29:16.000
+Okay. So here we are having the 2 phase locking. Okay.
+
+01:29:16.000 --> 01:29:27.000
+Which is adding some overhead. To the transaction. But it ensures that the concurrence, right, the concurrent running of the transactions.
+
+01:29:27.000 --> 01:29:34.000
+Wouldn't end up in any sort of Any sort of, isolation related problems. Okay.
+
+01:29:34.000 --> 01:29:49.000
+But The thing is But not always we need this sort of overhead. And the do not need to always be pessimistic about the lucky thing.
+
+01:29:49.000 --> 01:29:54.000
+Because sometimes.
+
+01:29:54.000 --> 01:30:05.000
+You know, you may have transactions that are actually dealing with different resources. And if the transactions are daily with different resources, there is no chance of having you know.
+
+01:30:05.000 --> 01:30:11.000
+No chance of having this.
+
+01:30:11.000 --> 01:30:18.000
+Isolation related problems. Okay. So then in that case, You can be optimistic. You can say, okay, so if.
+
+01:30:18.000 --> 01:30:34.000
+But my transactions are looking with different resources why I need to put any mechanism with it let's be optimistic let's assume that not is going to happen and and then That reduced overhead and at the end it doesn't violate isolation.
+
+01:30:34.000 --> 01:30:40.000
+Okay, but it's like It's a fact that is related to the nature. That's the problem.
+
+01:30:40.000 --> 01:30:47.000
+Okay. So the nature of the problem is something that you need to consider.
+
+01:30:47.000 --> 01:30:58.000
+So if there's another always wrong or always right answer. Yeah, so let's just quickly jump into the question, sorry, into the solution.
+
+01:30:58.000 --> 01:31:06.000
+Tribute together. So yeah, so 2 face liking always consider divorce is a pessimistic approach.
+
+01:31:06.000 --> 01:31:11.000
+Okay.
+
+01:31:11.000 --> 01:31:18.000
+Okay, so he's always considering but that's not always new. So sometimes we can be more optimistic.
+
+01:31:18.000 --> 01:31:26.000
+So if you optimistic. Yeah, you're just You know, getting rid of some of the overhead, getting more flexibility.
+
+01:31:26.000 --> 01:31:34.000
+But you are also at risk. So if your assumption of not having any 2 transactions that work on the same resource.
+
+01:31:34.000 --> 01:31:45.000
+Is violated, then you are at the risk of violating my solution to it. Okay, so it's like each of these Approaches feed to certain scenarios.
+
+01:31:45.000 --> 01:31:52.000
+You need to be aware of the nature of the problem. And based in that, you can choose any of these.
+
+01:31:52.000 --> 01:32:00.000
+Hey, so always. With being pessimistic, you're taking some precautions.
+
+01:32:00.000 --> 01:32:11.000
+And those precautions. It'll help you later down the road when you face certain problems. And with being optimistic, you're not taking any measures.
+
+01:32:11.000 --> 01:32:22.000
+With the hope that everything should be good. But if something that happens, then your you know. Yeah.
+
+01:32:22.000 --> 01:32:30.000
+You need to, I mean. You need to pay a very high price if something Grant habits. Okay.
+
+01:32:30.000 --> 01:32:34.000
+Cool. Any questions here?
+
+01:32:34.000 --> 01:32:40.000
+So that, why we need a different approach because of the nature of the because of different nature of the problems.
+
+01:32:40.000 --> 01:32:52.000
+Yeah, we need different approaches. Who. Now let's move into the next. Parts the first question of next part is the recovery management.
+
+01:32:52.000 --> 01:33:06.000
+So. Just along those lines they were talking about dismissing and and optimistic and concurrent. This is now another example of one pessimistic.
+
+01:33:06.000 --> 01:33:15.000
+As opposed to one optimistic approach. 4 inquiry management. Okay. So here we're assuming that in one approach.
+
+01:33:15.000 --> 01:33:25.000
+Which is approach one We are having a single. Checkpoints. And then we have these point of failure.
+
+01:33:25.000 --> 01:33:30.000
+And then you're having a another.
+
+01:33:30.000 --> 01:33:39.000
+Approach in which we are taking a checkpoint at the beginning of each of the transactions. Okay. Checkpoint at the beginning.
+
+01:33:39.000 --> 01:33:46.000
+And we want to see in the case of failure. What is the impact of each of these? Approaches.
+
+01:33:46.000 --> 01:33:57.000
+Okay. How much redo or undo you need to make. And Yeah. What is the overhead?
+
+01:33:57.000 --> 01:33:59.000
+So yeah, totally compare. Like the 2 scenarios. Which one is pessimistic? Which one is optimistic?
+
+01:33:59.000 --> 01:34:29.000
+What are the pros and cons of each of them? Maybe 2, 10 min. Oh, 3 to 4 min to send this question, then we'll get back here to.
+
+01:38:25.000 --> 01:38:34.000
+Okay, so thank you. A Bryan, so we have an on the one from Bryan.
+
+01:38:34.000 --> 01:38:44.000
+Cool. So, is saying need to only recover one transaction? 10 T 4.
+
+01:38:44.000 --> 01:38:48.000
+In what scenario you're talking about?
+
+01:38:48.000 --> 01:38:55.000
+Agree and then the creation of
+
+01:38:55.000 --> 01:39:02.000
+Yeah, okay. So what would change if the checkpointing you goes on. Okay, so you're saying we only need to recover one transaction.
+
+01:39:02.000 --> 01:39:09.000
+The T 4. Okay, yeah. It comes up, I also give it times up to them, degree in the creation and deletion of checkpoint.
+
+01:39:09.000 --> 01:39:20.000
+They'll lead to more cost. Yes, I also give it up to that. At mentioned. Another.
+
+01:39:20.000 --> 01:39:28.000
+Yeah, I give it left this one as well.
+
+01:39:28.000 --> 01:39:37.000
+So Mission is saying or the case in If crashy cares, the system recover to the beginning of T 2.
+
+01:39:37.000 --> 01:39:45.000
+Recover at the beginning of T 2.
+
+01:39:45.000 --> 01:39:49.000
+Okay, beginning recovers.
+
+01:39:49.000 --> 01:39:55.000
+That's fine. You don't need to worry about the spilling that much. Okay. Cool.
+
+01:39:55.000 --> 01:40:05.000
+So yeah, so in the case that you only have a single point of checkpoint. Point of check was a good one.
+
+01:40:05.000 --> 01:40:13.000
+So checkpoint, see your checkpoint. So yeah, so in the case of failure happens.
+
+01:40:13.000 --> 01:40:18.000
+You need to under this. You need to redo this. You probably need to redo this as well.
+
+01:40:18.000 --> 01:40:30.000
+So read to this. This needs to be on down probably. Because it has not been committed. But you need to redo this and this.
+
+01:40:30.000 --> 01:40:42.000
+Okay. In the case that you are having checkpoints at the start of Jesus stuff. At the start of his turn.
+
+01:40:42.000 --> 01:40:51.000
+In this transaction you were having a checkpoint. Then you are having a failure at this start of T 4.
+
+01:40:51.000 --> 01:41:05.000
+In that case, you can basically assume. That. So yeah, you are having a checkpoint here at the start of T 4 as well, right?
+
+01:41:05.000 --> 01:41:21.000
+So you don't need to redo T 2 or T 3. Unlike the other case and you only need to undo For instance, T 4 and that's it because D 4 is not committed right So it's like redoing of 2 transactions.
+
+01:41:21.000 --> 01:41:30.000
+You know, cut off in the second scenario. But You know, you're adding more. Checkpoints which is adding more overhead Okay.
+
+01:41:30.000 --> 01:41:38.000
+So just adding some smiles to the checkpoints. So these checkpoints that you're adding.
+
+01:41:38.000 --> 01:41:44.000
+Yeah, it's the overhead. So you need to see how often is possible. For you to crash.
+
+01:41:44.000 --> 01:41:54.000
+Okay. So how often the machine that you're working or If you're having the meantime failure for the transactions.
+
+01:41:54.000 --> 01:42:06.000
+And also another point that you need to consider. Then setting up the checkpoints. If you have a machine that really Fales, then you don't.
+
+01:42:06.000 --> 01:42:15.000
+Don't need to regularly. You know, make a checkpoint. Okay. You can only.
+
+01:42:15.000 --> 01:42:25.000
+Yeah, make it checkpoint once in a while. And then that should be enough. Okay, based on the How long is the meantime to failure?
+
+01:42:25.000 --> 01:42:40.000
+Maybe you can. Make it checkpoint right before the meantime failure, something like that. So you make sure that everything is cover up to that point before the potential failure.
+
+01:42:40.000 --> 01:42:46.000
+At least sort it out. Cool. Any questions here?
+
+01:42:46.000 --> 01:42:57.000
+Now let's move it to the next question. So next question is about 2 faces commit. So we know that 2 face coming is a
+
+01:42:57.000 --> 01:43:19.000
+You know, distribute the algorithm. That uses a voice from all the participants to decide whether to commit or not so the 2 first come in as the name suggests as 2 phase, the commit request phase in which a participants would vote.
+
+01:43:19.000 --> 01:43:37.000
+And then the commit phase which based on the vote of the you know the participants be decide to commit or not commit to a board Okay, so we will commit only if All of the transactions willed, yes.
+
+01:43:37.000 --> 01:43:45.000
+And we'll ab on the other case. Okay. Cool.
+
+01:43:45.000 --> 01:44:00.000
+So now we that in mind. So we are having this. 2 face commits Question? So we are having a coordinator, 3 participants.
+
+01:44:00.000 --> 01:44:10.000
+And 2 scenarios. The first scenario She of the 2 of the Participants are saying yes, one is saying no.
+
+01:44:10.000 --> 01:44:19.000
+We want to see if you're committing or not. This again, One of the. That's P 2 is crashing.
+
+01:44:19.000 --> 01:44:26.000
+But it was about to send. A vote message. So before sending your votes message. One of the.
+
+01:44:26.000 --> 01:44:34.000
+But it's actually crashed. So in each of the scenarios would be a commit or would be in a board.
+
+01:44:34.000 --> 01:45:04.000
+Briefly explain maybe again 2 to 3 min understand this question this should be a quick one And then we'll go through the Next question.
+
+01:50:32.000 --> 01:50:40.000
+Okay, slow again. Like most of the time, the first thing for this coming from William, thank you very much.
+
+01:50:40.000 --> 01:50:48.000
+As not as all committed. I give it thumbs up for the first one. Sorry, 2.
+
+01:50:48.000 --> 01:50:59.000
+Also, boards as coordinated as you receive a commit message from.
+
+01:50:59.000 --> 01:51:05.000
+Yes, message. Okay. I cannot give a thumbs up to this because it's only one reaction.
+
+01:51:05.000 --> 01:51:09.000
+Instead of giving a go to that.
+
+01:51:09.000 --> 01:51:23.000
+Okay, no, not the middle. I changed my mind. I give it clap. So, Lily, Very concise.
+
+01:51:23.000 --> 01:51:32.000
+So you have 2 P 2 timeouts in the boards. Yep. I like it. And then meeting me again.
+
+01:51:32.000 --> 01:51:42.000
+And then all participants would draw back and aboard logs. We'd be forced. To disk for coordinator and all buttons.
+
+01:51:42.000 --> 01:51:53.000
+Okay. Oh good, yeah, great. Thank you guys. So yeah, so in the first scenario, you know, the rules was very simple.
+
+01:51:53.000 --> 01:52:02.000
+So the first rule says you know We are committing if everyone says yes and clearly in the first case.
+
+01:52:02.000 --> 01:52:08.000
+One of them is saying no. So that's a Clear report. In the second scenario, P 2 crashed.
+
+01:52:08.000 --> 01:52:20.000
+Which means the coordinator didn't receive the yes message. So do wait for some time. If it doesn't receive the US message from P 2, which will not receive because Peter has already crashed.
+
+01:52:20.000 --> 01:52:28.000
+We'll send the board message to everyone. And then everyone will about the thing. Okay, thank you very much.
+
+01:52:28.000 --> 01:52:42.000
+Now let's Getting to this problem. Which is around Replicator Manages. So given the 2 following transaction TNU as you can see.
+
+01:52:42.000 --> 01:52:51.000
+The following 2 transactions. So.
+
+01:52:51.000 --> 01:52:59.000
+Yeah. Just a minute.
+
+01:52:59.000 --> 01:53:18.000
+Yeah, so given the following 2 transactions that we have TNU. So as you can see. T is doing these 2 operations one get balance and one deposit and you is also doing the So they are working with these replica managers, XY, MP and.
+
+01:53:18.000 --> 01:53:30.000
+Okay. So if you have seen a simple version of available copies. It's strategy that would not work. First, view the problem.
+
+01:53:30.000 --> 01:53:38.000
+It would I care if X and N. Where to crash during the execution this then state the solution that we have discussed in the class.
+
+01:53:38.000 --> 01:53:53.000
+Okay. So, but. Last but not least This is. What would happen under the final solution if rather than X and N becoming unavailable.
+
+01:53:53.000 --> 01:54:02.000
+Y becomes unavailable. Do the execution right after you has accessed AET. Okay, so first one to review.
+
+01:54:02.000 --> 01:54:12.000
+The scenario that you've seen in the class and then we want to assume that. Instead of having xen and failing so we are in the scenario that we are going to discuss as well.
+
+01:54:12.000 --> 01:54:20.000
+So you're assuming that N and X, they are okay. And then you're assuming that why is failing.
+
+01:54:20.000 --> 01:54:32.000
+Okay, right after you is existed and probably written into it okay they wanted to see Be the new final solution that we will discuss shortly.
+
+01:54:32.000 --> 01:54:40.000
+Well, what would happen to XY, to Y and the rest of the transactions to I mean to TNU what will happen.
+
+01:54:40.000 --> 01:54:47.000
+Each of them will commit, each of them will roll back and so on. Okay, so in order to do that, let's quickly.
+
+01:54:47.000 --> 01:54:56.000
+Review the slides so When we have replicas, so what's the idea of replicant managers?
+
+01:54:56.000 --> 01:55:07.000
+So in replicate managers, we're actually keeping copies of the same resource on different managers. And the name is suggesting, DREPLYY, So the way that we are dealing with replicate managers.
+
+01:55:07.000 --> 01:55:14.000
+So if a transaction wants to read a value. It's okay if, that transaction only reads from a single.
+
+01:55:14.000 --> 01:55:25.000
+But if a transaction wants to, write a value, it needs to update that value. Into, all of the replica managers that are holding that resource.
+
+01:55:25.000 --> 01:55:31.000
+For instance, here, T one. T wants to get balance of A, which is a reading of resource A.
+
+01:55:31.000 --> 01:55:38.000
+So we have 3 replicable managers that are storing gay. So it's okay for T to only read from one of them.
+
+01:55:38.000 --> 01:55:45.000
+Okay, and the other scenario we have you. It wants to deposit B, which means writing B.
+
+01:55:45.000 --> 01:55:58.000
+Writing something into B And then based on read one right or replication, it needs to write. Or update the value of p in all the replicas that it has.
+
+01:55:58.000 --> 01:56:05.000
+Okay.
+
+01:56:05.000 --> 01:56:10.000
+Cool. Now. What would be the problem? What would be the problem?
+
+01:56:10.000 --> 01:56:27.000
+If. You know, you cannot carry out with this, read one right or. Because of some failure in some of the So let's assume that in this case this one.
+
+01:56:27.000 --> 01:56:40.000
+Fales. Okay. So what would happen if a failure happens? So if a failure happens you know, you may have a deadlock.
+
+01:56:40.000 --> 01:56:53.000
+Because that for instance here. Let's assume that you goes first. Put a lock on and C goes first, put the lock on X, it reads the X, or it reads the A from X.
+
+01:56:53.000 --> 01:57:00.000
+But right after then t rates like. The value from X, the the same time.
+
+01:57:00.000 --> 01:57:10.000
+Be done the reading. Sorry, you done the reading of B and wants to write. And hey, so it's right and why.
+
+01:57:10.000 --> 01:57:19.000
+Wants to also write an X. But since Texas you know first of all x has T putting your luck on it?
+
+01:57:19.000 --> 01:57:38.000
+And second of all, it has failed. So you need to wait for. T and T is also waiting for you because if he wants to do this deposit it needs to put on lock on hand That seems you has not finished.
+
+01:57:38.000 --> 01:57:47.000
+So probably it already had the A log on B and they are in a deadlock. Okay. So how can we, resolve this issue?
+
+01:57:47.000 --> 01:57:57.000
+So one. Simple solution would be when ERPY manager is not available. Only updated the picker images that are available.
+
+01:57:57.000 --> 01:58:01.000
+So in this case, so we have T.
+
+01:58:01.000 --> 01:58:22.000
+So, and we have you. So X and N are becoming unavailable. So when you wants to write the value of a somewhere so it only writes it to the replic managers that are available and keeping a and then Tee wants to writes the new value of B.
+
+01:58:22.000 --> 01:58:35.000
+It only writes it to M and P. Because N is no longer available. Okay, but the point is that if you do so you will have in consistency between the values.
+
+01:58:35.000 --> 01:58:45.000
+That the different RPC managers are saving. For instance, if X becomes available, Why now has a different value of A than X.
+
+01:58:45.000 --> 01:58:56.000
+Because X was not updated. It was failed. Then. You was updating the value of a in the reputation and this is you know in consistency issue.
+
+01:58:56.000 --> 01:59:09.000
+Okay. So how can we solve this? So to solve this, we have this final solution. So the final solution says Before the transaction commits, It checks for the failures.
+
+01:59:09.000 --> 01:59:17.000
+And recoveries of all the Deborah managers it has contacted before. So the set should not change during the execution.
+
+01:59:17.000 --> 01:59:29.000
+Okay, which means. If transaction T. Has already a contacted x And then he's going to finish before committing.
+
+01:59:29.000 --> 01:59:36.000
+It will check X again. If X has failed at any point in time.
+
+01:59:36.000 --> 01:59:48.000
+TV. Commit and leave the board. It will self-. Okay, because the status of X should remain the same during the execution of this transaction.
+
+01:59:48.000 --> 01:59:59.000
+And that should be the same with you. So you will also check and before. Let me see. And since the the sense of and has changed, it will not commit.
+
+01:59:59.000 --> 02:00:10.000
+Okay, so yeah, so Basically the solution is the transaction needs to check the sense of the replicas that they have contacted, through the life cycle.
+
+02:00:10.000 --> 02:00:20.000
+And if the status of that translation has changed. You're not allowed to commit. Okay so that is what we discuss what was discussed in the lectures.
+
+02:00:20.000 --> 02:00:34.000
+Now let's go back to the news a problem that we are going to. Like address and we're going to solve here saying the new problem we're going to consider So X and and are okay.
+
+02:00:34.000 --> 02:00:43.000
+And you're having a failure. At Y right after. When you access A at one. Okay.
+
+02:00:43.000 --> 02:00:52.000
+We want to see if we go with the final solution. What would happen? Okay. Will you commit or?
+
+02:00:52.000 --> 02:00:59.000
+Because you need to. Okay.
+
+02:00:59.000 --> 02:01:04.000
+So maybe 3 to 4 min.
+
+02:01:04.000 --> 02:01:30.000
+Just understand this question. And then we get back here to CBS.
+
+02:01:30.000 --> 02:02:00.000
+So just remember that takes and are available.
+
+02:05:57.000 --> 02:06:11.000
+Okay, so we have 2 big inputs from William again. Thank you very much, William. He will be fine to proceed as it only needs to read wonderful manager.
+
+02:06:11.000 --> 02:06:22.000
+Which could be X and no issue in depositing to be. Depositing B tweaks.
+
+02:06:22.000 --> 02:06:29.000
+Become uncommitted as it checks for the failure before permitting, she would see that I failed. Yeah.
+
+02:06:29.000 --> 02:06:51.000
+So I would agree with those of that. Right, any other ideas with more specificity?
+
+02:06:51.000 --> 02:06:56.000
+Okay, so you know
+
+02:06:56.000 --> 02:07:01.000
+You're saying that, so let's assume that US starts. Okay, so you will put a lock on B.
+
+02:07:01.000 --> 02:07:18.000
+Then. Yeah, you will read the B. It will access A and V, probably update the value of Hey, bye and then we'll wait for X to be released by T.
+
+02:07:18.000 --> 02:07:27.000
+And T is like reading the value of A from X. Going to.
+
+02:07:27.000 --> 02:07:35.000
+Right on B, but, you know, at the same time since Yeah. Actually after that.
+
+02:07:35.000 --> 02:07:45.000
+You also wait for t 2 release XT is also waiting for you to release p but that's not the problem.
+
+02:07:45.000 --> 02:07:54.000
+We can solve it to the timer. So it should be all good. So, you will be also able to, get X.
+
+02:07:54.000 --> 02:08:00.000
+Yeah, then we set the time out. If a deadlock happens, you can deal with, you can handle it with timer.
+
+02:08:00.000 --> 02:08:08.000
+So you should be able to. get access to A and X and update the value of A on X.
+
+02:08:08.000 --> 02:08:16.000
+And then, T will also, you'll be able to update the value of B on N and all should be fine.
+
+02:08:16.000 --> 02:08:26.000
+Okay, but at the end you will check The status of why and since it has failed so you can see that You will self terminate itself.
+
+02:08:26.000 --> 02:08:44.000
+But you can see that, it was actually not necessary for you to terminate because because you know everything was fine you was already updating the value of y before failing and was also abating the value of X and T was also doing all good and everything was fine.
+
+02:08:44.000 --> 02:08:54.000
+Even if tea goes first, everything is fine again. So there should be no problem in, no.
+
+02:08:54.000 --> 02:09:06.000
+Consistency related problem once we've finished no matter what order of execution you assume for t and you But at the end, you still is self-terminating.
+
+02:09:06.000 --> 02:09:13.000
+So this shows that the final solution is another example of a pessimistic approach. That is self-, I think.
+
+02:09:13.000 --> 02:09:19.000
+Then even sometimes it's not required to self turn it. So okay, so it's not like.
+
+02:09:19.000 --> 02:09:28.000
+It cannot distinguish like this, policy. A final solution it's not sensitive to cases there.
+
+02:09:28.000 --> 02:09:34.000
+You know, the self-determination is not actually required. So it's like self-.
+
+02:09:34.000 --> 02:09:38.000
+All the same.
+
+02:09:38.000 --> 02:09:42.000
+Okay, so again, another example for
+
+02:09:42.000 --> 02:09:51.000
+Pessimistic approach Cool. Any questions here?
+
+02:09:51.000 --> 02:09:55.000
+Any questions?
+
+02:09:55.000 --> 02:10:01.000
+So let me get rid of this one.
+
+02:10:01.000 --> 02:10:10.000
+Oh, this marks the end of the Part of the material maybe have a. 5, 7 min break.
+
+02:10:10.000 --> 02:10:25.000
+We will get back here. 5. 40 to continue with the third part of Syria. Okay.
+
+02:10:25.000 --> 02:10:55.000
+5 40 to continue with it. Other parts.
+
+02:19:40.000 --> 02:19:44.000
+Okay, we'll come back. Everyone. So let's continue with the third part of the serial.
+
+02:19:44.000 --> 02:19:57.000
+So in this part, we are going to. Review a risk algorithm for recovery management So it has 2 phases in phase one we have the analysis.
+
+02:19:57.000 --> 02:20:06.000
+Which we figure out which of the tables exact. Or the DPT. Should be updated and how.
+
+02:20:06.000 --> 02:20:11.000
+And then we have the face 2 which is redo which we. Check if the condition is some condition is satisfied.
+
+02:20:11.000 --> 02:20:22.000
+We do some redo operations and then we have phase 3 which is undo. In which we you know undo.
+
+02:20:22.000 --> 02:20:32.000
+And update the exact NDP table based on that. When it's needed. Okay, so but what are the exact and DPT tables?
+
+02:20:32.000 --> 02:20:44.000
+So we have the exact table. Which is, you know, keeping the Ellison of the last edit.
+
+02:20:44.000 --> 02:20:56.000
+For each transaction so the exact table is for the transactions and the And then the DPT table is the dirty page table, which is for, the pages.
+
+02:20:56.000 --> 02:21:05.000
+Okay. So in the DPT on like LSN, we keep the oldest Ellison. Then the page was updated.
+
+02:21:05.000 --> 02:21:13.000
+Okay. So it's better understood through an example. So let's see. So let's assume that we have this.
+
+02:21:13.000 --> 02:21:25.000
+You know these following sequence of operations. So we have Check, begin checkpoint and checkpoint.
+
+02:21:25.000 --> 02:21:41.000
+Then we have. Doing some updating on t one,ating some value of a page p one Then we are also doing some, updating on T two,ating another.
+
+02:21:41.000 --> 02:21:54.000
+Oh, sorry. On the same transaction T one, we're updating another page. You're changing the value from, for instance, The first case from YY to ZZ and the second case from top to top to.
+
+02:21:54.000 --> 02:22:01.000
+XXX and finally we commit. Okay, so now let's check. How would the each of the.
+
+02:22:01.000 --> 02:22:08.000
+You know. The analysis redo and commit we look like.
+
+02:22:08.000 --> 02:22:14.000
+Okay. So we start with the analysis. So then we.
+
+02:22:14.000 --> 02:22:20.000
+Create the checkpoints. You actually initialize the exact table and also the DPT table.
+
+02:22:20.000 --> 02:22:39.000
+Okay, and then in Ellison's 10 We actually add these T one and Ls and 10 so we updates the status of t one in the exact table so we add the t one Ls and 10 to the exact table and we also add key one Ellis and 10 to DP table because this is the oldest place that
+
+02:22:39.000 --> 02:22:49.000
+people is being updated. And then in, Ellison, 15, we update the last Ellison of T one to 15 in the exact table.
+
+02:22:49.000 --> 02:23:00.000
+And we also add P 2 because. You're dealing with a new page P 2. In Lison 15 so we add p 2 illison 15 to dp as well.
+
+02:23:00.000 --> 02:23:15.000
+And then finally in Ellison 20 we changed the status of T one to commit in the exact table, which means that yeah, so, we are, you know, just updating the status of T one in perspective.
+
+02:23:15.000 --> 02:23:22.000
+So then we have the redo table, the redo up, you know, phase in the redo phase.
+
+02:23:22.000 --> 02:23:34.000
+We skip like. They're us in, 0 and 5 because those were all creating the exact NDP table so we start with Ls and 10.
+
+02:23:34.000 --> 02:23:49.000
+So in Lison 10. You read page one. We check the page, stored in the page so if the page of listen is less than 10 because this is the Ellison where the page has changed.
+
+02:23:49.000 --> 02:24:01.000
+Save the page. The page has not been updated so in that case We need to redo the Ls and 10 which means we need to set the value of P one to ZZZ.
+
+02:24:01.000 --> 02:24:10.000
+And then set the page. Page, Page will listen to tennis. And then in, Lison, 15, we do the same thing.
+
+02:24:10.000 --> 02:24:19.000
+So we basically. Read page 2. We check page Allison is stored in the Page.
+
+02:24:19.000 --> 02:24:34.000
+Okay. So if the page of listening again is less than 15, we redo the LSN 15, you set the value of XXX to P 2 and then we set the page L and also to 50.
+
+02:24:34.000 --> 02:24:41.000
+Okay, since we didn't have any uncommitted transaction we don't have an undo phase.
+
+02:24:41.000 --> 02:24:50.000
+And that's it. So we have analysis. In which we had I created the, exact table, the DP table and also updated each of them.
+
+02:24:50.000 --> 02:24:55.000
+And then we have the redo phase in which we.
+
+02:24:55.000 --> 02:25:03.000
+You know, done the some redo based on the page and then we have no undue.
+
+02:25:03.000 --> 02:25:17.000
+Okay, because we didn't have any uncommitted transaction. Now, let's just do the same thing for the following question in which we will also have some other Okay, so let's take what happens.
+
+02:25:17.000 --> 02:25:27.000
+Hey, each of the phases. Do we need to have a on do phase as well how would you do the under phase and then we'll get back here to see the answer.
+
+02:25:27.000 --> 02:25:57.000
+Maybe 3 to 4 min, this question.
+
+02:30:15.000 --> 02:30:21.000
+Okay, any ideas?
+
+02:30:21.000 --> 02:30:51.000
+What do you think?
+
+02:31:48.000 --> 02:31:56.000
+Pretty good. Thanks very much for your inputs. So.
+
+02:31:56.000 --> 02:32:06.000
+Yeah, so, meeting me is saying P 1 10 P 2 15 and P 3 20 would be the DPT.
+
+02:32:06.000 --> 02:32:16.000
+Okay. And then William again he's giving a Very comprehensive answer. Thank you very much for that.
+
+02:32:16.000 --> 02:32:21.000
+So he's analyzing. I assume this is the analysis phase.
+
+02:32:21.000 --> 02:32:29.000
+Okay, so let's start. So he's saying. In Ellison Probably 10.
+
+02:32:29.000 --> 02:32:36.000
+He starts LSN 10. We add T one and Lison 10 to the exact table.
+
+02:32:36.000 --> 02:32:45.000
+And add Q one, Ls and 10 to the DPT. Yeah, that's right.
+
+02:32:45.000 --> 02:32:53.000
+And then. Yeah, in LSM 15 and, yeah. Of the update.
+
+02:32:53.000 --> 02:33:07.000
+The Ellison, the last person of T one. In the exact table you add P 2 LSN 15 to DPT which is like again same as Oh, sorry.
+
+02:33:07.000 --> 02:33:26.000
+Yeah, so which is, also same as what, Lee was saying. And then in and this in 20 he says at t 2 less than 20 You need to add TTLS internally because there was no record of T 2 before.
+
+02:33:26.000 --> 02:33:39.000
+And then you add, P 3 and Ls and 20 as well. So in LSN, 25 you will set the size of, 21, sorry, you said this said it's if you want to.
+
+02:33:39.000 --> 02:33:51.000
+Commit. And then, yeah, and then he says in, You. Actually only update. T 2 and you don't update the, DPT. Okay.
+
+02:33:51.000 --> 02:34:08.000
+So let's go and check that pretty much like this the thing that we are doing in the analysis phase so well done So basically in the analysis phase.
+
+02:34:08.000 --> 02:34:14.000
+You know, in Ellison 5, you're actually just initializing the exact table and the DP table.
+
+02:34:14.000 --> 02:34:22.000
+Hey, Nelson, 10 VR. Adding, you know, information about T one to exact table.
+
+02:34:22.000 --> 02:34:26.000
+And also the information about P one to the DPT.
+
+02:34:26.000 --> 02:34:48.000
+Hey, Nelson, 15, we are updating. You know the 15. I mean the updates the t one information the exact table we said the last And then we also add the P 2 and.
+
+02:34:48.000 --> 02:34:57.000
+LSN 15 to the DPT okay because there was no prior information about D 2 before.
+
+02:34:57.000 --> 02:35:02.000
+Okay.
+
+02:35:02.000 --> 02:35:10.000
+Cool. Now in LSN 20 we add T 2 and Ls N 20 to the exact table.
+
+02:35:10.000 --> 02:35:18.000
+Because there was no information of T 2. So we added. Speaking table. Also there was no information of Petrie.
+
+02:35:18.000 --> 02:35:25.000
+He added to the DPT. And then you lost in 25, we just changed the size of T one to commit.
+
+02:35:25.000 --> 02:35:38.000
+And, So we just set the last lesson of T 2 in the exact table to 30. We don't need to, you know, update DPT because the oldest, updates.
+
+02:35:38.000 --> 02:35:46.000
+Happen in at this in 10. Okay. And in DPT, we only keep I reference the oldest update.
+
+02:35:46.000 --> 02:35:53.000
+Okay. This is the analysis phase. The redo phase should be very quick. So in each other's end you just check.
+
+02:35:53.000 --> 02:35:59.000
+If the page allison is less than the LSM that you're Checking, then you need to.
+
+02:35:59.000 --> 02:36:02.000
+Redo that LSN you need to set the value the new value to that page value and you also need to set the page.
+
+02:36:02.000 --> 02:36:14.000
+Listen to 10. So that's. Pretty much the same for us in 1015 and 20.
+
+02:36:14.000 --> 02:36:25.000
+And then. In Ellison, Since we are updating. You know, a page that we had reference before.
+
+02:36:25.000 --> 02:36:34.000
+So you need to a read. Page P one and if it has been flushed then check the page Allison the page your license should be.
+
+02:36:34.000 --> 02:36:42.000
+10 because the last time that we checked that was 10. So then you need to redo.
+
+02:36:42.000 --> 02:36:54.000
+You need to set the value of TTT. To, the page one. Okay. And then you also need to set the page a listen.
+
+02:36:54.000 --> 02:37:03.000
+Off that page to 30 because this is the last days that's being update.
+
+02:37:03.000 --> 02:37:10.000
+Okay, so only redo Ellison.
+
+02:37:10.000 --> 02:37:23.000
+So you're actually redoing the checks all the time. Okay, so, the redo can happen in each of these based on the status of the page Ellison that you are dealing with.
+
+02:37:23.000 --> 02:37:45.000
+Okay, but here Probably a redo is required because Yeah, because as you may see, so, the value of p one is already changed here so you need to if the page has been pushed yeah, you need to, do the redo here.
+
+02:37:45.000 --> 02:37:51.000
+Cool. And what about the undo? So we will have undo because we have T 2. Which is uncommitted.
+
+02:37:51.000 --> 02:37:57.000
+Okay. So probably we need to do some undo for all the changes that T 2 has done. And we always.
+
+02:37:57.000 --> 02:38:07.000
+We start the undo from the last Ellison that's That transaction had with the
+
+02:38:07.000 --> 02:38:19.000
+Okay, so we, first of all, write the abort, record, Then for LScenteri, the undue of the Centrei, basically be clear.
+
+02:38:19.000 --> 02:38:26.000
+A 4 P one. Okay, so we set the value of P one to ZZZ, which is the old value that we had.
+
+02:38:26.000 --> 02:38:46.000
+And we on the next undo would be. 20 which is the the previous operation that we've done in t 2 okay then we do an undo 20 so in under 1020 we write a clear message a clear operation for P 3.
+
+02:38:46.000 --> 02:38:49.000
+So we set the P tree to UU and we You know, after that, there is no more operation for T 2.
+
+02:38:49.000 --> 02:39:00.000
+So we just here, value of Petrie to UU. And then we set the on the next to now.
+
+02:39:00.000 --> 02:39:11.000
+And then, the right U. And then that's all. The undone is complete.
+
+02:39:11.000 --> 02:39:17.000
+Okay, any questions here?
+
+02:39:17.000 --> 02:39:36.000
+So now let's do this for this final example here. And then we can wrap up the third part of today's material as well.
+
+02:39:36.000 --> 02:40:06.000
+Yeah, please. 3 to 4 min to think on this question as well and then we can wrap up this material today as well.
+
+02:48:26.000 --> 02:48:35.000
+Okay, thank you very much. William. Meeting. So yeah.
+
+02:48:35.000 --> 02:48:49.000
+So here the important thing. He's also inflicted in the William Answer is the fact that, you know, we are not starting to check your point.
+
+02:48:49.000 --> 02:49:01.000
+At the beginning of the operations. So we are having 2 operations, 2 updates. In T one and T 2 and then we are doing a checkpoint.
+
+02:49:01.000 --> 02:49:04.000
+And then we're going with the rest, right?
+
+02:49:04.000 --> 02:49:13.000
+So we are starting with the checkpoint. So checkpoint doesn't. You know the exact table and the yeah, the exact table on DPT table.
+
+02:49:13.000 --> 02:49:28.000
+They are not starting as empty. So they have some value in them. And then throughout the rest of the operations we are just updating the values in the DPT.
+
+02:49:28.000 --> 02:49:36.000
+Okay. So yeah, so that's. Pretty much.
+
+02:49:36.000 --> 02:49:43.000
+What? William was mentioned. Also mentioned is saying in table.
+
+02:49:43.000 --> 02:49:51.000
+At Ellison 25 it says DPT as P 2 and E 15.
+
+02:49:51.000 --> 02:50:02.000
+This is, oh sorry, it says. Ellison 15 says p 3.
+
+02:50:02.000 --> 02:50:09.000
+Yeah, it should be P 3. To BP tree. It's a type of yes.
+
+02:50:09.000 --> 02:50:17.000
+Okay, so Let's continue and then yeah and then William also has the
+
+02:50:17.000 --> 02:50:24.000
+Redu phase. She's again pretty much checking the Ellison page. Page listening and shaking meetings.
+
+02:50:24.000 --> 02:50:45.000
+They're listening that you're dealing with. If that's less than that. Then you need to set the value and also set the page also so you'll like if anyone was about to like do what video is doing like writing these so this part of the learning you're learning right so you're
+
+02:50:45.000 --> 02:50:54.000
+just doing the examples by your own. And then if you think differently, you will see. How are you very thinking differently?
+
+02:50:54.000 --> 02:51:03.000
+It will definitely help you in the exam, right? So. Thank you very much. So that's, start with.
+
+02:51:03.000 --> 02:51:06.000
+The question 3 part 3.
+
+02:51:06.000 --> 02:51:13.000
+So yeah, so. At LSN, 25, we initialize the exact table.
+
+02:51:13.000 --> 02:51:26.000
+We have with some values in it so t one and t 2 already has some values in it we also initialize DPT 2 peach p one and Petri Okay, let's be Ellison.
+
+02:51:26.000 --> 02:51:32.000
+So recently I send off P one and P 3 will also be sets in the DPT that you are creating.
+
+02:51:32.000 --> 02:51:45.000
+And then in, So we are updating. You know, the LSN of a T one and you're also adding these P 2 to the DPT.
+
+02:51:45.000 --> 02:52:01.000
+In 35, you're just changing the status. Of T one to commit. In 40 we are only setting the The last lesson of T 2 to 40 be your net changing BPT.
+
+02:52:01.000 --> 02:52:07.000
+In 45. We are changing the size of T 2 to your board in the exact table.
+
+02:52:07.000 --> 02:52:19.000
+I am 50, it is like a clearing of. You know p one so p one in the last.
+
+02:52:19.000 --> 02:52:36.000
+Operation that you've done. So here in line 10. Listen, Ted, the value, the new value of P one was easy Z but here we want to clear that value.
+
+02:52:36.000 --> 02:52:47.000
+Okay. And we want to set the on do next and listen to. 15. yeah.
+
+02:52:47.000 --> 02:53:00.000
+Which means that you know, the next, other sense. So, you know, we are actually updating the value of
+
+02:53:00.000 --> 02:53:12.000
+P one here, but here we are. You know clearing it and since we are clearing it with so we are the next undue would be.
+
+02:53:12.000 --> 02:53:25.000
+15 instead of 40. Okay. So this next under LSM is setting it to 50 because the clery the clear operation is actually on doing these updates by its part.
+
+02:53:25.000 --> 02:53:34.000
+Okay. So yeah, so. And in 50 we just said the last lesson of T 2.
+
+02:53:34.000 --> 02:53:45.000
+2 4 to 5. Okay, that's what we do. In the analysis phase. The redo phase would be pretty much.
+
+02:53:45.000 --> 02:54:02.000
+Same as always. So we just check if. You know the page I'll listen is less than that you're checking If that's the case, then set the value and So then we are referring to a page.
+
+02:54:02.000 --> 02:54:12.000
+It has already been referred to. So this is the second time. So you need to. Read page if it has been flushed, if it has been slashed.
+
+02:54:12.000 --> 02:54:20.000
+Flush so check page your list is stored in the page it should be 10 which is like last Time date has been changed.
+
+02:54:20.000 --> 02:54:29.000
+And then you need to redo that operation in Aison 40 for instance you need to Set the value of P one to TTT and set the page.
+
+02:54:29.000 --> 02:54:32.000
+And then same goes here.
+
+02:54:32.000 --> 02:54:42.000
+So you need to, set the value to ZZ, which is the old value here. Okay, so it's like an undoing of this approach.
+
+02:54:42.000 --> 02:54:50.000
+Okay. And then you also, you'll sit the page of listening to 15. Okay, since we are having an abort, so we will have some.
+
+02:54:50.000 --> 02:55:00.000
+On do operations as well. So the undo will start from the last edition of the transaction that we want to undo So we put.
+
+02:55:00.000 --> 02:55:11.000
+50 there. So in here. Since, so this one itself was an undo of 40.
+
+02:55:11.000 --> 02:55:23.000
+So we also, we only need to put the Ls and 50. In the 2 undo so nothing more needs to be done in L 1,050 And then we go to Ellison, 15.
+
+02:55:23.000 --> 02:55:31.000
+Hey, and, 15, we actually need to undo this. And the way that we undo it is by setting you you.
+
+02:55:31.000 --> 02:55:40.000
+As the value of p 3 and also setting the undo next to this and to know. And write you you in Petri.
+
+02:55:40.000 --> 02:55:57.000
+Okay. Is the on your face? Very clear. Okay, so this marks the ends of today's material if you have any questions please let me know Hi, have a great evening.
+
+02:55:57.000 --> 02:56:10.000
+And have a good exam. And it was a pleasure to be your tutor for this semester. And good luck.
+
+02:56:10.000 --> 02:56:18.000
+Thank you very much, Lily. Thank you for your team. Thank you, Minchin.
+
+02:56:18.000 --> 02:56:26.000
+Thank you, William. Thank you.
+
+02:56:26.000 --> 02:56:44.000
+Have a great weekend. Have a great. Evening to have.
+

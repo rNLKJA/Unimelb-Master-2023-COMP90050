@@ -1,0 +1,1496 @@
+WEBVTT
+
+00:10:14.000 --> 00:10:25.000
+Users in order of millions or in order. Tens of thousands accessing the services at the same time. You should be prepared with.
+
+00:10:25.000 --> 00:10:39.000
+So you can imagine that. Doseen are yours. You know, isolation is not S and who can see each other's uncommon changes what sort of you know.
+
+00:10:39.000 --> 00:10:52.000
+Chaos would happen. Okay, so in order to prevent that KS from happening So isolation should be a must.
+
+00:10:52.000 --> 00:10:55.000
+These type of businesses.
+
+00:10:55.000 --> 00:11:09.000
+Okay, so this is also why isolation should be. Actually complied with. So. Let's maybe have a look to be.
+
+00:11:09.000 --> 00:11:15.000
+And it says well.
+
+00:11:15.000 --> 00:11:19.000
+That's the grab this one.
+
+00:11:19.000 --> 00:11:22.000
+Okay.
+
+00:11:22.000 --> 00:11:32.000
+Okay, so we say that both of the system based on their businesses, which are online businesses that businesses may need to serve a large number of customers at any time.
+
+00:11:32.000 --> 00:11:43.000
+And for achieving consistency. Be required that the transaction does not see. Values of the other
+
+00:11:43.000 --> 00:11:57.000
+So. One way to achieve this is to only let a single transaction. Into the platform or Grant is single transaction access to do some stuff.
+
+00:11:57.000 --> 00:12:03.000
+In the platform. Which is, you know, a basic night approach.
+
+00:12:03.000 --> 00:12:12.000
+But, although you know, Itchieve. Is isolation property and satisfy that.
+
+00:12:12.000 --> 00:12:18.000
+But it do heavily impact efficiency of the service.
+
+00:12:18.000 --> 00:12:28.000
+Okay, so imagine that. Tens of thousands are going to access the online banking system. And you are applying this one at a time.
+
+00:12:28.000 --> 00:12:38.000
+Approach. Okay. So we can, you know, people. If they want to check their I count.
+
+00:12:38.000 --> 00:12:47.000
+What do you do to do the same then I can go and check. It would be, you know, massive drop in.
+
+00:12:47.000 --> 00:12:55.000
+Users that's function in Turn it on, No, the response time and so on.
+
+00:12:55.000 --> 00:13:01.000
+Okay, so we actually. Want to achieve like that isolation. Okay.
+
+00:13:01.000 --> 00:13:13.000
+So don't want to. Show inconsistent, daughter to the user, but at the same time he also wants to achieve a high limit.
+
+00:13:13.000 --> 00:13:21.000
+Efficiency while also maintaining consistency. And that's why this topic of isolation is becoming, you know, a key.
+
+00:13:21.000 --> 00:13:32.000
+No concept doesn't waste management system because no. It's very crucial. Platforms to work properly.
+
+00:13:32.000 --> 00:13:41.000
+At the same time, it's not very trivial to. Implement and, you need to put some efforts into that.
+
+00:13:41.000 --> 00:13:45.000
+Any questions here?
+
+00:13:45.000 --> 00:13:57.000
+So we're going to. Talk more about different types of. Isolation you know stats genes that can help with concurrency at the same time.
+
+00:13:57.000 --> 00:14:03.000
+No, doesn't kill efficiency.
+
+00:14:03.000 --> 00:14:09.000
+Any questions?
+
+00:14:09.000 --> 00:14:14.000
+Let's jump into the next question. So in this question we have a bank with millions of customers.
+
+00:14:14.000 --> 00:14:24.000
+So this bank wants to provide the bonus, each of its customer. Yeah, bonus is updated in the database.
+
+00:14:24.000 --> 00:14:36.000
+That's a section as you can see here. So, want to discuss example and associate issues that can happen in such an approach.
+
+00:14:36.000 --> 00:14:46.000
+Okay. I want to discuss it's a good choice. To use this.
+
+00:14:46.000 --> 00:14:50.000
+Okay, maybe for this fund.
+
+00:14:50.000 --> 00:14:59.000
+2 to 4 min again. Just stay on this question before we can jump. The next slides.
+
+00:14:59.000 --> 00:15:04.000
+You know for that transaction we make these slides
+
+00:15:04.000 --> 00:15:34.000
+And then review this question as well. If you want to process a million. Records to this transaction. Feasible reasonable or there are some problems associated with it.
+
+00:20:07.000 --> 00:20:10.000
+Okay, any ideas?
+
+00:20:10.000 --> 00:20:18.000
+How did you go with this question? Any ideas?
+
+00:20:18.000 --> 00:20:32.000
+Okay, again, June. Sounds good. Choice seems if an ever happened at some point in the loop, the entire section will be, Let me go.
+
+00:20:32.000 --> 00:20:37.000
+Okay.
+
+00:20:37.000 --> 00:20:49.000
+I mean, I do both sick and pod. Still affect the consistency of the data.
+
+00:20:49.000 --> 00:21:01.000
+Because if you are rolling back you are actually undoing all the changes right so you don't commit changes and this that is system should remain the same.
+
+00:21:01.000 --> 00:21:05.000
+Basically.
+
+00:21:05.000 --> 00:21:13.000
+Any other ideas?
+
+00:21:13.000 --> 00:21:19.000
+No, it's not about being wrong or right. I'm just, now we're having a discussion too.
+
+00:21:19.000 --> 00:21:30.000
+Contact. You know, to just check our understanding. There again, nothing.
+
+00:21:30.000 --> 00:21:37.000
+Please. When you're posting the
+
+00:21:37.000 --> 00:21:45.000
+Answer. Nothing is wrong. Discussing. Don't say that.
+
+00:21:45.000 --> 00:21:48.000
+Okay, any other?
+
+00:21:48.000 --> 00:21:51.000
+To use
+
+00:21:51.000 --> 00:21:59.000
+So first of all, let's check what happens if we follow this plan section. So we begin the war.
+
+00:21:59.000 --> 00:22:04.000
+For each customer. So this is basically a for loop that you're doing.
+
+00:22:04.000 --> 00:22:14.000
+Is for loop or, calculate the bonus. Yeah, basically.
+
+00:22:14.000 --> 00:22:24.000
+Calculating bonus here to be your basically Updating the account values. Okay, so you're doing this for 1 million records.
+
+00:22:24.000 --> 00:22:41.000
+So let's assume that as the 1,500,000 reports. Definitely smart, but actually eating a crash and whole frap transaction next to no crash.
+
+00:22:41.000 --> 00:22:51.000
+So since you didn't save the walk any better. Good. In a redoing what you've done, which is a vase this compute tower.
+
+00:22:51.000 --> 00:22:57.000
+At least of time. And basically.
+
+00:22:57.000 --> 00:23:02.000
+Which we doesn't want that.
+
+00:23:02.000 --> 00:23:13.000
+So what's the remedy? In this situation. So you can add some. Save points, default transaction.
+
+00:23:13.000 --> 00:23:21.000
+Okay, when you're doing with millions of reports. And that will not distinguish. To that transaction with save phones from a classic.
+
+00:23:21.000 --> 00:23:25.000
+That's nice.
+
+00:23:25.000 --> 00:23:28.000
+Okay.
+
+00:23:28.000 --> 00:23:38.000
+So yeah, basically, this is like too risky because in the case of a failure. Maybe we'll have lots of a listed compute power.
+
+00:23:38.000 --> 00:23:41.000
+That's a waste of time.
+
+00:23:41.000 --> 00:23:45.000
+Which is not ideal for us.
+
+00:23:45.000 --> 00:23:48.000
+Any questions here?
+
+00:23:48.000 --> 00:24:01.000
+But it will not actually impact the consistency of the data because if the You know. If it changes are not committed.
+
+00:24:01.000 --> 00:24:15.000
+And you know, have a crash. In the middle of the transaction all of the oncoming changes would be rolled back so none of them will become doable Nothing. Stay.
+
+00:24:15.000 --> 00:24:19.000
+I mean, in the standard dollar base is a rubble change.
+
+00:24:19.000 --> 00:24:26.000
+Okay, any questions here?
+
+00:24:26.000 --> 00:24:30.000
+Okay, cool. Thank you very much.
+
+00:24:30.000 --> 00:24:39.000
+Now, let's check what happens if we add some safe ones. To the
+
+00:24:39.000 --> 00:24:58.000
+To the selection. So this is the case. When we add some Save points. So this is for that transaction at some save points.
+
+00:24:58.000 --> 00:25:07.000
+Sorry, want to see what happens. Yeah, Yeah, we assume that, in the following to a transaction, the condition is satisfied.
+
+00:25:07.000 --> 00:25:15.000
+So the condition they can assume that it's true. And So finally you also do commit the work.
+
+00:25:15.000 --> 00:25:30.000
+Okay, but under these 2 conditions but the printed value of accounts. That we'll have at the end.
+
+00:25:30.000 --> 00:26:00.000
+Okay, maybe again. 3 to 4 min to stay on this question. So this is when we wanted to see what is the impact of adding the safe points to 2 to 2 min or 2 or 4 min to stand this question then we'll get back CBN set.
+
+00:27:50.000 --> 00:28:02.000
+Okay, thank you for your input again. She can, So. Also are receiving some.
+
+00:28:02.000 --> 00:28:06.000
+Reactions from the cloud which is really good.
+
+00:28:06.000 --> 00:28:14.000
+Oh, no, actually. In.
+
+00:28:14.000 --> 00:28:21.000
+So he's becoming. Like Yeah.
+
+00:28:21.000 --> 00:28:32.000
+Is like. Replacing some students that come today.
+
+00:28:32.000 --> 00:28:37.000
+With extra reactions.
+
+00:28:37.000 --> 00:28:44.000
+So maybe it's jump into the question to see. What happens in this scenario?
+
+00:28:44.000 --> 00:28:49.000
+Any more ideas?
+
+00:28:49.000 --> 00:28:59.000
+So it looks like that everyone is agreeing with. 21, spin final output.
+
+00:28:59.000 --> 00:29:06.000
+Okay, so let's start from the beginning. First of all, at this point, S the That's fine.
+
+00:29:06.000 --> 00:29:16.000
+Can be safe here. 4, yeah. So when we save the board, it's like you can imagine that those changes are committed.
+
+00:29:16.000 --> 00:29:42.000
+And pushed to the to the dollar list okay then be again. Increase the But you of the count so again this is some on coming to changes but honestly save the world all of that changes will also become committed and they'll become Then we'll increase the value account again in the app.
+
+00:29:42.000 --> 00:29:51.000
+5 more so we started with 10 at 10 more so at this point we have 20. Okay. 20.
+
+00:29:51.000 --> 00:29:56.000
+Then we have 25 here.
+
+00:29:56.000 --> 00:30:04.000
+Then, yeah, save it again. Then 5 more so you will have 30 here.
+
+00:30:04.000 --> 00:30:13.000
+Okay. And then finally, at this point, we're going to roll back the full concept. Okay.
+
+00:30:13.000 --> 00:30:23.000
+What's the ruling bank to save point 4, but number 2. Or, yeah, save point number 2 actually.
+
+00:30:23.000 --> 00:30:31.000
+So when we, go back to that point. It means that all of the committed changes at that point.
+
+00:30:31.000 --> 00:30:49.000
+Are going to stay. In the database and the rest what has happened after that we're going to ignore it Okay, so basically what has happened between the point that you do the rollback to the safe point and the safe point.
+
+00:30:49.000 --> 00:30:59.000
+So starting from here. Hop to the safe point which is here, everything that has happened, you can imagine that it has not happened or it has never happened.
+
+00:30:59.000 --> 00:31:10.000
+So we can ignore all of these. Operations here. Okay. It has been rolling back to the coming to changes at these points.
+
+00:31:10.000 --> 00:31:15.000
+And at that point, the value of the count was 20.
+
+00:31:15.000 --> 00:31:20.000
+Okay, beneath that.
+
+00:31:20.000 --> 00:31:28.000
+Here, before executing the accounts equal to count plus one. Your account is actually equal to 20.
+
+00:31:28.000 --> 00:31:36.000
+And then the add one more to the count. The value of count here becomes 21.
+
+00:31:36.000 --> 00:31:41.000
+Okay, go ahead. To disregard this.
+
+00:31:41.000 --> 00:31:47.000
+Okay, 21. And then we come into work.
+
+00:31:47.000 --> 00:31:54.000
+So at the point of commits or before the commit when they have trained and I'll use, 21.
+
+00:31:54.000 --> 00:32:04.000
+So well done. Chi, and, and, Any questions here?
+
+00:32:04.000 --> 00:32:08.000
+Okay.
+
+00:32:08.000 --> 00:32:13.000
+Any questions?
+
+00:32:13.000 --> 00:32:34.000
+Oh cool. Let's move to the Last question of the first part of the. TED tutorial.
+
+00:32:34.000 --> 00:32:47.000
+So in these parts. We're going to talk about this transactions. So before we jump into This, question of message transactions.
+
+00:32:47.000 --> 00:32:58.000
+We're going to briefly discuss. What is And message transaction and what are the rules that govern There we go, message transactions.
+
+00:32:58.000 --> 00:33:08.000
+So in different transactions, we have the parent transactions. Okay. So we have time here. Karen.
+
+00:33:08.000 --> 00:33:15.000
+Oh, sorry.
+
+00:33:15.000 --> 00:33:22.000
+So we have here. And then this parent will have some children.
+
+00:33:22.000 --> 00:33:32.000
+That's okay. So these are like you can say T one.
+
+00:33:32.000 --> 00:33:39.000
+. To and one. Okay. So.
+
+00:33:39.000 --> 00:33:48.000
+There are some rules when it comes to this. So first, the first rule is that children should always follow pattern and follow parents in a robot.
+
+00:33:48.000 --> 00:33:53.000
+So if kind of rolls back.
+
+00:33:53.000 --> 00:34:04.000
+Means it doesn't commit or undo all the changes then all of the transactions all of the children should also to the robot.
+
+00:34:04.000 --> 00:34:11.000
+Okay. That is the first. So children always follow. In the rollback.
+
+00:34:11.000 --> 00:34:14.000
+The second rule is if the parent commits Okay, the children can commit or can roll back. So it's up to them.
+
+00:34:14.000 --> 00:34:33.000
+It's not No way. On the children's side. But if children commit and their parent also commit then coming to the children will become durable so you can.
+
+00:34:33.000 --> 00:34:41.000
+Good. Means if the parent commits and children also commit. Committed to the children become durable.
+
+00:34:41.000 --> 00:34:47.000
+But they are not enforced to commit. Okay, it's up to them if they want to commit or roll back.
+
+00:34:47.000 --> 00:34:58.000
+So these 2 are basically the 2 rules governing. Missing transactions. Okay.
+
+00:34:58.000 --> 00:35:06.000
+So with those 2 rules, we want to. Check these questions.
+
+00:35:06.000 --> 00:35:16.000
+So we have 4 transactions, a parent and 3. You know children transactions and want to see what will happening.
+
+00:35:16.000 --> 00:35:24.000
+Super polling scenarios. So each of the comics will become durable and each transaction is needed to roll back.
+
+00:35:24.000 --> 00:35:40.000
+So the first scenario. Children commit and turn roll back in the second one of the commit the third 1 2 of the children, one of the parent commits and You had to jump in.
+
+00:35:40.000 --> 00:36:10.000
+So maybe 5 to 6 min with the next question. And then we'll get back here to see the answer.
+
+00:42:32.000 --> 00:42:42.000
+Okay, thank you very much everyone. So have lots of feedback. So. She can't please think.
+
+00:42:42.000 --> 00:42:46.000
+Discuss.
+
+00:42:46.000 --> 00:43:10.000
+Okay, As you can be saying first A BMC Okay, for, The second case none, Okay.
+
+00:43:10.000 --> 00:43:18.000
+Okay. We roll back. The second case, done. And it is also not.
+
+00:43:18.000 --> 00:43:29.000
+Well done. B, it's also saying 4 school Mac. Probably means. I'm taking it there, so it's not.
+
+00:43:29.000 --> 00:43:34.000
+Okay.
+
+00:43:34.000 --> 00:43:44.000
+So just wondering if there is any order to do the commits like parents have to go first and then the children to react or vice versa.
+
+00:43:44.000 --> 00:43:53.000
+It depends on how they are actually being executed the order of the execution of them. But you usually depend.
+
+00:43:53.000 --> 00:44:03.000
+Last. So it's like, It goes. And then it kind of disagrees with children rolling back.
+
+00:44:03.000 --> 00:44:11.000
+All of the children needs to also go back. Okay. Cool. So let's, start the first part.
+
+00:44:11.000 --> 00:44:20.000
+So the first one says The parent is rolling back. And Sure. Committing. So due to the first move.
+
+00:44:20.000 --> 00:44:28.000
+And this is If the pan rules back, all the children need to follow the term. In holding back.
+
+00:44:28.000 --> 00:44:36.000
+Okay. So I'm in this case actually only to go back so all go back.
+
+00:44:36.000 --> 00:44:40.000
+Okay.
+
+00:44:40.000 --> 00:44:48.000
+So we can say, oh, we'll need to roll back.
+
+00:44:48.000 --> 00:44:59.000
+And then in the third case, there is no between the parents and children in the commit. So actually this is all good.
+
+00:44:59.000 --> 00:45:09.000
+And in third case we have 2 of the children and the parents green so we have the parent here.
+
+00:45:09.000 --> 00:45:17.000
+We have one children. She's okay. Have other children. She's also okay.
+
+00:45:17.000 --> 00:45:29.000
+We have the children which is not okay. And then the parent is also okay. We know that. When the parent is committing Children can commit or not phone.
+
+00:45:29.000 --> 00:45:38.000
+Okay, so it's okay. 4 C to roll back they can go back But if, like the children commit, they're coming to Google.
+
+00:45:38.000 --> 00:45:45.000
+Okay, I'm doable because the parent has
+
+00:45:45.000 --> 00:45:50.000
+And the coming of this one will also become doable.
+
+00:45:50.000 --> 00:46:05.000
+Assuming that the parent doesn't have any Okay. So then the last case only see. Needs to roll back and the rest can It's over.
+
+00:46:05.000 --> 00:46:14.000
+Okay, so this marks the end of the first part of the Terry. Yeah, maybe take a 10 min break.
+
+00:46:14.000 --> 00:46:22.000
+And then we can get back here. The second part of. So remember, please get, 10 min great.
+
+00:46:22.000 --> 00:46:26.000
+We can start 4 20.
+
+00:46:26.000 --> 00:46:56.000
+And ultimately, 4 20. Continue with the second part to tell you. See you soon.
+
+00:59:51.000 --> 01:00:04.000
+Okay, hello and welcome back real part so let's start this again part material So first we have a Christian from the from.
+
+01:00:04.000 --> 01:00:13.000
+Being sure saying that for a question 4 of the trees in C. Build back. Own initiative.
+
+01:00:13.000 --> 01:00:23.000
+Is it still count as forced to roll back? No. Because it was its own decision. The first call back is only when
+
+01:00:23.000 --> 01:00:33.000
+You know the children are Meeting parent goes back so children due to the missing transaction rules need to go back.
+
+01:00:33.000 --> 01:00:37.000
+That is a force.
+
+01:00:37.000 --> 01:00:43.000
+Now that's, moving to the next question, which is about The Bulk and the Pavilion.
+
+01:00:43.000 --> 01:00:52.000
+Okay, so first of all, let's discuss what we're and then we can get into, So any.
+
+01:00:52.000 --> 01:01:06.000
+Any idea? Dead lockings. Or when the like happens actually.
+
+01:01:06.000 --> 01:01:29.000
+Can you use the chat area?
+
+01:01:29.000 --> 01:01:56.000
+Okay, so any ideas so far? 1, 2 min for YouTube. Raising your ideas on what
+
+01:01:56.000 --> 01:02:06.000
+Okay, so that luck happens when 2 transactions actually wait for one or another differently. Or for, you know, extended.
+
+01:02:06.000 --> 01:02:13.000
+Period of time. 4. Especially without any end. Okay.
+
+01:02:13.000 --> 01:02:25.000
+So it happens in 10 s when you know. there are like 2 different resources that these 2 transactions are dealing with.
+
+01:02:25.000 --> 01:02:33.000
+So the first one. Put a log on the Hi, this resource. Take into a section between lock on it.
+
+01:02:33.000 --> 01:02:42.000
+Second resource and then. First transaction wants to get a lock on the second resource.
+
+01:02:42.000 --> 01:02:51.000
+And at the same time, the second time, the second, the first resource. Okay. So it's like, if we draw it.
+
+01:02:51.000 --> 01:02:59.000
+Would be something like this. So we have transaction T one. I can't.
+
+01:02:59.000 --> 01:03:03.000
+. 2
+
+01:03:03.000 --> 01:03:14.000
+So basically there are 2 resources you can say. Hey. And Okay, so maybe let's put them.
+
+01:03:14.000 --> 01:03:23.000
+The middle.
+
+01:03:23.000 --> 01:03:41.000
+So now let's assume that's transition t one get. Class section 2. Now in your transaction T one also wants to get Since the 2 only got it, so it needs to break.
+
+01:03:41.000 --> 01:03:51.000
+Okay. And if. He too also wants to get a . One already a lock on it, it also needs to be.
+
+01:03:51.000 --> 01:04:04.000
+Okay, so in this case T one is waiting for to release the and T 2 is also waiting for T one to release A and none of then can actually commit.
+
+01:04:04.000 --> 01:04:13.000
+And they will actually wait for one other in for partner. Extend it to your plan.
+
+01:04:13.000 --> 01:04:24.000
+Okay, but now we want to you know more formally or using my medical language see what is the Purple to that and then the situation actually.
+
+01:04:24.000 --> 01:04:28.000
+Thanks. Cool.
+
+01:04:28.000 --> 01:04:38.000
+So we start by. Sitting. Like a number. Transactions as well and also to the number of So what's the whole say?
+
+01:04:38.000 --> 01:04:43.000
+Let's assume that we have n plus one transaction.
+
+01:04:43.000 --> 01:04:52.000
+And be, you know, take one of the as a transaction that we are talking about and the rest of the entered sections.
+
+01:04:52.000 --> 01:04:56.000
+Yeah.
+
+01:04:56.000 --> 01:05:14.000
+So we also assume that we have total are capital bonds. And each transaction can get at most you know small not so Actually, when the transaction starts.
+
+01:05:14.000 --> 01:05:24.000
+They hold back 0 locks and as they you know proceed to the finish they hold our line okay so from 0 to R.
+
+01:05:24.000 --> 01:05:34.000
+Not they can get at most are not. Each transaction can get. So in average, transactions have R or 2 locks approximately.
+
+01:05:34.000 --> 01:05:43.000
+Okay, so this is the approach, the average number. This transaction can have. And then we have 10 of those transactions.
+
+01:05:43.000 --> 01:05:54.000
+So we have 10. Times r over 2 as the total Number 4, the average number of logs that is taken by the 2 sections.
+
+01:05:54.000 --> 01:06:00.000
+Okay. So now, let's assume that we want to.
+
+01:06:00.000 --> 01:06:25.000
+You know, get in lock on. One of the resources. So what is the probability that the, you know, conflict is one of the existing blocks so that is the number of existing dots over total So the probability that the transaction that you are talking about leads for a lot The number of the average number of box
+
+01:06:25.000 --> 01:06:47.000
+which is NR over 2 or the total number. Logs, machines, capital. And then about these particular, you know, The section that you're talking about if we you know calculate the opposite The probability date doesn't wait for It will be, on-indus.
+
+01:06:47.000 --> 01:06:59.000
+And R. Okay, and then we know that Eastern section. Wants to get at most our locks so the probability that Doesn't wait at all in its lifetime.
+
+01:06:59.000 --> 01:07:08.000
+Who's the same value? Not's waiting for it. The power of R. Okay, so it would be one minus.
+
+01:07:08.000 --> 01:07:17.000
+Hey, the cover of car. And then based on the calling equation, you know, that we can simplify.
+
+01:07:17.000 --> 01:07:29.000
+This is Okay, so we can put it as one minus and or 2 or 2 are. That's the probability that the particular transaction you're talking about.
+
+01:07:29.000 --> 01:07:37.000
+Doesn't like that or not. And then the probability that the particular transaction rates It's lifetime will be.
+
+01:07:37.000 --> 01:07:48.000
+One minus this, this would be one minus p or one minus one minus 10. Hard to pull up to a tour which will give us and multiple 2 or 2.
+
+01:07:48.000 --> 01:07:57.000
+Is the probability that the legal transaction base? In in its lifestyle for some. Okay, and then now you say this.
+
+01:07:57.000 --> 01:08:04.000
+We can get the probability that 2. Transaction T which is the particular transaction of we are talking about.
+
+01:08:04.000 --> 01:08:12.000
+How are the trans section tones? And the probability of the block of T, you already know that.
+
+01:08:12.000 --> 01:08:19.000
+And R over 2 R and R 2 B to R, you put it there. And then the probability that another transaction.
+
+01:08:19.000 --> 01:08:28.000
+Great for this transaction for this particular transaction team. He's the probability of, you know, in its lifetime over n.
+
+01:08:28.000 --> 01:08:37.000
+Guys, this is a they, you know, in its lifetime or all of the other transactions.
+
+01:08:37.000 --> 01:08:45.000
+And if it wants to wait for a specific transaction, you need to divide it by n. So to do that, when we find that.
+
+01:08:45.000 --> 01:09:09.000
+Good'll get the probability that this particular transaction T. Waits for some other transaction T one. Okay, this is only for 2 transactions and if you want to do it for all the transactions you just need to multiply to end another time So you have 100, the power of 2 if you want to.
+
+01:09:09.000 --> 01:09:22.000
+You will get the expendable of to port. 4 or 2 as the Okay. If we go back, we started with assuming that.
+
+01:09:22.000 --> 01:09:29.000
+They haven't post one transactions. We put one of them side as the particular translation we were talking about.
+
+01:09:29.000 --> 01:09:35.000
+And then we set for the rest of them, they assume that our total number. Our likes here and.
+
+01:09:35.000 --> 01:09:44.000
+These transaction can get at most are small runts in their iPhone. They will have a I'm gonna go over 2.
+
+01:09:44.000 --> 01:10:00.000
+Total number of n times over 2 up. Hello, and then the probability will be How about waiting for a large would be the number of licenses already acquired by other transactions or total number of locks which is this.
+
+01:10:00.000 --> 01:10:10.000
+And then by that we cut the probability of not making and then poverty of not waiting at all and also ability of waiting for some time.
+
+01:10:10.000 --> 01:10:23.000
+Based on automotive waiting for 2. Transaction and then move. Get it for. For, giving it for general case.
+
+01:10:23.000 --> 01:10:34.000
+Okay. Any questions here?
+
+01:10:34.000 --> 01:10:39.000
+Okay.
+
+01:10:39.000 --> 01:10:49.000
+Let's jump into the next question during this question we want to see here. Each of the following 2 transactions can end up in that situation.
+
+01:10:49.000 --> 01:10:52.000
+Okay.
+
+01:10:52.000 --> 01:10:59.000
+So you're just running these operations for interesting transactions. You may think of any possible overlap of execution.
+
+01:10:59.000 --> 01:11:12.000
+Transactions every 2 transactions. And then we want to see each of the 2 we can follow up. Into a Maybe 2 to 3 min or 2 to 4 min.
+
+01:11:12.000 --> 01:11:42.000
+And then walk it back here to see the answer.
+
+01:17:43.000 --> 01:17:55.000
+Okay, thank you everyone. So we have t 24 from jinkle on my also Shimmy, So let's see.
+
+01:17:55.000 --> 01:18:03.000
+So first of all, what's the, you know, the current is it? Or 2 transactions to fall into the block.
+
+01:18:03.000 --> 01:18:07.000
+Okay, what's the
+
+01:18:07.000 --> 01:18:22.000
+I mean some of the some transactions can never end up in 2. Finish. Or can end up in
+
+01:18:22.000 --> 01:18:48.000
+Any ideas?
+
+01:18:48.000 --> 01:18:57.000
+Okay, so first of all. 2 translations can end up in the deadlock if and only if they are using the same set of resources.
+
+01:18:57.000 --> 01:19:05.000
+They're not using the same sort of resources. There's no chance. Here we have T one, we also have T 2.
+
+01:19:05.000 --> 01:19:14.000
+So T one and T 2 are doing sort of resources. I see and T 2 is working with A and B.
+
+01:19:14.000 --> 01:19:19.000
+Okay, so there is not possible. For these 2.
+
+01:19:19.000 --> 01:19:28.000
+So similarly T 3 and T 4 can never encompass Okay, or T one and T 4 can never end up.
+
+01:19:28.000 --> 01:19:35.000
+So now we only need to consider 2 pairs. T one.
+
+01:19:35.000 --> 01:19:45.000
+You need to consider the T one. Teach me. And T 4 8.
+
+01:19:45.000 --> 01:19:56.000
+Okay, so now let's take it to one and t 3. Do they fall into a So if one goes first and T 3 goes second, you can also assume that.
+
+01:19:56.000 --> 01:20:02.000
+Other day around but since the 2 are the same Doesn't matter which one goes first, right?
+
+01:20:02.000 --> 01:20:14.000
+So if you assume that T one is going first. Lock and see at this point. And now it's, imagine that T 3 right after that you'll get the floor.
+
+01:20:14.000 --> 01:20:23.000
+So they also want to put in look and see, but since. T one only has a lock on C.
+
+01:20:23.000 --> 01:20:29.000
+What do you want to finish? Okay. So then T 3 will wait here.
+
+01:20:29.000 --> 01:20:43.000
+So they will wait here. One, T one, finish. 21, they'll finish and we'll actually at the end of that just before they commit, release the lock at this point.
+
+01:20:43.000 --> 01:20:55.000
+So at that point, So I have to get that gets the lot. There is no. This one has already finished until 3 will continue.
+
+01:20:55.000 --> 01:21:09.000
+The process and So, Oh good, we need to. Can you do the replacement t 2 and t 4 and one together?
+
+01:21:09.000 --> 01:21:18.000
+So let's assume that first, T 2 gets Dock on A at this point right after that before it gets.
+
+01:21:18.000 --> 01:21:28.000
+Okay. Then, T 2, write something in A. And then T 4, you'll also run something to B.
+
+01:21:28.000 --> 01:21:36.000
+And then Teacher will try to lock on me, but. Since, T 4 already not be.
+
+01:21:36.000 --> 01:21:50.000
+So here, until needs to rate, right? The And at these points. We can see that T 4 also needs to pay because it wants to put a lot on A.
+
+01:21:50.000 --> 01:21:58.000
+Breach. See you only be able to walk on. So. We're also.
+
+01:21:58.000 --> 01:22:07.000
+And so then the 2 do actually wait for one another to release a lot But since they are like waiting for each other.
+
+01:22:07.000 --> 01:22:15.000
+They've been wait indefinitely for now infinitesimal For you have time. We just called it.
+
+01:22:15.000 --> 01:22:20.000
+So this is a good luck situation.
+
+01:22:20.000 --> 01:22:35.000
+Okay, and if you go to the other way around starting the T 4 the same will happen they will again end up in Execute one coming from T 4, one from T 2, again one for T 2.
+
+01:22:35.000 --> 01:22:39.000
+To see how they end up in
+
+01:22:39.000 --> 01:22:56.000
+Cool. Any questions here?
+
+01:22:56.000 --> 01:23:02.000
+Any questions? Now let's go into the next.
+
+01:23:02.000 --> 01:23:15.000
+Thank you.
+
+01:23:15.000 --> 01:23:25.000
+Question 7. So isolation property in asset properties states that each transaction should run without being in there or in difference with another transactions.
+
+01:23:25.000 --> 01:23:34.000
+Okay. So we want to pull the solution. For achieving isolation. So the solution is if we.
+
+01:23:34.000 --> 01:23:47.000
+Use a, you know. A big lock for each transaction that gets into the memory. You too. That the whole database.
+
+01:23:47.000 --> 01:23:55.000
+The whole other base. Oh, I putting the big black payer transaction that is running. Then what will happen?
+
+01:23:55.000 --> 01:24:08.000
+Okay. Is this a ideal solution to or getting our estimation working or not?
+
+01:24:08.000 --> 01:24:23.000
+So we can review why this may not be an idea solution. So again, so We discussed what my solution is, why it is important for you know different applications.
+
+01:24:23.000 --> 01:24:28.000
+And now we are suggesting some new approach.
+
+01:24:28.000 --> 01:24:37.000
+Okay, so we just want to see if that approaches. Something feasible or not.
+
+01:24:37.000 --> 01:25:07.000
+So I'd be 2 to 4 min just to ask questions. Then we'll get right here to see the answer.
+
+01:29:35.000 --> 01:29:42.000
+Okay, any ideas? Thank you very much. So some input is coming. So we start Stephen.
+
+01:29:42.000 --> 01:29:52.000
+In this case when one transaction is running, no other transaction which can run. Although you can achieve the isolation property.
+
+01:29:52.000 --> 01:30:06.000
+Yes. That's right. The point. So then we have Jean, means every time I only execute one transaction which means decrease the performance.
+
+01:30:06.000 --> 01:30:27.000
+Every transaction. Should wait for the previous one to one lot. Data. They'll increase the yes that's also right may take too long to process many transactions This transaction may not be going with the same type of rules, so volcano or Latin, fast.
+
+01:30:27.000 --> 01:30:37.000
+Yes, that's also a very good point. . Okay, all of you were right.
+
+01:30:37.000 --> 01:30:46.000
+So this is actually very same that the One at a time, solution that be proposed at the end of the start of today's material, right?
+
+01:30:46.000 --> 01:30:52.000
+So we saw that, in banking and shopping systems. If you apply that one at the time.
+
+01:30:52.000 --> 01:31:09.000
+Policy. You actually deteriorate your performance. Thank you. For the Third year transaction to be finished, which is not feasible.
+
+01:31:09.000 --> 01:31:17.000
+Reality But you know this is one of the, this, this was another boarding of that simplistic approach.
+
+01:31:17.000 --> 01:31:25.000
+And by itself. It's a simplistic approach. But, one of the key.
+
+01:31:25.000 --> 01:31:39.000
+Shortcomings of these approach. Is the basic resource that it creates. Okay. You know, as, Richie and actually, So this is very pessimistic.
+
+01:31:39.000 --> 01:31:51.000
+Assuming that every 2 transaction is going to. Access the same sort of resource and end up in a situation that we have there's a read of there to but that's not necessarily the case.
+
+01:31:51.000 --> 01:32:01.000
+So we can have many transactions that are like totally, working with different set of resources as we've seen in the previous network example, right?
+
+01:32:01.000 --> 01:32:11.000
+So in those cases, we don't need to do that. And then when we have you know transactions are both in the same sort of resources.
+
+01:32:11.000 --> 01:32:19.000
+Please, is very, you know. Has a very big overhead. And the running time.
+
+01:32:19.000 --> 01:32:32.000
+You know, totally impacted the negative bay. So that's why. Potentially at the So, but yeah, this is one of the first.
+
+01:32:32.000 --> 01:32:51.000
+You know. Concurrent sequential models. Which we can name and you know, as we said, so the downside of that is that it's actually based in lots of resources such as I know.
+
+01:32:51.000 --> 01:33:02.000
+CPU you will have you have That's so on. So even in single CPU situations, you prefer some speed up using concurrency then.
+
+01:33:02.000 --> 01:33:07.000
+Sticking with please. Conservative approach.
+
+01:33:07.000 --> 01:33:08.000
+So in overall, we always want to achieve, isolation as we discussed in the first question.
+
+01:33:08.000 --> 01:33:33.000
+So achieving isolation is ideal. And actually is the requirement for us. By the same time, we don't want to you know, sacrifice the performance because performance is also as important to us and to maybe businesses as the I mean, as the consistency.
+
+01:33:33.000 --> 01:33:42.000
+Okay, and the solutions should not actually work as you know, reasonable solution. That can work in practice.
+
+01:33:42.000 --> 01:33:51.000
+Cool. Any questions here?
+
+01:33:51.000 --> 01:33:55.000
+Any questions?
+
+01:33:55.000 --> 01:34:03.000
+Now it's moving. Next question, which is the last question of the second. So we have.
+
+01:34:03.000 --> 01:34:13.000
+We want to actually come up with an example. So we have a new policy for dealing with. So previously we said, okay, so let's.
+
+01:34:13.000 --> 01:34:18.000
+Do it one by one. The first question we said, let's do it one at a time.
+
+01:34:18.000 --> 01:34:31.000
+We saw that now the impact is very big. And it's not feasible then they said okay so let's come and the big lock on the database and then we said no that's actually saying to the one at a time you don't want to use that.
+
+01:34:31.000 --> 01:34:42.000
+Peter, now in the third approach we want to do some concurrency that by now implemented the following.
+
+01:34:42.000 --> 01:34:52.000
+You know, approach. In this approach we are, you know, using One not, okay, pair operation.
+
+01:34:52.000 --> 01:34:58.000
+So clear operation. A huge transaction. We use logs to make sure that concurrent access is done properly.
+
+01:34:58.000 --> 01:35:08.000
+Okay. So yeah, so. Each operation basically. In the transaction discovered the appropriate lock.
+
+01:35:08.000 --> 01:35:15.000
+And you want to see if that's enough for a achieving isolation when we run any 2.
+
+01:35:15.000 --> 01:35:22.000
+2 sections come currently Okay.
+
+01:35:22.000 --> 01:35:31.000
+So this is actually one of the approaches that is being used in operating systems and it works fine. I want to see if that works one as well in.
+
+01:35:31.000 --> 01:35:40.000
+The base management system as well. So if you can give 2 transactions. Okay. That.
+
+01:35:40.000 --> 01:35:50.000
+Can show that this approach does not always work as expected. That would be great. So again, you will have
+
+01:35:50.000 --> 01:35:58.000
+. One You will have also T 2.
+
+01:35:58.000 --> 01:36:09.000
+So, So you need to. You know do the you know overlay the operations. To.
+
+01:36:09.000 --> 01:36:20.000
+Transactions in a bay that although then you know you have some operations, let's say you have this operation this is covered by the appropriate account You have another operation also.
+
+01:36:20.000 --> 01:36:32.000
+Calling the appropriate log and you have also some operations here as well. So you want to open the operations of these 2 transactions in a way that it can violate.
+
+01:36:32.000 --> 01:36:42.000
+Isolation in overall. Want to see if This, approach can achieve ISIS or if it's not enough yet.
+
+01:36:42.000 --> 01:37:12.000
+For achieving running town sections. Maybe. Yeah, 3 to 4 min on this question and then get back here to see you.
+
+01:39:52.000 --> 01:40:01.000
+Okay, any other dues?
+
+01:40:01.000 --> 01:40:17.000
+Can we use like these 2 transactions? Like. Every operation covered. Innovate that they you know.
+
+01:40:17.000 --> 01:40:21.000
+There to read. Okay, yes. How come?
+
+01:40:21.000 --> 01:40:51.000
+Okay, Can you give an example?
+
+01:40:55.000 --> 01:41:04.000
+Okay, so when it comes to there to be basically you need to have transaction that is you know having right operation.
+
+01:41:04.000 --> 01:41:14.000
+And then raise another Right operation over late, it means to write operation from best transaction. So The second one is actually doing it.
+
+01:41:14.000 --> 01:41:23.000
+Read and write operation between the 2 right operations of the first transaction. Okay. It's also what I, like, wrote here so you can see.
+
+01:41:23.000 --> 01:41:36.000
+If you assume that those operations of the first one sections are Right operations. Then you transaction T 2 does some bright operation in between the right operations of the first transaction.
+
+01:41:36.000 --> 01:41:42.000
+I'll go with them can be covered with an appropriate note. The whole thing is still violets.
+
+01:41:42.000 --> 01:41:53.000
+Isolation. Okay, so let's have a look at Gene. Example, do you want to read?
+
+01:41:53.000 --> 01:42:14.000
+Right, right. So yeah, you may also assume that they have like the appropriate like on top of each of the So, Okay.
+
+01:42:14.000 --> 01:42:25.000
+It should be 2 right on the same resource. I don't think that this one can Yeah.
+
+01:42:25.000 --> 01:42:30.000
+Ring. We can.
+
+01:42:30.000 --> 01:42:36.000
+No, it cannot because you know If you have T one, right, in the example of Jean, everyone.
+
+01:42:36.000 --> 01:42:40.000
+Please have a look to that.
+
+01:42:40.000 --> 01:42:47.000
+Chat area. So first of all, in one transaction you need to have 2 writing points on the same resource.
+
+01:42:47.000 --> 01:42:54.000
+None of your translations has 2 right parts at the same resource. Okay. So it looks like the T one.
+
+01:42:54.000 --> 01:43:05.000
+Is writing something on A and then it's committing. Okay, all the changes to Hey, he's being committed, you know, similar to being committed.
+
+01:43:05.000 --> 01:43:13.000
+Have to finishes the first right on A because there is no right coming up on A. So if, T 2 gets the phone.
+
+01:43:13.000 --> 01:43:17.000
+After that.
+
+01:43:17.000 --> 01:43:31.000
+It's so good. I mean in terms of value of pay because T one is not going to change it any further and whatever G 2 changes that's all good And the same is.
+
+01:43:31.000 --> 01:43:45.000
+But now let's check. Like an example of the case the guy said so we have 2 right operations from one transaction and One right operation from the transaction that is overlay between these 2 right operations.
+
+01:43:45.000 --> 01:43:54.000
+Okay.
+
+01:43:54.000 --> 01:44:02.000
+Okay. Okay, so as you can see. So we have operation one to 4, operation 5 to 9.
+
+01:44:02.000 --> 01:44:24.000
+So in operation one to 4 we have one right one update of value a and operation report. Your reading, replacing the value, then in between that and between a lot of right operation that we have in operation 11 and transaction 2 is actually taking the floor is reading the value of A is of taking the value of A and writing it.
+
+01:44:24.000 --> 01:44:35.000
+So when the transaction T one is getting the floor back, the value of A is not same as Then it changed it in operation 4.
+
+01:44:35.000 --> 01:44:43.000
+But that's why. That although we covered like these operations such as read such as Read and write.
+
+01:44:43.000 --> 01:44:51.000
+They all are covered with appropriate lodge. Yes, don't cover it in a perfect part, but it's still the whole thing.
+
+01:44:51.000 --> 01:44:58.000
+It's fine. So it looks like that only covering the operations of the appropriate land is not enough.
+
+01:44:58.000 --> 01:45:07.000
+To achieve isolation in your current when you are concurrently running to town sections
+
+01:45:07.000 --> 01:45:13.000
+Okay.
+
+01:45:13.000 --> 01:45:25.000
+So again, you have 2 touch points. In 1, one here. And between these 2 touchpoints and another transaction comes and updates the value invited.
+
+01:45:25.000 --> 01:45:40.000
+And this is ruining the whole. This is like by making up, isolation because this transactions reading some unchanged uncommitted changes from Class Action.
+
+01:45:40.000 --> 01:45:45.000
+Okay, oh good
+
+01:45:45.000 --> 01:45:57.000
+So. We take a 10 min another 10 min break and then after 10 min, 5 17, get back here.
+
+01:45:57.000 --> 01:46:01.000
+Continue with the third part.
+
+01:46:01.000 --> 01:46:31.000
+And probably finish this. Material as well. So see you in. 5, 17.
+
+01:55:39.000 --> 01:55:51.000
+Okay, welcome back with one. So let's continue with So we begin to part with this dependence relation problem.
+
+01:55:51.000 --> 01:56:11.000
+So we have this history of the transaction that has been run. And the history we know that, that the transaction is run on you know it's done some operation on specific resources for instance theization t one is reading from.
+
+01:56:11.000 --> 01:56:18.000
+It's the other Transition T 3, it's writing on, and so on and so forth.
+
+01:56:18.000 --> 01:56:23.000
+Okay, so
+
+01:56:23.000 --> 01:56:37.000
+And now we want to create this depends relation. So the current simulation basically is relation between 2 transactions when you know they are doing some completing operation on the
+
+01:56:37.000 --> 01:56:49.000
+Shared resource for instance this session t one is reading from object one. And this Transaction T 3 is also writing to option one.
+
+01:56:49.000 --> 01:57:05.000
+So the 2 town sections are having good. I'm clicking the operation on the same resource. And that creates a dependency relationship between T one and T 3 on the same object or one.
+
+01:57:05.000 --> 01:57:20.000
+Okay. So you want to create like all of the possible dependency relations they just out there And then based on that, they create pinsi graph and then we can present the pens graph.
+
+01:57:20.000 --> 01:57:41.000
+You can comment on whether then the serial history. Or, there's a, Okay, so in the same way that we created the dependence relation between t one and t 3 please go ahead and Try to find all the other kinds of relations.
+
+01:57:41.000 --> 01:57:52.000
+And also try to create the and simulation graph. So the difference relation graph basically create one note for each of the transactions Okay.
+
+01:57:52.000 --> 01:57:55.000
+Like this.
+
+01:57:55.000 --> 01:58:11.000
+And then for instance here you have section T one having a penis with transaction t 3 on all one then if this is t one and this is T 3.
+
+01:58:11.000 --> 01:58:19.000
+Then we just connect the 2.
+
+01:58:19.000 --> 01:58:25.000
+So the one link will come out from Translation T one and we'll go up to Translation T 3.
+
+01:58:25.000 --> 01:58:50.000
+Just the way that we right the transaction relation. Okay, so yeah, try to create the depends on relations and then try to also create the See graphs see if there's a bone hole or cycle in the pensi graph or there's or if there's a maybe 2 to 4 min on this question and then get back to
+
+01:58:50.000 --> 01:59:20.000
+you. Yes.
+
+02:08:25.000 --> 02:08:41.000
+Oh, sorry. So did you hear me talking about the answer of Question 9 and 10.
+
+02:08:41.000 --> 02:08:52.000
+Okay, sorry for that. Yeah, okay. So, Probably I need to do it again. So thank you for telling me.
+
+02:08:52.000 --> 02:08:59.000
+So yeah, so for this 1. 4. This question.
+
+02:08:59.000 --> 02:09:05.000
+So we first need to Come up with the
+
+02:09:05.000 --> 02:09:16.000
+Depends on relations so yeah your friends actually correctly mentioned how the penestrelation are driven So if you check here, we first need to start with.
+
+02:09:16.000 --> 02:09:29.000
+Yeah, and the objects or the resources that the transactions are dealing with. So, the, first check for Transaction T one, it's O one.
+
+02:09:29.000 --> 02:09:38.000
+So we go and check if any other Transaction is dealing with O one, you see that yes, D 2 is also delaying the full one.
+
+02:09:38.000 --> 02:09:49.000
+And then we check if the operations are conflicting. This is also the case because, This is a.
+
+02:09:49.000 --> 02:09:54.000
+One
+
+02:09:54.000 --> 02:10:05.000
+And then we eliminate these 2. And then do the same for T 3 and T 2. So we say.
+
+02:10:05.000 --> 02:10:09.000
+For T tree.
+
+02:10:09.000 --> 02:10:22.000
+It is like writing an offline. Let's check if any of the transaction is. Doing any other operation on O 5 you see yes it's T 2 and it's a reading, yeah, we know that again reading and writing is conflicting.
+
+02:10:22.000 --> 02:10:34.000
+So again, T 3 will have a T 2. And be right there as a defense relation here. So both of them will have a dependence relation on O 5.
+
+02:10:34.000 --> 02:10:43.000
+That they could do the fees to as well. Then the next would be P 2 is doing some writing and O 2 also.
+
+02:10:43.000 --> 02:10:49.000
+T one is doing some reading at all 2.
+
+02:10:49.000 --> 02:11:06.000
+And we can see that. You know again the operations, reading and writing are conflicting and we can write it as a Pence relation between T 2 and T one on resource Just begin, be again.
+
+02:11:06.000 --> 02:11:16.000
+You could do the fat. And then the other 2, both of them are T 5, so a translation cannot have a answer relation between itself.
+
+02:11:16.000 --> 02:11:22.000
+And basically It's like doing, operations or separate resources that doesn't matter even if it was on the same resource.
+
+02:11:22.000 --> 02:11:31.000
+Since it's like the same transaction doing these operations and also seems it's like only read operation, we can ignore that.
+
+02:11:31.000 --> 02:11:37.000
+So we can ignore these 2.
+
+02:11:37.000 --> 02:11:49.000
+Okay, that'll have these 3. It tends to relation. So now you can think of If you draw a graph and put one into team for Each of the 10 sections.
+
+02:11:49.000 --> 02:11:59.000
+Then these relations will Talk about the pages. So you can see that one edge is going from T one to T 3.
+
+02:11:59.000 --> 02:12:11.000
+Then one age is going from T 3 to T 2. And then one going one edge is going back from all the way from T 2 back to T one, right?
+
+02:12:11.000 --> 02:12:20.000
+Which means there's a warm hole or there's a loop. In the dependency graph. And therefore there is no Syrian history.
+
+02:12:20.000 --> 02:12:24.000
+Okay.
+
+02:12:24.000 --> 02:12:37.000
+Because of a warm hole or a loop that we can see. In the Okay, any questions here?
+
+02:12:37.000 --> 02:12:44.000
+Any questions?
+
+02:12:44.000 --> 02:12:49.000
+Let's move to the next question.
+
+02:12:49.000 --> 02:12:54.000
+Hey, question 11.
+
+02:12:54.000 --> 02:13:06.000
+So assume the following 2 transactions. So we want to. Can see the 2 different running for the of the following 2 transactions.
+
+02:13:06.000 --> 02:13:16.000
+The first for the transaction T one for transaction one goes first and then transaction 2 goes and you may overlay, you know, the operations.
+
+02:13:16.000 --> 02:13:23.000
+As you fish, but they assume that no 2 operations can. Run exactly at the same time.
+
+02:13:23.000 --> 02:13:28.000
+So one should go first and then the other one.
+
+02:13:28.000 --> 02:13:37.000
+So given these 2 transactions, we want to see What happens if transsection one goes first and then transaction 2 those?
+
+02:13:37.000 --> 02:13:49.000
+As opposed to the case when the section 2 goes first and then transaction 1. 1, 2, 2.
+
+02:13:49.000 --> 02:13:58.000
+Okay, so yeah, so maybe 3 to 4 min on this question. So try to run transaction T one.
+
+02:13:58.000 --> 02:14:05.000
+And when you're running, maybe you can alternate between one operation from. 21 and one operation.
+
+02:14:05.000 --> 02:14:13.000
+And run it this way to the end. Then come back and run it. The Translation T 2 first and 21 s.
+
+02:14:13.000 --> 02:14:43.000
+I see what happens and what's the difference in these 2 cases.
+
+02:17:41.000 --> 02:17:59.000
+Okay, so any ideas what happens if transaction one goes first? As opposed to translation 2 going first.
+
+02:17:59.000 --> 02:18:04.000
+So let's check. Let's start with transaction T one.
+
+02:18:04.000 --> 02:18:09.000
+Going first.
+
+02:18:09.000 --> 02:18:18.000
+Save transaction T one goes first. It's first put an S knock here on A. Then let's assume that's right after the.
+
+02:18:18.000 --> 02:18:27.000
+You can install on any things. Not conflicting, that's so good. And that's actually T one again goes first.
+
+02:18:27.000 --> 02:18:37.000
+Then Thanks, Locken. T 2 wants to go it wants to put an extra company in well but since session t one already for the next step.
+
+02:18:37.000 --> 02:18:44.000
+I need this one next to great.
+
+02:18:44.000 --> 02:18:52.000
+That's the great. 1 s you want to finish. Contest section T one.
+
+02:18:52.000 --> 02:19:05.000
+Is week from B. Bill, do some. Then find out.
+
+02:19:05.000 --> 02:19:17.000
+Okay. So at this point then transaction. They want unlocks the transition. T 2 and finish the get an mix up on B and execute the reception.
+
+02:19:17.000 --> 02:19:27.000
+So basically, Transaction T 2 gets the go back and transaction one has committed. And therefore, what the Transsection T 2 does.
+
+02:19:27.000 --> 02:19:33.000
+Dressive transaction doesn't matter. Because it will only vote with the committed changes from transaction to one.
+
+02:19:33.000 --> 02:19:40.000
+So in the case, Ben T one. First.
+
+02:19:40.000 --> 02:19:44.000
+One goes first and then to second.
+
+02:19:44.000 --> 02:19:59.000
+You too. Okay, so now let's check the case when T 2 goes first and then Oops.
+
+02:19:59.000 --> 02:20:24.000
+So in the case when T 2 goes Hey, right after that, T one goes and You can just let an A that's all good because 2 translation PIN. It's not on the same resources.
+
+02:20:24.000 --> 02:20:41.000
+. One, what's the put in next lot on B, but since the 2 already got a start on B, transition T one needs to wait Okay, then t 2 will continue right and be
+
+02:20:41.000 --> 02:20:54.000
+Brighton B. And we'll also unlock So at this point the Translation T 2 unlocks section T one and kicks in.
+
+02:20:54.000 --> 02:21:11.000
+And Take an then transaction, T 2 can get it over and and run this one, but if that's section 2 2 wants to Get them.
+
+02:21:11.000 --> 02:21:21.000
+Me to wait for. You want to finish. And release transaction. And release expects.
+
+02:21:21.000 --> 02:21:34.000
+Dot com B right. So. But at this point when transaction T one is actually reading A so the value of A and actually bidding B the value of B has already.
+
+02:21:34.000 --> 02:21:43.000
+You know, updated. And has only been written. So this is this value of is reading at this point.
+
+02:21:43.000 --> 02:21:55.000
+There's actually some value that has already changed. So this is a day to week here. So you can say that this is a there to read at this point.
+
+02:21:55.000 --> 02:22:06.000
+Okay. And This can create the power. So again, you can see that this reading and writing and B is happening.
+
+02:22:06.000 --> 02:22:18.000
+Between 2 rights of B. We have so we have these 2 rights and then we have This one, Teams and this is the violation of the isolation.
+
+02:22:18.000 --> 02:22:30.000
+It is happening in this case. Okay. So yeah, so if done section, T one goes first and T 2 goes second, everything was fine, but other way around.
+
+02:22:30.000 --> 02:22:38.000
+T 2 goes first and then. He one goes. That's not okay.
+
+02:22:38.000 --> 02:22:54.000
+Because as you can see. We can have there to read and also Any questions here?
+
+02:22:54.000 --> 02:23:00.000
+Any questions?
+
+02:23:00.000 --> 02:23:04.000
+Now let's move to the next question.
+
+02:23:04.000 --> 02:23:09.000
+So next question is about the degree of isolation.
+
+02:23:09.000 --> 02:23:14.000
+So you want to know what's the degree of isolation of the following transaction.
+
+02:23:14.000 --> 02:23:20.000
+So before, that we can quickly review what was the degree of isolation. So we have 4 degree of isolation.
+
+02:23:20.000 --> 02:23:32.000
+We have degree 3. Degree 2. One and B 3 0. Okay, so that's maybe quickly.
+
+02:23:32.000 --> 02:23:44.000
+I did. 4. Degrees of isolation.
+
+02:23:44.000 --> 02:23:48.000
+So we have degree 3.
+
+02:23:48.000 --> 02:24:02.000
+So what what are the properties of it? So first of all, Well, with respect to
+
+02:24:02.000 --> 02:24:06.000
+Right.
+
+02:24:06.000 --> 02:24:10.000
+And it is 2 phase.
+
+02:24:10.000 --> 02:24:15.000
+Respect to
+
+02:24:15.000 --> 02:24:33.000
+All locks. Okay. So what does well form means means therefore means that every reading or writing writing operation is, covered with the appropriate Okay.
+
+02:24:33.000 --> 02:24:40.000
+And 2 phase we just speak to all Dux means that we have one face for lucky. One Facebook unlucky.
+
+02:24:40.000 --> 02:24:46.000
+And no locking operation happens after the first unbuttoning approach.
+
+02:24:46.000 --> 02:24:52.000
+Okay, so then We go with degree 2.
+
+02:24:52.000 --> 02:25:02.000
+That relaxes. We could read to some extent. So it is still with home. Respect to.
+
+02:25:02.000 --> 02:25:13.000
+Read and bright. But it is not no longer. 2 phase, sorry, 2 phase.
+
+02:25:13.000 --> 02:25:22.000
+Is no longer too faith with respect to all the logs. It's only Only 2 phase.
+
+02:25:22.000 --> 02:25:30.000
+With respect to Thanks.
+
+02:25:30.000 --> 02:25:37.000
+Okay.
+
+02:25:37.000 --> 02:25:45.000
+This is degree 2, then we also have degree one.
+
+02:25:45.000 --> 02:25:58.000
+So in degree one. It is only well form so we relax the property of their phone. So it's only Bell form.
+
+02:25:58.000 --> 02:26:08.000
+Respect to Right. And it is. Only 2 days.
+
+02:26:08.000 --> 02:26:15.000
+To speak to. Exclusive.
+
+02:26:15.000 --> 02:26:24.000
+Bucks. And then we also have degree 0.
+
+02:26:24.000 --> 02:26:28.000
+They also have degree 0.
+
+02:26:28.000 --> 02:26:35.000
+Hey, Cheese. Only well formed.
+
+02:26:35.000 --> 02:26:39.000
+Just expect to.
+
+02:26:39.000 --> 02:26:50.000
+Right. Okay. So this is how degree of isolations. Are defined and the this degree.
+
+02:26:50.000 --> 02:27:01.000
+Actually handles all different types of conflict and then as we go down the list. So. They, you know, handle.
+
+02:27:01.000 --> 02:27:06.000
+You were cases up until the
+
+02:27:06.000 --> 02:27:17.000
+This case that only doesn't write on the dirty dot of another One section. Okay. But here we only want to work with you know, identifying.
+
+02:27:17.000 --> 02:27:25.000
+What is degree 3 what is degree 2 and how we can switch between these 2. So you can always need to check.
+
+02:27:25.000 --> 02:27:37.000
+The Boldphone property and whether it covers only the rates, the rights or some of them for both of them.
+
+02:27:37.000 --> 02:27:48.000
+And then you also need to check how it's covering, you know. Hi there it's two-phase, in a speak to all the logs or it's just to place in respect to exclusive logs.
+
+02:27:48.000 --> 02:27:59.000
+And so on. So let's jump into the Question 12. So we want to check what is the degree of isolation of comparing transaction.
+
+02:27:59.000 --> 02:28:08.000
+Checking the well form property. Shaking if it's filmed with respect to read and write if that's the case It's at least decree.
+
+02:28:08.000 --> 02:28:21.000
+2 and then we need to check the 2 face property And if it's not, with respect to read and write, it is most the one.
+
+02:28:21.000 --> 02:28:28.000
+Okay.
+
+02:28:28.000 --> 02:28:40.000
+So. Requiring Lee's saying, degree one. Retreat So maybe 24 min in this case.
+
+02:28:40.000 --> 02:29:10.000
+Any other ideas?
+
+02:30:24.000 --> 02:30:42.000
+Okay, so any comment on the bill form? So is it the phone? Is it only, Oh, sorry, you just went to.
+
+02:30:42.000 --> 02:30:45.000
+Any ideas?
+
+02:30:45.000 --> 02:30:49.000
+So let's take the operations one by one.
+
+02:30:49.000 --> 02:31:02.000
+. Right So we have one group operation. That is covered with But here we have. One right operation is also appropriate.
+
+02:31:02.000 --> 02:31:11.000
+Have which has the but this read operation. Doesn't have any. So it's at March, it's up to 3 1.
+
+02:31:11.000 --> 02:31:26.000
+Now what's the difference between B one and between 0? It's only the 2 phases of the exclusive locks so here we have only One exclusive log, which is
+
+02:31:26.000 --> 02:31:35.000
+And one exclusive bar by itself is always, 2 faced. So we can say that this is a different one.
+
+02:31:35.000 --> 02:31:38.000
+1 s.
+
+02:31:38.000 --> 02:31:46.000
+Okay, any questions?
+
+02:31:46.000 --> 02:31:49.000
+Any questions?
+
+02:31:49.000 --> 02:31:55.000
+Now let's move to the That's the question of this material.
+
+02:31:55.000 --> 02:32:00.000
+Just question to your team.
+
+02:32:00.000 --> 02:32:11.000
+So we want to convert this degree to transaction into a degree tree transaction.
+
+02:32:11.000 --> 02:32:16.000
+How would you do that?
+
+02:32:16.000 --> 02:32:27.000
+So we know that between 2 and degree 3 both are well formed with respect to course freedom rights. But degree 3 is, 2 phase with respect to.
+
+02:32:27.000 --> 02:32:57.000
+All locks and The 2 is only 2 phrases with respect to exclusive. So how can we convert this degree 2 to the query?
+
+02:33:40.000 --> 02:33:54.000
+Okay, so the only difference between degree 2 and degree 3 is the 2 for instance, right? So let's check which operation is actually violating the 2 for instance with respect to all the So we have this unlock on A.
+
+02:33:54.000 --> 02:34:09.000
+That is actually you know Rooney, the 2 faces because After that we have some lighting operating. So if you remove these on liking here and move it to the end of Transsection.
+
+02:34:09.000 --> 02:34:19.000
+Okay, basically here should be all good. Right. Because after that, no more liking operation we had.
+
+02:34:19.000 --> 02:34:34.000
+And it should be all good. And to be still cover every operation with the appropriate logs of your nuts violating the bell form mess and you're adding the 2 businesses.
+
+02:34:34.000 --> 02:34:42.000
+To this transaction so it's like only removing the unlocking from here since we already have one on like here
+
+02:34:42.000 --> 02:34:49.000
+And we can also remove the like you as well because
+
+02:34:49.000 --> 02:34:54.000
+You have one at the top, so we have, you don't need to close it, keep it open.
+
+02:34:54.000 --> 02:35:05.000
+We remove this unlock, we also remove this and then all should be good.
+
+02:35:05.000 --> 02:35:14.000
+Yes, yes, we also need to. So Gene Kwang Lee, yeah, we also need to remove the second slack as well because doesn't.
+
+02:35:14.000 --> 02:35:24.000
+You know, doesn't mean if you put 2 S like without
+
+02:35:24.000 --> 02:35:30.000
+Okay, this marks the end of today's stereo if you have any questions. Let me know.
+
+02:35:30.000 --> 02:35:43.000
+Otherwise, have a great
+
+02:35:43.000 --> 02:36:13.000
+Thank you.
+

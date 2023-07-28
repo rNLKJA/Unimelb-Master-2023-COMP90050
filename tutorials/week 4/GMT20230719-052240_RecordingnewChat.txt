@@ -1,0 +1,108 @@
+00:08:14	William De Michele:	Line 3, line 6, line 9 are unlocks that occur while there are still locks that are occurring.These should all be placed after line 10, the final lock
+00:12:07	Min Shen:	34 => no two-phase lock on reading，67=> no two-phase locking? Not sure，9 10 => no two-phase lock on writing
+00:14:18	William De Michele:	Alternatively could instead bring lines:7 and 10 to before 6
+00:21:03	William De Michele:	Is it advisable to bring locks earlier, or release unlocks later??
+00:21:23	William De Michele:	i.e. my first answer vs my alternative answer
+00:23:19	William De Michele:	Clear
+00:45:11	William De Michele:	U is compatible with S without delay, IX is not compatible with S giving a delay:IX is not compatible with U, causing a delay.Order will be T1 (S)-> T2 (U)-> T3 (IX)with T1 and T2 running without delay, and T3 being delayed
+00:53:40	Lily Li:	Can we assume the order for ourselves
+00:54:03	Ibrahim Ibrahim:	S and X are not compatible so t1 cannot go with t2 too without delay
+00:56:56	Ibrahim Ibrahim:	When value of A=3*
+01:00:12	Lily Li:	For these questions do we need to go through all orderings
+01:00:29	Lily Li:	Or is it sufficient to discuss just one
+01:00:38	William De Michele:	Sorry Ahmad I'm a bit confused about where I was incorrect?
+01:02:05	William De Michele:	Doesn't the compatability suggest the order? Not sure why to not maximise compatability
+01:03:06	William De Michele:	Okay sure thanks
+01:03:20	Ibrahim Ibrahim:	When A = 2, t1 S goes first and still compatible with t2 U. But not compatible with t3
+01:03:27	Min Shen:	T1 t2 run concurrently, t3 delay, as s is compatible with u, then lock status become u, then u will deny all;t1 t3 t2: s will deny the request of ix, but later can accept the request of u(in t2), so t1 t2 can run concurrent in this scenario but t3 still delay
+01:03:55	Min Shen:	And a == 2, so if statement is always false
+01:04:12	Ibrahim Ibrahim:	Ya.. agree
+01:04:25	Min Shen:	😁
+01:15:15	William De Michele:	First order: Only T1 & T3 can run because the IX prevents T2 from accessing FILE-2Reverse Order: All transactions can run, as T2 is able to share its IS with T1  ???
+01:15:15	Min Shen:	Database:t1 t2,can run, t3 delay, status is IX; file-2: t1 t2 can run, status is IX, key-a(file-2):t1 t2 can run, status is S, other keys(file-2): t2 can run, status is S;
+01:15:24	Min Shen:	For t1 t2 t3
+01:15:34	William De Michele:	Not sure on this one tho
+01:21:07	Min Shen:	So for t3-t2-t1
+01:21:14	Min Shen:	Lower layers first consider t2
+01:21:17	Min Shen:	Then t1?
+01:21:39	William De Michele:	Is it possible to go over granularity again during this break, I am still confused
+01:22:08	Min Shen:	Are all layers can be seen as independent?
+01:23:18	Min Shen:	so for t3 t2 t1, t1 is delayed in DATABASE, will this influence the lower layers?
+01:24:27	Min Shen:	So for each node, just consider them independently?
+01:24:54	William De Michele:	Isn't IS compatable with IX and vice versa? Why does the ordering change which transactions pass?
+01:25:15	Min Shen:	So if transaction is delayed in parent node, then this transaction in all child node will be delayed?
+01:26:05	William De Michele:	Yes I am unsure why going from back to front changed the compatability
+01:26:07	Min Shen:	Oh,so for t3 -t2 t1,just check database is fine?
+01:26:39	Min Shen:	Reacted to "Oh,so for t3 -t2 t1,..." with 👍
+01:26:55	William De Michele:	The order of transactions
+01:27:42	William De Michele:	On the table both IX -> IS has a plus and IS -> IX has a plus. Am I interpreting this wrong, I thought it means they are both granted
+01:30:53	William De Michele:	Oh okay I think I misheard the original answer then which lead to my confusion
+01:32:19	Min Shen:	want higher efficiency, higher throughput
+01:32:44	William De Michele:	Reacted to "want higher efficien..." with 👍
+01:34:24	Yeting Wu:	reduce waiting time
+01:34:41	Ahmad Asgharian Rezaei:	Reacted to "reduce waiting time" with 👏
+01:36:11	Ibrahim Ibrahim:	Reacted to "want higher efficien…" with 👍
+01:36:11	Ibrahim Ibrahim:	Reacted to "reduce waiting time" with 👏
+01:36:26	Min Shen:	Reacted to "reduce waiting time" with 👏
+01:40:51	Ibrahim Ibrahim:	Need to only recover 1 transaction? The t4
+01:41:59	Min Shen:	Replying to "Need to only recover..."
+
+Agree. And the creation and deletion of checkpoints will lead to more cost
+01:42:32	William De Michele:	Reacted to "Need to only recover..." with 👍
+01:42:37	William De Michele:	Reacted to "Agree. And the creat..." with 👍
+01:42:57	Ibrahim Ibrahim:	Replying to "Need to only recover…"
+@Min Shen:nodder:
+01:43:36	Lily Li:	Reacted to "Need to only recover..." with 👍
+01:44:36	Yeting Wu:	已使用👍回应"Need to only recov..."
+01:44:55	Min Shen:	For the case in figure, if crash occurs, the system recover to the begging of t2?
+01:45:09	Min Shen:	beginning* recovers*
+01:45:30	Ahmad Asgharian Rezaei:	Reacted to "Need to only recover..." with 👍
+01:45:38	Ahmad Asgharian Rezaei:	Reacted to "Agree. And the creat..." with 👍
+01:45:48	Ahmad Asgharian Rezaei:	Reacted to "@Min Shen:nodder:" with 😂
+01:52:03	William De Michele:	Scenario1: Abort as not all commitedScenario2: Also abort as coordinator didn't receive a commit message from P2
+01:52:09	Lily Li:	Scenario 1: abort
+Scenario 2: P2 timeout and abort
+01:52:18	Min Shen:	Reacted to "Scenario 1: abort
+Sc..." with 👍
+01:52:32	Yeting Wu:	已使用👍回应"Scenario 1: abort
+..."
+01:53:15	Lily Li:	And then all participants would rollback and abort logs would be forced to disk for coordinator and all participants
+01:55:20	Ibrahim Ibrahim:	Reacted to "And then all partici…" with 👍
+01:55:21	Ibrahim Ibrahim:	Reacted to "Scenario 1: abort
+Sc…" with 👍
+01:55:38	Ibrahim Ibrahim:	Reacted to "Scenario1: Abort as …" with 👍
+01:55:45	Min Shen:	Reacted to "And then all partici..." with 👍
+01:57:08	Ahmad Asgharian Rezaei:	Reacted to "Scenario1: Abort as ..." with 👍
+01:57:38	Ahmad Asgharian Rezaei:	Reacted to "Scenario1: Abort as ..." with 👏
+01:57:51	Ahmad Asgharian Rezaei:	Reacted to "Scenario 1: abort
+Sc..." with 👍
+02:07:34	Min Shen:	A in X becomes old
+02:09:58	William De Michele:	T will be fine to proceed as it is only needs to read one Replica manager which will be X, and no issues in depositing B to its replicas
+02:11:04	William De Michele:	U would become uncommited as it checks for the failure before commiting, which it would see that Y failed and would abort
+02:11:35	Min Shen:	Reacted to "U would become uncom..." with 👍
+02:13:01	Ahmad Asgharian Rezaei:	Reacted to "T will be fine to pr..." with 👍
+02:13:02	Ahmad Asgharian Rezaei:	Reacted to "U would become uncom..." with 👍
+02:37:15	Lily Li:	DPT:
+P1 10
+P2 15
+P3 20
+02:37:43	William De Michele:	Add (T1, LSN10) to Xact Table. Add (P1, LSN10) to DPTAdd (T1, LSN15) to Xact Table. Add (P2, LSN15) to DPTAdd (T2, LSN20) to Xact Table. Add (P3, LSN20) to DPTAdd(T2, LSN30) to Xact Table, No need for P1 in DPT again
+02:38:15	William De Michele:	Change T1 status to "commit" in Xact table
+02:38:50	William De Michele:	Yep didn't get to redo in time
+02:43:08	Min Shen:	so only redo Len 30?
+02:43:12	Min Shen:	lsn*
+02:50:53	William De Michele:	### AnalysisLSN 10:LSN 15: LSN 20: Initiate Xact table to (T1, LSN10) (T2, LSN20), and DPT to (P1, LSN10)  (P2, LSN15)LSN 30: Add Xact (T1, LSN30), Add DPT (P2, LSN30)LSN 35: Set Xact T1 status to CommitLSN 40: Add Xact (T2, LSN40)LSN 45: Set Xact T2 status to AbortLSN 50: ???
+02:53:14	Min Shen:	In the table, at lsn=25, it says DPT has [p2,15], but at Len = 15, it is p3..
+02:53:23	Min Shen:	lsn*
+02:53:32	William De Michele:	Reacted to "In the table, at lsn..." with 👍
+02:54:11	William De Michele:	Replying to "In the table, at lsn..."
+
+Also says [T2, 20] instead of [T2, 15]
+02:55:03	Ibrahim Ibrahim:	Replying to "In the table, at lsn…"
+Ya I think there is typo
+02:55:06	William De Michele:	### RedoScan forward through the log starting at LSN 30LSN 30: Read page P2, check PageLSN stored in the page. If PageLSN<30, redo LSN (set value to WWW) and set the PageLSN=30LSN 40: Read page P1, check PageLSN stored in the page. If PageLSN<40, redo LSN (set value to ZZZ) and set the PageLSN=40LSN 50: ???
+03:02:31	Lily Li:	Thanks for the semester!
+03:02:33	Yeting Wu:	thank you!
+03:02:35	Min Shen:	thank you
+03:02:40	William De Michele:	Thanks for the semester Ahmad
+03:02:42	Ibrahim Ibrahim:	Thank you!

@@ -1,0 +1,54 @@
+00:33:37	Jinhong Mai:	The isolation ensures multiple concurrent transactions' execution are isolated from each other
+00:34:30	Ziqiang Li:	isolation ensures that concurrent transactions leave the database in the same state as if the transaction were executed separately. Both businesses require consistency of data which isolation can ensure the consistency of data across multiple users
+00:37:13	Ziqiang Li:	concurrent transactions
+00:47:37	Jinhong Mai:	It is not a good choice since if an error happened at some point in the loop, the entire transaction will be rolled back and it will affect the consistency of the data
+00:48:30	Jinhong Mai:	ok, I am wrong
+00:48:52	Jinhong Mai:	Yep, I know that
+00:51:45	Jinhong Mai:	No
+00:54:39	Ziqiang Li:	21?
+00:54:46	Jinhong Mai:	21
+00:54:53	Jinhong Mai:	Reacted to "21?" with 👏
+00:54:55	Jinhong Mai:	Reacted to "21?" with 🤘
+00:54:57	Jinhong Mai:	Reacted to "21?" with 👍
+00:55:32	Zhikai Wu:	Reacted to "21?" with 👏
+00:55:33	Zhikai Wu:	Reacted to "21?" with 🤘
+00:55:35	Zhikai Wu:	Reacted to "21?" with 👍
+00:55:54	Zhikai Wu:	Reacted to "21?" with 🤌
+00:56:42	Jinhong Mai:	Reacted to "21?" with 🤌
+01:04:23	Ziqiang Li:	1: ABand C2: none3: none
+01:04:37	Jinhong Mai:	Reacted to "1: ABand C
+2: none
+3..." with 👍
+01:04:57	Ziqiang Li:	this is for rollback
+01:05:08	Jinhong Mai:	i: A,B,Cand parent ii: none iii: none
+01:06:22	Mingxiao Li:	(I) forced rollback; (ii) none (III) none
+01:09:28	Mingxiao Li:	Just wondering if there is any order to do the commit? Like parent have to commit first and then the children can react, or vice versa?
+01:19:28	Mingxiao Li:	For q4 (iii), since C rolls back with its own initiative , is it still count as “forced to roll back”?
+01:27:55	Mingxiao Li:	Thanks
+01:42:02	Jinhong Mai:	T2,T4
+01:42:34	Ziqiang Li:	Reacted to "T2,T4" with 👍
+01:44:02	Rescian Rey:	Reacted to "T2,T4" with ☝️
+01:44:14	Xinyi Rui:	2 and 4
+01:45:08	Steven:	Reacted to "T2,T4" with 👍
+01:55:09	Steven:	In this case, when one transaction is running, no other transactions can run. Although we can achieve the isolation property, the overall performance is bad.
+01:55:42	Jinhong Mai:	This means every time we can only execute one transaction which will decrease the performance and every transaction should wait for the previous one to unlock the data will increase the delay.
+01:56:55	Rescian Rey:	It may take too long to process many transactions. Each transaction may not be dealing with same tables/rows, so more granular locking is faster.
+02:07:35	Jinhong Mai:	dirty read
+02:07:38	Jinhong Mai:	I think
+02:08:47	Jinhong Mai:	T1: read A write A read B write B T2:read B write B read A write A
+02:30:24	Ziqiang Li:	DEP(H) = <T1,o1,T3>,<T3,O5,T2><T2,O2,T1>
+02:30:30	Jinhong Mai:	<T1,O1,T3>,<T3,O5,T2>,<T2,O2,T1> wormhole: T1-O1-> T3-O5->T2-O2->T1
+02:30:36	Ziqiang Li:	no wormhole
+02:31:02	Ziqiang Li:	oh, yes there is wormhole
+02:35:32	Zhikai Wu:	you are muted ahmad
+02:35:59	Ziqiang Li:	no
+02:36:00	Jinhong Mai:	Nope
+02:36:01	Rescian Rey:	No
+02:36:02	Mingxiao Li:	no
+02:55:23	Ziqiang Li:	degree 1
+02:55:24	Jinhong Mai:	3
+02:58:06	Jinhong Mai:	write
+02:58:09	Jinhong Mai:	degree 1
+03:01:06	Ziqiang Li:	maybe remove the 2nd slock A
+03:01:20	Ziqiang Li:	and move the unlock A to the end
+03:03:01	Zhikai Wu:	thankyou
