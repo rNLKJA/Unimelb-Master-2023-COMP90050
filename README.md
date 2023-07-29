@@ -252,7 +252,7 @@
   - [Alternative to Logs: Shadow Paging](#alternative-to-logs-shadow-paging)
   - [Distributed](#distributed-1)
     - [Atomicity in distributed transaction processing](#atomicity-in-distributed-transaction-processing)
-    - [Two phase commit protocol](#two-phase-commit-protocol)
+    - [Two-phase commit protocol](#two-phase-commit-protocol)
     - [Currency control in distributed DBs](#currency-control-in-distributed-dbs)
       - [Other Considerations for Locking-based systems](#other-considerations-for-locking-based-systems)
       - [Timestamp ordering concurrency control revisited](#timestamp-ordering-concurrency-control-revisited)
@@ -1307,6 +1307,10 @@ Disk writes for consistency: Either entire block is written correctly on disk or
 ### Logged Write
 
 Similar to duplex write, except one of the writes goes to a log. This method is very efficient if the changes to a block are small.
+
+The first one of the writes goes to a log. The second overwrites the old regular data block. In short, all modifications need to be logged before they are applied.
+
+So if a failure occurs, system knows where we are left to take proper action, i.e., even during a single block write.
 
 ## Cyclic Redundancy Check (CRC) Generation
 
@@ -2741,9 +2745,11 @@ Nested transaction does not encounter the problem with ACID properties. If one t
 
 Changes made by a subtransaction are visible to the parent only when the subtransaction commits. ALl objects of parent are visible to its children. Implication of this is that the parent should not be modify objects while children are accessing them. This is not a problem as parent does not run in parallel with its children.
 
-> Reading: Open-nested transaction
+> What if a crash happens during a nested transaction?
+>
+> - If the crash happens during a subtransaction, the subtransaction is rolled back and the parent transaction is aborted.
 
-<!-- TODO Reading Open-nested transaction -->
+> Nested transaction: a transaction that is a subtransaction of another transaction and managed by the same transaction manager.
 
 ## Transaction Processing Monitor (TPM)
 
@@ -3492,6 +3498,192 @@ Commit
 
 Optimistic locking assumes no conflict will occur and allows transactions to proceed without locking the resources. Locks are only applied at the end of transaction during the validation phase. If no conflict is found, the transaction is committed, making the duration of locks shorter than in two-phase locking where resources are locked for the entire duration of the transaction.
 
+---
+
+1. Discuss why the isolation proerpty of ACID properties will apply to both an Online shopping platform as well as an Online banking system despite that they are different appliations dealing with different data.
+
+Both types of systems may need to serve a large number of customers at any given time. For achieving consistency, both systems require that a transaction does not use the values that have been modified by another uncommitted transaction. A naive approach to achieve this is handling one customer at a time. But the efficiency of the service would be extremely low with this approach. Therefore, the systems should allow different transactions to run concurrently. At the same time, the changes to the data are made as if the transactions run on a serial schedule, i.e., a transaction runs as if it is the only transaction in the system and does not become aware of other concurrent transactions which is the objective of isolation. Isolation helps with achieving a high level of efficiency while maintaining the consistency of the data that is manipulated.
+
+2. A bank with millions of customers provides a bonus to each of its customer at the end of the year. The bonus is updated in the database as a flat transaction shown below. Discuss example and the associated issue(s) that can happen with such execution. Is it good choice to use flat transaction here?
+
+```
+GivenEndofYearBonus()
+{
+  exec sql BEGIN WORK
+  for each customer in database
+  {
+    double bonus = calculate_bonus(customer);
+    exec SQL UPDATE customer set account = account + :bonus
+  }
+}
+```
+
+The customer table here is a large table with millions of customers. This means this transaction can potentially be doing a lot of work during its exeuction and take a long time. Any failure in this transaction's execution would mean a lot of work lost. So better not to have this transaction as a flat transaction.
+
+3. A flat transaction with save-points has the following statements as example. If condition 1 is true once and the final commit is successful, what will be printed as the value of count?
+
+```
+BEGIN WORK
+count = 10
+SAVE WORK 1
+count = count + 10
+SAVE WORK 2
+count = count + 5
+SAVE WORK 3
+count = count + 5
+If (condition1) ROLLBACK WORK(2)
+count = count + 1
+print count
+COMMIT WORK
+```
+
+If condition1 is true, then the transaction rolls back to the save point WORK2. The exeuction order then follow the order below, with the value of count shown in the sides. The final count is 21.
+
+```
+BEGIN WORK
+count = 10
+SAVE WORK 1
+count = count + 10 // count is 20 at this point
+SAVE WORK 2
+count = count + 1 // count is 21 at this point
+print count // 21 will be printed as the value of count
+COMMIT WORK
+```
+
+4. In a nested transaction, a transaction PARENT has three sub-transactions A, B, B. For each of the following scenarios, answer which of these four transactions' commits can be made durable, and which ones has to be forced to rollback.
+
+- Scenario 1: Commit by A, B, and C; but PARENT rolls back.
+  - Based on the rollback rule, all four transactions rolls back, no durable commit by any transaction.
+- Scenario 2: Commit by A, B, C and PARENT.
+  - All four transactions make durable commits, no roll backs.
+- Scenario 3: Commit by A, B, and PARENT; but C rolls back.
+  - Durable commits by A, B, and PARENT, C rolls back.
+
+5. What is the probability that a deadlock situation occurs?
+
+- Assume, Number of transaction = n + 1 ≈ n (if n is large)
+- Each transaction access r number of locks exclusively
+- Total number of records in the database = R
+
+On average, each transaction is holding r/2 locks approximately (minimum 0 and maximum r, hence average is r/2) - transaction just commenced holds 0 locks, transaction that is just about to finish holds r locks.
+
+Average number of locks taken by the other n transactions = n \* (r/2) = nr/2R
+
+![](images/2023-07-29-22-40-50.png)
+
+- The probability that a particular transaction waits for a lock is nr/2R.
+- The probability that a particular transaction did not wait for a lock = 1 - nr/2R
+- The probability that a particular transaction did not wait (for any of the r locks), P = (1 - nr/2R)^r ≈ 1 - nr^2/2R
+- The probability that a particular transaction waits in its life time pw(T) = 1 - P = 1 - {1 - nr^2/2R} = nr^2/2R
+- The probability that a particular transaction T waits for some transaction T1 and T1 waits for T is pw(T) \* pw(T1) = nr^4/4R^2 [since the probability T1 waits for T is 1/n times the probability T1 waits for someone]
+- Probability of any two transactions causing deadlock is = n \* nr^4/4R^2 = n^2r^4/4R (this is very small in practice)
+
+6. If we use the following comments to lock and unlock access to objects, then which transactions below are in deadlock if they start around the same time?
+
+![](images/2023-07-29-22-45-28.png)
+
+T2 and T4 are in a deadlock as each of them will wait for the other to release a lock while holding a lock that the other needs to acquire to complete.
+
+7. Isolation proerpty in ACID properties states that each transactions should run without being aware or in interference with another transaction in the system. If that is the case, we can run transactions sequentially by locking the whole database itself and adhering to the Ioslation property through a big lock per transaction. Review why this may not be an ideal solution.
+8. Given two transactions, per operation of each transaction, we can use locks to make sure concurrent access is done properly to individual objects that are used in both transactions, i.e., they are not accessed at the same time. This is after all what the operating system do, e.g. lock a file while one program is accessing it so others cannot chagne it at the same time. Give two transactions showing that this is not enough to achieve isolation property of transactions for RDBMS.
+
+| Transaction 1 at Process 1 | Transaction 2 at Process 2 |
+| -------------------------- | -------------------------- |
+| Lock (A)                   |                            |
+| Read (A)                   |                            |
+| Unlock (A)                 |                            |
+| A = A + 100                |                            |
+|                            | Lock (A)                   |
+|                            | Read (A)                   |
+|                            | A = A + 50                 |
+|                            | Write (A)                  |
+|                            | Unlock (A) / Commit        |
+| Lock (A)                   |                            |
+| Write (A)                  |                            |
+| Unlock(A) / Commit         |                            |
+
+This exeuction order is not equal to T1 running first nor to T2 running first and does not obey the Isolation property. Although for each disk access, we first obtained a lock properly. Thus we need something more for proper concurrency control in DBMS.
+
+9.  What are the dependencies in the following history (a sequence of tuples in the form [$T_i$ $O_i$, $T_j$])? Draw the dependency graph mapping to this dependency set as well.
+
+H =< (T1,R,O1),(T3,W,O5),(T3,W,O1),(T2,R,O5),(T2,W,O2),(T5,R,O4),(T1,R,O2),(T5,R,O3) >
+
+Dependencies are given as:
+
+- DEP(H) = <T1, O1, T3>, <T3, O5, T2>, <T2, O2, T1>
+- We can also build the following dependency graph based on the following graph:
+- ![](images/2023-07-29-23-23-14.png)
+
+> Following the object operation order to draw the dependency graph.
+
+10. Given the solution above for the previous question, can we say the history is equal to serial history? If yes, show one such history. If not, show that there is a wormhole.
+
+There exists a cycle in the dependency graph, i.e., there are wormhole transactions (e.g. T1 is before and after of T3 at the same time). Therefore, finding equivalent serial execution is not possible.
+
+11. Assume the following two transactions start at nearly the same time and there is no other concurrent transaction. The 2nd operation of both transactions is Xlock(B). Is there a potential problem if Transaction 1 performs the operation first? What if Transaction 2 performs the operation first?
+
+| Transaction 1 | Transaction 2 |
+| ------------- | ------------- |
+| 1.1 Slock(A)  | 2.1 Slock(A)  |
+| 1.2 Xlock(B)  | 2.2 Xlock(B)  |
+| 1.3 Read(A)   | 2.3 Write(B)  |
+| 1.4 Read(B)   | 2.4 Unlock(B) |
+| 1.5 Write(B)  | 2.5 Read(A)   |
+| 1.6 Unlock(A) | 2.6 Xlock(B)  |
+| 1.7 Unlock(B) | 2.7 Write(B)  |
+|               | 2.8 Unlock(A) |
+|               | 2.9 Unlock(B) |
+
+If transaction 1 executes Step 1.2 and Transaction 2 executes step 2.2, there would be no problem. This is because T1 releases the lock at the end. T2 has to wait till then. However, if Transaction 2 executes Step 2.2 first, Transaction 1 may have a dirty read of B if it tries to run Step 1.2 immediately after Transaction 2 releases the Xlock on B. This is because when Transaction 2 release the lock on B (Step 2.4), Transaction 1 will be granted the Xlock on B (Step 1.2). After that, Transaction 1 will read B (Step 1.4). After Transaction 1 completes, Transaction 2 will acuquire another Xlock on B (Step 2.6) then modify the object. In other words, the reading of B by Transaction 1 happens between two writes of B by Transaction 2.
+
+12. What degree of isolation does the following transaction provide?
+
+```
+Slock(A)
+Xlock(B)
+Read(A)
+Write(B)
+Read(C)
+Unlock(A)
+Unlock(B)
+```
+
+Degree 1 as there is one read operation `Read(C)` without taking any lock. The only write operation has an exclusive lock associated with it. The transaction is two-phase with respect to exclusive lock.
+
+13. The following operation are given with Degree 2 isolation locking principles in place. Convert the locking sequence to Degree 3.
+
+```
+# Degree 2
+Slock(A)
+Read(A)
+Unlock(A)
+Xlock(C)
+Xlock(B)
+Write(B)
+Slock(A)
+Read(A)
+Unlock(A)
+Write(C)
+Unlock(B)
+Unlock(C)
+```
+
+```
+# Degree 3
+Slock(A)
+Read(A)
+Xlock(C)
+Xlock(B)
+Write(B)
+Read(A)
+Unlock(A)
+Write(C)
+Unlock(B)
+Unlock(C)
+```
+
+---
+
 ### What degree of isolation does the following transaction provide?
 
 ```
@@ -3549,6 +3741,20 @@ WHERE name = 'model'
 -- 3. Checkpoint interval: specify target recovery interval, for example, if a crash happens, recover within 1 min. The system will then determine how often it needs to create checkpoints based on that value.
 
 ```
+
+**Strategy plan based on:**
+
+- Goals and requirements of your organization/task
+- The nature of your data and usage pattern
+- COnstraint on resources
+
+**Design backup strategy**
+
+- Full disk backup vs. partial - Are changes likely to occur in only a small part of the databsae or in a large part of the database?
+- How frequently data changes
+  - If frequent: use differential backup that captures only the changes since the last full database backup
+- Space requirement of the backups depending on the resource
+- Multiple past instances of backup is useful if point-in-time recovery is needed
 
 ---
 
@@ -3935,7 +4141,7 @@ Two phases:
 
 <img src="images/2023-07-25-15-44-03.png" width=49% />
 
-### Two phase commit protocol
+### Two-phase commit protocol
 
 Coordinator or participant can abort transaction.
 
@@ -4037,6 +4243,8 @@ The limitations of distributed databases can be described in the so called the C
 - Availability: the system continues to operate, even if nodes crash, or some hardware or software parts are down due to upgrades
 - Partition Tolerance: the system continues to operate in the presence of network partitions
 
+> Atomoicity, concurrency, replication rule is distributed transaction processing.
+
 > CAP theorem: any distributed database with shared data, can have at most two of the three desirable properties, C, A or P.
 
 Assume two nodes on oppsite sides of a network partition
@@ -4044,6 +4252,8 @@ Assume two nodes on oppsite sides of a network partition
 - Availability + Partition Tolerance forfeit Consistency as changes in place cannot be propagated when the system is portioned.
 - Consistency + Partition Tolerance entails that one side of the partition must act as if it is unavailable, thus forfeiting Availability.
 - Consistency + Availability is only possible if there is no network partition, thereby forfeiting Partition Tolerance.
+
+> Network partition in databases: a network partition occurs when a network failure prevents two nodes from communicating with each other but does not prevent each node from communicating with other nodes.
 
 ## Large-Scale Databases
 
@@ -4126,6 +4336,8 @@ Tradeoff between Consistency and Latency (availability):
   - Availability and latency are arguably the same thing:
     - unavailable $\rightarrow$ extreme high latency
   - Achieving different levels of consistency/availability takes different amount of time.
+
+> ARIES: Algorithms for Recovery and Isolation Exploiting Semantics
 
 ## Trading-Off Consistency
 
@@ -4256,3 +4468,102 @@ What data to summarize
 - Raw data may be too large to store
 - Aggregate values (totals/subtotals) often suffice
 - Queries on raw data can often be transformed by query optimizer to use aggregate values
+
+---
+
+**WHy not just use cloud?**
+
+- Privacy: data is sensitive
+- Cost
+- Lock setup: need to determine the lock setup for the cloud
+- Crash recovery: need to determine what type of consistency is needed
+  - e.g. shoppiing cart
+- Database design issues: need to determine the schema by DBA
+
+> Session consistency: As long as session exists, system guarantees read-your-write consistency. Guarantees do not overlap sessions.
+
+---
+
+1. Given the operations for a transaction T1 below, please list the lines that this transaction is executing that given happen with two-phase locking. Briefly explain.
+
+```
+01. Slock(A)
+02. Read(A)
+03. Unlock(A)
+04. Slock(B)
+05. Read(B)
+06. Unlock(B)
+07. Xlock(C)
+08. Write(C)
+09. Unlock(C)
+10. Xlock(A)
+11. Write(A)
+12. Unlock(A)
+```
+
+1. Discuss why two-phase locking guarantees serializability.
+
+Because two-phase locking guarantees that the locks are acquired in a serial order, and the locks are released in a reverse order. This means that the transactions will not be able to access the data that is locked by another transaction, and the transactions will not release the locks before they are done with the data. This ensures that the transactions are executed in a serial order.
+
+3. The following transactions are issued in a system at the same time. Answer for both scenarios.
+
+- Scenario 1: When the value of A is 3, which of the following transactions can run concurrently from the beginning till commit (that is, all operations and locks are compatible to run concurrently with another one) and which ones need to be delayed? Please give explanation for the delayed transactions.
+- Scenario 2: When the value of A is 2, which of the following transactions can run concurrently from the beginning till commit (that is, all operations and locks are compatible to run concurrently with another one) and which ones need to be delayed? Please give explanation for the delayed transactions.
+
+![](images/2023-07-29-23-51-09.png)
+
+Request: +|- -> (next mode), +(granted), -(delayed)
+
+| Current Mode | None   | IS     | IX    | S    | SIX    | U    | X    |
+| ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
+| IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
+| IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | -(U) | -(SIX) | -(U) | -(X) |
+| X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+
+Scenario 1: None of the transactions can run concurrently. T2's update lock and T3's IX conflict with each other, and the subsequent X locks for A == 3 will conflict. T3's IX lock conflicts with T1's Slock. Although T1's shared lock and T2's update lock are compatible if T1 gets the lock first, for A == 3, T2's Xlock request will conflict with T1's shared lock. So only one can run at a time while the other transactions must be delayed.
+
+Scenario 2: When A is 2, T2 and T3 will not request exclusive lock. Hence, T1 and T2 can run concurrently as T2's update lock can be granted if T1 gets the shared lock on A first. T1 and T3 cannot run concurrently - one of them must be delayed as the locks are not compatible. T2 and T3 cannot run concurrently - one of them must be delayed as the locks are not compatible.
+
+4. Review the concepts of granular locks then answer the following question. Given the hierachy of database objects and the corresponding granular locks in the following picture, which transaction can run if the transactions arrive in the order T1-T2-T3? What if the order is T3-T2-T1? Note that locks from the same transaction are in the same color. We assume that the transactions need to take the locks when they start to run.
+
+![](images/2023-07-30-00-04-28.png)
+
+If the order is T1-T2-T3, then T1 and T2 can run in parallel while T3 waits. This is because T1's lock at the root node is not compatible with T3's S lock at the same node.
+
+If the order is T3-T2-T1, then T3 and T2 can run while T1 waits. This is due to the similar reason as above. This example shows that the order of transaction can be a deciding factor of the set of parallel-runnning transactions.
+
+We should also note that granular locks can lead to the delay of transactions at any level in the hierachy below the root node, e.g., a transaction may need to wait for a lock at the FILE-3 node or a KEY-A node due to lock compatibility issues.
+
+5. With two-phase locking we have already seen a successful strategy that will solve concurrency problems for DBMSs. Then discuss why someone may want to invent something like Optimistic Concurrency control in addition to that locking mechanism.
+
+Two-phase locking or in general locking assumes the worst, i.e. there are many updates in the system and most of them will lead to conflicts in access to objects. This means there is a good rationale to pay the overhead of locking and stop problems from occuring in the first place. But what if the DBMS is one such that people tend to work on different parts of data, or most of the operations are read operations, and as such there aren't many conflicts at all. Then there is no need to pay the overhead of lock management but rather it may be better to allow transactions run freely and have a simple check when they finish whether there was any conflict with concurrent transactions. Most of the time there will be so one will get increased concurrecny with less overheads. Obviously, the reverse is also true, i.e. if there were really many conflicting writes then doing optimistic concurrency control means many problems would be observed only after running the transactions and a lot of work will need to be wasted to preserve consistency of the data. So there is no clear answer but depending on the situation a strategy may be good or bad.
+
+6. In the following figure the first vertical line $T_c$ denotes the point where checkpointing was done and the second on the right, $T_f$ is where a system crash occurs. Please discuss what would change if the checkpointing was done right at the beginning of each transaction instead of the following case in the figure.
+
+![](images/2023-07-29-23-57-18.png)
+
+If we were to do checkpointing at the beginning of each transaction, then after a system failure there would be much less to do during recovery time. This is because unlike the case above there would be much less transactions to consider for redo/undo. T3 for example would not be considered if at the beginning of T4 we did a checkpoint. Thus, with more checkpointing recovery becomes fast. Having said this, this does not come for free. There would be many ouptut oeprations to the disk for each checkpoint as well as entries to the log regarding checkpointing. Thus the cost is during transaction processing there would be more overheads. One needs to consider the frequency of checkpointing carefully. There is no one good frequency and it is deployment dependant.
+
+- For systems where immediate recovery is ulmost important than frequency can be increased.
+- For systems where transaction processing should be done fast, but recovery can take a long time, less checkpointing should be considered.
+
+7. Assume a two-phase commit involves a coordinator and three participants, P1, P2 and P3. What would happen in the following scenarios?
+
+- Scenario 1: P1 and P2 voted yes and P3 voted no.
+
+  Coordinator asks all participants to rollback. Abort logs are forced to disk at coordinator and all participants. Because to achieve atomicity, all participants should commit or none will commit.
+
+- Scenario 2: P2 crashed when it was about to send a vote message to the coordinator.
+
+  The coordinator will try to get a response within the timeout period. If the coordinator cannot receive the vote from P2 within the timeout period. It will abort the transaction and ask all participants to rollback. Abort logs will b forced to disk at coordinator and all participants.
+
+8. Given the two following transaction T and U that run on replica managers X, Y, M, P, and N, review the problem that would occur if X and N were to crash during execution. Then state the solution that we have seen in the lecture. Discuss what would happen, if rather than X and N becoming unavailable we have the following scenario: If Y were to become unavailable during the exeuction and right after U accessed A at Y, but X and N do not fail, rest of the assumptions of this scenario is the same as the lecture slide:
+
+![](images/2023-07-29-23-59-17.png)
+
+For the case where Y fails instead of others. The scenario is different. We wish that: U can lock Y and is delayed at X as A is lockec by T there. On M, P, and N either U gets the lock first and T waits, in which case there is a deadlock which will be resolved by timer, or T locks on N as well and U also waits there and T finishes first and N later. In any case, as you see there is no problem as T and U should have been able to run without causing any harm. Nevertheless, the executions above will not occur, as seeing Y is gone U will self-terminate based on the rule. The implementation of the strategy that we have seen and in fact many strategies in DBMSs are only approximations and in general pessimistic ones so that they guarantee proper executions but sometimes terminate transactions that would not really cause harm.
+
+---
