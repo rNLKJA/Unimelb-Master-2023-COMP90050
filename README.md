@@ -231,6 +231,9 @@
     - [The duration of locks are usually shorter in optimistic locking than two-phase locking, true or false?](#the-duration-of-locks-are-usually-shorter-in-optimistic-locking-than-two-phase-locking-true-or-false)
     - [What degree of isolation does the following transaction provide?](#what-degree-of-isolation-does-the-following-transaction-provide)
   - [Crach Recovery](#crach-recovery)
+      - [Analysis Phase](#analysis-phase)
+      - [The REDO Phase](#the-redo-phase)
+      - [The UNDO Phase](#the-undo-phase)
     - [Review the ACID properties](#review-the-acid-properties)
     - [Assumptions](#assumptions)
     - [Motivation](#motivation)
@@ -3523,7 +3526,88 @@ So at first, we need to know what happens during the usual exectuion of a system
 
 Recover from a failure either when a single-instance database crashes or all instances crash.
 
+---
+
+**Crash Recovery in Practice**
+
+Choose the right recovery model for your application.
+
+Types of recovery models in MS SQL server:
+
+- Simple: No logs, but has backups. Recovery is doen from the last backup.
+- Full: Uses logs plus backups, regular checkpoints.
+- Bulk-logged: Logs are not maintained for each individual writes, but for multiple writes together.
+
+```sql
+-- 1. Find the current recovery model
+SELECT name, recovery_model_desc
+FROM sys.databases
+WHERE name = 'model'
+
+-- 2. Change the model if needed
+
+-- 3. Checkpoint interval: specify target recovery interval, for example, if a crash happens, recover within 1 min. The system will then determine how often it needs to create checkpoints based on that value.
+
+```
+
+---
+
 Crash recovery is the process by which the database is moved back to a consistent and usable state after a crash. This is done by making the commited transactions durable and rolling back incomplete transactions.
+
+![](images/2023-07-29-16-59-49.png)
+
+- Start from a checkpoint (found via master record)
+- Three pahses:
+  - Analysis: find all Xacts that were active at crash time
+  - Redo: re-execute all Xacts that were active at crash time
+  - Undo: undo all Xacts that were active at crash time
+
+#### Analysis Phase
+
+Reconstruct state at checkpoint via end_checkpoint record.
+
+Scan log forward from checkpoint.
+
+- End record: Remove Xact from Xact table
+- Other records: add Xact to Xact table, set lastLSN=LSN, change Xact status on commit.
+- Update record: If P not in Dirty Page Table, add P to Dirty Page Table, set recLSN(P)=LSN.
+
+> LSN: Log Sequence Number
+
+#### The REDO Phase
+
+We repeat History to reconstruct state at crash:
+
+- Reapply all updates (even of aborted Xacts), redo CLRs.
+- Scan forward from log record containing smallest recLSN in Dirty Page Table. For each CLR or update log record LSN, REDO the action unless:
+  - Affected page is not in the Dirty Page Table, or
+  - Affected page is in the Dirty Page Table, but LSN < recLSN for the page in the Dirty Page Table.
+  - pageLSN (in database) ≥ LSN
+- To REDO an action:
+  - Reapply logged action
+  - Set pageLSN to LSN. No additional logging
+
+> CLR: Compensation Log Record
+
+#### The UNDO Phase
+
+```
+ToUnDO = [l | l is a lastLSN of a "loser" Xact]
+```
+
+We can form this list from Xtable.
+
+```
+Repeat:
+- choose the largest LSN among ToUndo
+- If this LSN is a CLR and undonextLSN == NULL
+  - Write an END record for the Xact
+- If this LSN is a CLR and undonextLSN != NULL
+  - Add undonextLSN to ToUndo
+- Else this LSN is an update. Undo the Update, write a CLR and prepend it to the log.
+
+Until ToUndo is empty
+```
 
 ### Review the ACID properties
 
@@ -3932,6 +4016,18 @@ If all servers are available then no issue - but what if soem severs are not ava
   - E.g. T would check if X still available among others
   - We said X fails before T's deposit, in which case, T would have to abort
   - Thus no harm can come from this execution now
+
+---
+
+Machine A has 16 GB main memory and machine B has 32 GB main memory. Given similar workload, which machine is likely to have a larger dirty page table?
+
+- [ ] Machine A
+- [x] Machine B
+
+> Dirty page table: One entry per dirty page in buffer pool. Contains recLSN -- the LSN of the log record which first caused the page to be dirty since loaded into the buffer cache from the disk.
+> Dirty page: A page that has been modified in the buffer pool but not yet written to disk.
+
+---
 
 ## The CAP Theorem
 
