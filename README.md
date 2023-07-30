@@ -294,6 +294,7 @@
     - [Colummar Databases](#colummar-databases)
   - [Data Warehousing](#data-warehousing)
     - [Data Warehouse Design Issues](#data-warehouse-design-issues)
+    - [ARIES: Algorithm for Recovery Management](#aries-algorithm-for-recovery-management)
 
 ## Administration Information
 
@@ -1328,6 +1329,41 @@ Similar to duplex write, except one of the writes goes to a log. This method is 
 The first one of the writes goes to a log. The second overwrites the old regular data block. In short, all modifications need to be logged before they are applied.
 
 So if a failure occurs, system knows where we are left to take proper action, i.e., even during a single block write.
+
+---
+
+We have a simplified log at the time of a system crash. We assume that there is no log record before the checkpoint. The format of a log record is (LSN, Operation Details).
+
+```
+(00, begin checkpoint)
+(05, end checkpoint)
+(10, T1 writes page 5)
+(20, T2 write page 3)
+(30, T1 abort)
+(40, CLR undo T1 LSN 10)
+(50, T1 end)
+(60, T3 write page 1)
+(70, T3 commit)
+(75, T3 end)
+(80, T2 write page 5)
+CRASH
+```
+
+The system recovery consists of three phases: analysis, redo and undo (ARIES). Please answer the following three questions for this system recovery.
+
+1. What information will be in the dirty page after the analysis phase (shown as a lsit of the format (PageID, LSN))?
+
+- [x] (Page5, 10), (Page3, 20), (Page1, 60)
+- [ ] (Page5, 80), (Page3, 20), (Page1, 60)
+- [ ] (Page5, 40), (Page3, 20), (Page1, 60)
+
+2. What is the order of the LSNs to redone in the Redo phase? Assume all necessary pages are in the dirty page table, all LSN are greater than or equal to the corresponding page's recLSN, and all LSN are greater than the corresponding page's pageLSN.
+
+- [x] Redo LSNs in the following order: 10, 20, 40, 60, 80
+- [ ] Redo LSNs in the following order: 10, 20, 30, 40, 50, 60, 70, 80
+- [ ] Redo LSNs in the following order: 10, 20, 30, 40, 60, 70, 80
+
+---
 
 ## Cyclic Redundancy Check (CRC) Generation
 
@@ -2503,9 +2539,9 @@ Deleting records from the stable storage after successful transmission would not
 
 - [ ] Use a stable storage to store information related to received data, transmitted data and acknowledgements
 
-Sending acknowledgement after receiving a message
+- [ ] Sending acknowledgement after receiving a message
 
-Delete all records from the stable storage after a message has been transmitted successfully
+- [x] Delete all records from the stable storage after a message has been transmitted successfully
 
 #### Which of the following is true for the cyclic redundancy check (CRC) technique?
 
@@ -2904,6 +2940,17 @@ Different ways for concurrency control
 - algorithm does not depend on number of processes
 - are very efficient for low lock contentions - all BD systems use them
 
+---
+
+Which one is a disadvantage of spin locks?
+
+- [x] Uses busy waiting
+- [ ] Necessary in symmetric multiprocessor machines
+- [ ] Expensive to execute due to saving the contextx of requesting process after the OS interruption call
+- [ ] Independent of the number of processes
+
+---
+
 #### Implementation of Atomic operations: test and set
 
 ```c
@@ -3090,6 +3137,29 @@ Semaphores derive from the corresponding mechanism used for trains: a train may 
 Computer semaphores have a get() routine that acquuires the semaphore (perhaps waiting until it is free) and a dualt give() routine that returns the semaphore to the free state, perhaps signaling (waking up) a waiting process.
 
 Semaphores are very simple locks, indeed, they are used to implement general-purpose locks.
+
+---
+
+Which one is not a part/componetn of a general semaphore implementation?
+
+- [x] The semaphore is acquired through OS interruption calls
+- [ ] After usage, the owner of a semaphore may wake up the oldest process in the queue
+- [ ] After usage, the owner of a semaphore may wake up all the processes in the queue
+- [ ] Maintains a queue of processes
+
+Which of the following is not a property of snapshot isolation?
+
+- [ ] Atomicity is not preserved
+- [ ] Not serializable
+- [ ] Usually more efficient than two-phase, well-formed locking
+- [ ] May do dirty reads
+
+The duration of locks are usually shorter in optimistic locking than two-phase locking, true of false?
+
+- [x] True
+- [ ] False
+
+---
 
 ### Implementation of Exclusive mode Semaphore
 
@@ -3741,6 +3811,17 @@ COMMIT WORK
 > - Consistency: Database is consistent before and after transaction
 > - Isolation: Concurrent execution should not cause application programs (transactions) to malfunction
 > - Durability: Once a transaction is committed, its effects are permanent
+
+---
+
+In a nested transaction, a transaction PARENT has three sub-transactions A, B, C. For the following scenarios, which of these four transactions' commits can be made durable, and which ones has to be forced to rollback.
+
+- [x] None of the transactions commits are durable
+- [ ] Only PARENT's commit is durable
+- [ ] All of the four transactions commits are durable
+- [ ] A, B and C make durable commit, but PARENT does not make durable commit
+
+---
 
 5. What is the probability that a deadlock situation occurs?
 
@@ -4771,7 +4852,18 @@ Scenario 2: When A is 2, T2 and T3 will not request exclusive lock. Hence, T1 an
 
 4. Review the concepts of granular locks then answer the following question. Given the hierachy of database objects and the corresponding granular locks in the following picture, which transaction can run if the transactions arrive in the order T1-T2-T3? What if the order is T3-T2-T1? Note that locks from the same transaction are in the same color. We assume that the transactions need to take the locks when they start to run.
 
-![](images/2023-07-30-00-04-28.png)
+Request: +|- -> (next mode), +(granted), -(delayed)
+
+| Current Mode | None   | IS     | IX    | S    | SIX    | U    | X    |
+| ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
+| IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
+| IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | +(S) | -(SIX) | -(U) | -(X) |
+| SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | +(U) | -(SIX) | -(U) | -(X) |
+| X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+
+<img src="images/2023-07-30-00-04-28.png" width=500px />
 
 If the order is T1-T2-T3, then T1 and T2 can run in parallel while T3 waits. This is because T1's lock at the root node is not compatible with T3's S lock at the same node.
 
@@ -4781,11 +4873,23 @@ We should also note that granular locks can lead to the delay of transactions at
 
 5. With two-phase locking we have already seen a successful strategy that will solve concurrency problems for DBMSs. Then discuss why someone may want to invent something like Optimistic Concurrency control in addition to that locking mechanism.
 
-Two-phase locking or in general locking assumes the worst, i.e. there are many updates in the system and most of them will lead to conflicts in access to objects. This means there is a good rationale to pay the overhead of locking and stop problems from occuring in the first place. But what if the DBMS is one such that people tend to work on different parts of data, or most of the operations are read operations, and as such there aren't many conflicts at all. Then there is no need to pay the overhead of lock management but rather it may be better to allow transactions run freely and have a simple check when they finish whether there was any conflict with concurrent transactions. Most of the time there will be so one will get increased concurrecny with less overheads. Obviously, the reverse is also true, i.e. if there were really many conflicting writes then doing optimistic concurrency control means many problems would be observed only after running the transactions and a lot of work will need to be wasted to preserve consistency of the data. So there is no clear answer but depending on the situation a strategy may be good or bad.
+Two-phase locking or in general locking assumes the worst,
+
+- i.e. there are many updates in the system and most of them will lead to conflicts in access to objects.
+- This means there is a good rationale to pay the overhead of locking and stop problems from occuring in the first place.
+
+But what if the DBMS is one such that people tend to work on different parts of data, or most of the operations are read operations, and as such there aren't many conflicts at all.
+
+- Then there is no need to pay the overhead of lock management but rather it may be better to allow transactions run freely and have a simple check when they finish whether there was any conflict with concurrent transactions. Most of the time there will be so one will get increased concurrecny with less overheads.
+- Obviously, the reverse is also true, i.e. if there were really many conflicting writes then doing optimistic concurrency control means many problems would be observed only after running the transactions and a lot of work will need to be wasted to preserve consistency of the data. So there is no clear answer but depending on the situation a strategy may be good or bad.
 
 6. In the following figure the first vertical line $T_c$ denotes the point where checkpointing was done and the second on the right, $T_f$ is where a system crash occurs. Please discuss what would change if the checkpointing was done right at the beginning of each transaction instead of the following case in the figure.
 
-![](images/2023-07-29-23-57-18.png)
+<img src="images/2023-07-29-23-57-18.png" width=350px />
+
+- T4 is not commited, undo it.
+- T2 and T3 are commited, redo them.
+- Adding more checkpoints = adding more overheads
 
 If we were to do checkpointing at the beginning of each transaction, then after a system failure there would be much less to do during recovery time. This is because unlike the case above there would be much less transactions to consider for redo/undo. T3 for example would not be considered if at the beginning of T4 we did a checkpoint. Thus, with more checkpointing recovery becomes fast. Having said this, this does not come for free. There would be many ouptut oeprations to the disk for each checkpoint as well as entries to the log regarding checkpointing. Thus the cost is during transaction processing there would be more overheads. One needs to consider the frequency of checkpointing carefully. There is no one good frequency and it is deployment dependant.
 
@@ -4802,10 +4906,56 @@ If we were to do checkpointing at the beginning of each transaction, then after 
 
   The coordinator will try to get a response within the timeout period. If the coordinator cannot receive the vote from P2 within the timeout period. It will abort the transaction and ask all participants to rollback. Abort logs will b forced to disk at coordinator and all participants.
 
+> Two-phase commit
+>
+> - it is a type of atomic commitment protocol (ACP)
+> - It is a distributed algorithm that coordinates all the proceesses that participate in a distributed atomic transaction on whether to commit or abort
+> - The protocol consist of two phases:
+>   - Phase 1 (voting phase): commit-request phase -> ask to vote
+>   - Phase 2: commit phase -> commit if all voted 'yes' or Abort otherwise
+
 8. Given the two following transaction T and U that run on replica managers X, Y, M, P, and N, review the problem that would occur if X and N were to crash during execution. Then state the solution that we have seen in the lecture. Discuss what would happen, if rather than X and N becoming unavailable we have the following scenario: If Y were to become unavailable during the exeuction and right after U accessed A at Y, but X and N do not fail, rest of the assumptions of this scenario is the same as the lecture slide:
 
-![](images/2023-07-29-23-59-17.png)
+<img src="images/2023-07-29-23-59-17.png" width=500px />
+
+**Transactions with replicated data**
+
+In read one/write all replication, one server is required for a read request and all servers for a write request.
+
+- each read operation is performed by a single server, which sets a read lock
+- every write operation must be performed at all servers, each of which applies a write lock
+
+Any pair of write operations will require conflicting locks at all of the servers. A read operation and write operation will require conflicting locks on one server.
+
+<img src="images/2023-07-30-15-53-19.png" width=500 />
+
+Here we assumed all servers are working all the time.
+
+- The simple read one/write all scheme is not realistic because it cannot carried out if some of the servers are unavailable which beats the purpose in many casees.
+- The available copies replication scheme is designed to allow some servers to be temporarily unavailable.
+
+<img src="images/2023-07-30-15-56-56.png" width=500px />
+
+<img src="images/2023-07-30-15-58-49.png" width=500 />
+
+In this case, U can only write to replica manager Y and T only write to N. But there is an issue when X or N available, X and Y or M,P and N have different values on A and B.
+
+_Solution_: available copies replication rule -> before a transaction commits, it checks for failures and recoveries of the RMs it has contacted, the set shold not change during execution.
+
+- T would check if X is still available among others
+- We said X fails before T's deposit in which case, T would have to abort
+- Thus no harm can come from this execution now
+
+Moving on, when Y is not available and X and N are available.
+
+<img src="images/2023-07-30-16-03-36.png" width=500 />
 
 For the case where Y fails instead of others. The scenario is different. We wish that: U can lock Y and is delayed at X as A is lockec by T there. On M, P, and N either U gets the lock first and T waits, in which case there is a deadlock which will be resolved by timer, or T locks on N as well and U also waits there and T finishes first and N later. In any case, as you see there is no problem as T and U should have been able to run without causing any harm. Nevertheless, the executions above will not occur, as seeing Y is gone U will self-terminate based on the rule. The implementation of the strategy that we have seen and in fact many strategies in DBMSs are only approximations and in general pessimistic ones so that they guarantee proper executions but sometimes terminate transactions that would not really cause harm.
 
 ---
+
+### ARIES: Algorithm for Recovery Management
+
+- Phase 1: Analysis: Figure out which transactions (Xacts) are committed since checkpoint, which failed
+- Phase 2: Redo all actions (repeat history)
+- Phase 3: Undo: effects of failed Xacts
