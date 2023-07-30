@@ -137,12 +137,17 @@
     - [Machine A has a higher cache hit ratio than Machine B. The cache access time and the memory access time of both machines are the same. Which machine has a faster effective memory access time?](#machine-a-has-a-higher-cache-hit-ratio-than-machine-b-the-cache-access-time-and-the-memory-access-time-of-both-machines-are-the-same-which-machine-has-a-faster-effective-memory-access-time)
     - [Jane wants to add an online shopping cart option to her local clothing store website. The users do not need to register to shop online there, but they get a temporary ID when they start adding items to the online shopping cart. Each time an item is added to a cart, an entry needs to be stored with that user’s ID and the item’s ID in a database. Which of the following types of databases can be used in this context?](#jane-wants-to-add-an-online-shopping-cart-option-to-her-local-clothing-store-website-the-users-do-not-need-to-register-to-shop-online-there-but-they-get-a-temporary-id-when-they-start-adding-items-to-the-online-shopping-cart-each-time-an-item-is-added-to-a-cart-an-entry-needs-to-be-stored-with-that-users-id-and-the-items-id-in-a-database-which-of-the-following-types-of-databases-can-be-used-in-this-context)
     - [Weather service Australia has installed multiple sensors in Melbourne with a small computing device in them. Each computing devices store and manage the data of its own sensor. When the sensors record any new data, they connect with the other nearby sensors in an ad-hoc network, share those data, and then disconnect. Which of the following database architecture is the most suitable choice for this scenario?](#weather-service-australia-has-installed-multiple-sensors-in-melbourne-with-a-small-computing-device-in-them-each-computing-devices-store-and-manage-the-data-of-its-own-sensor-when-the-sensors-record-any-new-data-they-connect-with-the-other-nearby-sensors-in-an-ad-hoc-network-share-those-data-and-then-disconnect-which-of-the-following-database-architecture-is-the-most-suitable-choice-for-this-scenario)
+    - [A database stores the email address of the customers who want to receive marketing information in the future. Customers can login to the database via a web interface. The customers can create or modify their email addresses after logging in. The database has one million tuples currently. Which of the following should be achieved?](#a-database-stores-the-email-address-of-the-customers-who-want-to-receive-marketing-information-in-the-future-customers-can-login-to-the-database-via-a-web-interface-the-customers-can-create-or-modify-their-email-addresses-after-logging-in-the-database-has-one-million-tuples-currently-which-of-the-following-should-be-achieved)
   - [Quiz 2](#quiz-2)
     - [Which of the following RAID settings has the highest storage utilisation when all disks have the same capacity.](#which-of-the-following-raid-settings-has-the-highest-storage-utilisation-when-all-disks-have-the-same-capacity)
     - [Both failvote and failfast systems can provide more reliable outputs (if there is majority agreement) than a single module system with no voting. True or False](#both-failvote-and-failfast-systems-can-provide-more-reliable-outputs-if-there-is-majority-agreement-than-a-single-module-system-with-no-voting-true-or-false)
     - [Which of the following thecniques is NOT used to achieve a reliable communication?](#which-of-the-following-thecniques-is-not-used-to-achieve-a-reliable-communication)
     - [Which of the following techniques is NOT used to achieve a reliable communication?](#which-of-the-following-techniques-is-not-used-to-achieve-a-reliable-communication)
       - [Which of the following is true for the cyclic redundancy check (CRC) technique?](#which-of-the-following-is-true-for-the-cyclic-redundancy-check-crc-technique)
+    - [A database table contains personal information of patients such as name and birthday. Which index technique is suitable if the table is frequently used for finding patients based on a range of birthday?](#a-database-table-contains-personal-information-of-patients-such-as-name-and-birthday-which-index-technique-is-suitable-if-the-table-is-frequently-used-for-finding-patients-based-on-a-range-of-birthday)
+    - [Which statement is incorrect?](#which-statement-is-incorrect)
+    - [Which of the following is true for transaction processing?](#which-of-the-following-is-true-for-transaction-processing)
+    - [Given a structure of nested transactions as shown below, which of the statement is correct based on nested transaction rules?](#given-a-structure-of-nested-transactions-as-shown-below-which-of-the-statement-is-correct-based-on-nested-transaction-rules)
   - [SQL Injection](#sql-injection)
     - [SQL Injection Example, SQL syntax](#sql-injection-example-sql-syntax)
     - [Prevention](#prevention)
@@ -2423,6 +2428,13 @@ Each of these options could theoretically be used, but the optimal choice depend
 
 It's worth noting that in practice, the architecture might be a hybrid or a variant of these. For instance, the sensors might operate as a P2P network locally but could periodically sync data to a centralised or distributed cloud database for long-term storage, analysis, and backup.
 
+### A database stores the email address of the customers who want to receive marketing information in the future. Customers can login to the database via a web interface. The customers can create or modify their email addresses after logging in. The database has one million tuples currently. Which of the following should be achieved?
+
+- [x] The data will not be lost if one of the database servers broke down.
+- [ ] Full backup of the database is created every second.
+- [ ] The database stores the true email address of customers.
+- [ ] Different customers cannot modify their email addresses at the same time.
+
 ---
 
 ## Quiz 2
@@ -2497,6 +2509,47 @@ The other statements are not accurate for CRC:
 - CRC for error repair: CRC does not provide a mechansim to repair errors, it can only detect them. The recovery from the error (usually by retransmitting data) must be managed by higher-level protocols.
 - CRC for disk storage utilisation: While CRC is used to increase the reliability of data storage, it does not improve disk storage utilisation. In fact, it adds overhead to storage because additional space is needed to store the check value.
 - CRC for read throughput: CRC does not inherently improve read throughput. It is used for error detection, not performance improvement. Reading the data and the CRC check value may slightly reduce throughput due to the additional data that needs to be read.
+
+### A database table contains personal information of patients such as name and birthday. Which index technique is suitable if the table is frequently used for finding patients based on a range of birthday?
+
+- [x] B+ tree index
+- [ ] Bitmap index
+- [ ] Quadtree index
+- [ ] Hash index
+
+> B+ tree index: B+ tree index is suitable for finding patients based on a range of birthday. B+ tree index is a balanced tree structure that stores keys in its internal nodes and data in its leaf nodes. The keys in the internal nodes are used to guide the search for the data in the leaf nodes. The keys in the internal nodes are sorted, and the data in the leaf nodes are sorted and linked together. Therefore, B+ tree index is suitable for finding patients based on a range of birthday.
+
+### Which statement is incorrect?
+
+- [ ] Hash index an be used for fast access to individual records
+- [x] Bitmap index is suitable for a column with _many distinct values_ which cannot be bucketed into groups
+- [ ] R-tree is suitable for nearest neighbour queries on multi-dimensional data
+- [ ] A quadtree index is not necessarily a balanced index
+
+### Which of the following is true for transaction processing?
+
+- [ ] In nested transactions, when a sub-transaction commits, results of the sub-transaction are finalised
+
+  If we want to achieve Atomicity, all trainsaction must be commit or none.
+
+- [ ] Cyclic Redundancy Check is only used in communication system
+- [x] Running transactions based on serializable schedule helps with preserving ACID properties
+- [ ] Logging is mainly used in DBMSs to make sure we have an audit trail
+
+  Logging is used to recover from failure.
+
+> CRC: Cyclic Redundancy Check is a technique used for detecting errors in data.
+
+### Given a structure of nested transactions as shown below, which of the statement is correct based on nested transaction rules?
+
+![](images/2023-07-30-12-40-40.png)
+
+- [x] If $S_1$ roll backs, $SS_{1,1}$ and $SS_{1,2}$ need to roll back
+- [ ] The objects of T are not visible to $SS_{1,2}$
+- [ ] If $SS_{1,2}$ rolls back, $SS_{3,1}, SS_{1,2}, SS_{1,1}$ need to roll back
+- [ ] When $SS_{3,1}$ commits, its results become available to all other transactions
+
+---
 
 ## SQL Injection
 
@@ -3678,6 +3731,8 @@ There exists a cycle in the dependency graph, i.e., there are wormhole transacti
 |               | 2.8 Unlock(A) |
 |               | 2.9 Unlock(B) |
 
+> Dirty writes can happen in this case if Transaction 2 executes Step 2.2 first.
+
 If transaction 1 executes Step 1.2 and Transaction 2 executes step 2.2, there would be no problem. This is because T1 releases the lock at the end. T2 has to wait till then. However, if Transaction 2 executes Step 2.2 first, Transaction 1 may have a dirty read of B if it tries to run Step 1.2 immediately after Transaction 2 releases the Xlock on B. This is because when Transaction 2 release the lock on B (Step 2.4), Transaction 1 will be granted the Xlock on B (Step 1.2). After that, Transaction 1 will read B (Step 1.4). After Transaction 1 completes, Transaction 2 will acuquire another Xlock on B (Step 2.6) then modify the object. In other words, the reading of B by Transaction 1 happens between two writes of B by Transaction 2.
 
 12. What degree of isolation does the following transaction provide?
@@ -3693,6 +3748,26 @@ Unlock(B)
 ```
 
 Degree 1 as there is one read operation `Read(C)` without taking any lock. The only write operation has an exclusive lock associated with it. The transaction is two-phase with respect to exclusive lock.
+
+> Degree 3:
+>
+> - well formed with respect to read and write operations
+> - it is two phases with respect all locks
+> - all transaction locks are released at the end
+>
+> Degree 2:
+>
+> - well formed with respect to read and write operations
+> - only two phase with respect to exclusive locks
+>
+> Degree 1:
+>
+> - only well-formed with respect to writes (if there is no share lock on read operations)
+> - only two phased with respect to exclusive locks
+>
+> Degree 0: no locks
+>
+> - only well-formed with respect to writes
 
 13. The following operation are given with Degree 2 isolation locking principles in place. Convert the locking sequence to Degree 3.
 
@@ -3711,6 +3786,8 @@ Write(C)
 Unlock(B)
 Unlock(C)
 ```
+
+There are two share locks on A, hence move the read lock on A to the end of the transaction (Read operations). All locks must be released at the end of all transactions (Unlock operations), no duplicate locks on the same object.
 
 ```
 # Degree 3
