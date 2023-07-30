@@ -3640,6 +3640,8 @@ This is in fact one type of simplistic concurrency control, i.e., make sure that
 | Write (A)                  |                            |
 | Unlock(A) / Commit         |                            |
 
+Dirty writes can happen in this case.
+
 This exeuction order is not equal to T1 running first nor to T2 running first and does not obey the Isolation property. Although for each disk access, we first obtained a lock properly. Thus we need something more for proper concurrency control in DBMS.
 
 9.  What are the dependencies in the following history (a sequence of tuples in the form [$T_i$ $O_i$, $T_j$])? Draw the dependency graph mapping to this dependency set as well.
