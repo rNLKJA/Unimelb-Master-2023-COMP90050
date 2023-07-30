@@ -3518,7 +3518,7 @@ A naive approach to achieve this is handling one customer at a time. But the eff
 
 At the same time, the changes to the data are made as if the transactions run on a serial schedule, i.e., a transaction runs as if it is the only transaction in the system and does not become aware of other concurrent transactions which is the objective of isolation. Isolation helps with achieving a high level of efficiency while maintaining the consistency of the data that is manipulated.
 
-2. A bank with millions of customers provides a bonus to each of its customer at the end of the year. The bonus is updated in the database as a flat transaction shown below. Discuss example and the associated issue(s) that can happen with such execution. Is it good choice to use flat transaction here?
+2. A bank with _millions of customers_ provides a bonus to each of its customer at the end of the year. The bonus is updated in the database as a flat transaction shown below. Discuss example and the associated issue(s) that can happen with such execution. Is it good choice to use flat transaction here?
 
 ```
 GivenEndofYearBonus()
@@ -3573,6 +3573,13 @@ COMMIT WORK
 - Scenario 3: Commit by A, B, and PARENT; but C rolls back.
   - Durable commits by A, B, and PARENT, C rolls back.
 
+> ACID: Atomicity, Consistency, Isolation, Durability
+>
+> - Atomicity: All or nothing
+> - Consistency: Database is consistent before and after transaction
+> - Isolation: Concurrent execution should not cause application programs (transactions) to malfunction
+> - Durability: Once a transaction is committed, its effects are permanent
+
 5. What is the probability that a deadlock situation occurs?
 
 - Assume, Number of transaction = n + 1 ≈ n (if n is large)
@@ -3581,16 +3588,26 @@ COMMIT WORK
 
 On average, each transaction is holding r/2 locks approximately (minimum 0 and maximum r, hence average is r/2) - transaction just commenced holds 0 locks, transaction that is just about to finish holds r locks.
 
-Average number of locks taken by the other n transactions = n \* (r/2) = nr/2R
+<!-- Average number of locks taken by the other n transactions = n \* (r/2) = nr/2R -->
+
+$$
+\begin{align}
+  \text{Average number of locks taken by the other n transactions} &= n\times(r/2) \\
+  &= \text{The probability that a particular transaction waits for a lock} \\
+  &= \text{Requesting an exclusive lock on one of the $nr/2$ locks held by the other $n$ transactions out of $R$ possible locks} \\
+  &= \frac{nr/2}{R} \text{ out of potential $R$ records} \\
+  &= \frac{nr}{2R}
+\end{align}
+$$
 
 ![](images/2023-07-29-22-40-50.png)
 
-- The probability that a particular transaction waits for a lock is nr/2R.
-- The probability that a particular transaction did not wait for a lock = 1 - nr/2R
-- The probability that a particular transaction did not wait (for any of the r locks), P = (1 - nr/2R)^r ≈ 1 - nr^2/2R
-- The probability that a particular transaction waits in its life time pw(T) = 1 - P = 1 - {1 - nr^2/2R} = nr^2/2R
-- The probability that a particular transaction T waits for some transaction T1 and T1 waits for T is pw(T) \* pw(T1) = nr^4/4R^2 [since the probability T1 waits for T is 1/n times the probability T1 waits for someone]
-- Probability of any two transactions causing deadlock is = n \* nr^4/4R^2 = n^2r^4/4R (this is very small in practice)
+- The probability that a particular transaction waits for a lock is $nr/2R$.
+- The probability that a particular transaction did not wait for a lock = $1 - nr/2R$
+- The probability that a particular transaction did not wait (for any of the r locks), $P = (1 - nr/2R)^r ≈ 1 - nr^2/2R$
+- The probability that a particular transaction waits in its life time $pw(T) = 1 - P = 1 - {1 - nr^2/2R} = nr^2/2R$
+- The probability that a particular transaction T waits for some transaction T1 and T1 waits for T is $pw(T) \times pw(T1) = nr^4/4R^2$ [since the probability T1 waits for T is 1/n times the probability T1 waits for someone]
+- Probability of any two transactions causing deadlock is = $n \* nr^4/4R^2 = n^2r^4/4R$ (this is very small in practice)
 
 6. If we use the following comments to lock and unlock access to objects, then which transactions below are in deadlock if they start around the same time?
 
@@ -3599,6 +3616,13 @@ Average number of locks taken by the other n transactions = n \* (r/2) = nr/2R
 T2 and T4 are in a deadlock as each of them will wait for the other to release a lock while holding a lock that the other needs to acquire to complete.
 
 7. Isolation proerpty in ACID properties states that each transactions should run without being aware or in interference with another transaction in the system. If that is the case, we can run transactions sequentially by locking the whole database itself and adhering to the Ioslation property through a big lock per transaction. Review why this may not be an ideal solution.
+
+e.g. banking system, running in sequence compromises the performance of the system. Customers will be unhappy if they have to wait for a long time to complete their transactions.
+
+This is in fact one type of simplistic concurrency control, i.e., make sure that all transactions run in a sequence, i.e., in some order. But then we are not benefit from the potential use of idle resources such as accessing disk while another transaction is using the CPU. So even under single CPU situations, concurrency can speed up things that we are not doing. In addition, if there ia a long-running transaction in the system, holding up every other transaction till that longer one finish is going to make the associated company's customers very unhappy. So in short, although we want our exeuctions to be equal to the outcome of a serial execution of a given set of transactions, we do not really want to run them one after the other but rather in concurrency with each other.
+
+> Consider the cost in runtime.
+
 8. Given two transactions, per operation of each transaction, we can use locks to make sure concurrent access is done properly to individual objects that are used in both transactions, i.e., they are not accessed at the same time. This is after all what the operating system do, e.g. lock a file while one program is accessing it so others cannot chagne it at the same time. Give two transactions showing that this is not enough to achieve isolation property of transactions for RDBMS.
 
 | Transaction 1 at Process 1 | Transaction 2 at Process 2 |
