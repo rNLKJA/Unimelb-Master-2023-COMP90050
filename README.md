@@ -2892,11 +2892,11 @@ There is no difference between start and restart in TP based system.
 
 ## Concurrency Problems
 
-> ![](images/2023-07-13-22-30-15.png)
+> <img src="images/2023-07-13-22-30-15.png" width=300 />
 > Concurrent transactions can cause issues in Database - need concurrency control.
 > In database, some file may be used by multiple transactions. If one transaction is updating the file, other transactions should not be able to read the file.
 >
-> ![](images/2023-07-13-22-32-24.png)
+> <img src="images/2023-07-13-22-32-24.png" width=300 />
 > C,D is fine.
 
 Multiple concurrently running transactions may cause conflicts. Still we try to allow concurrent runs as much as possible for a better performance, while avoiding conflicts as much as possible.
@@ -4959,3 +4959,114 @@ For the case where Y fails instead of others. The scenario is different. We wish
 - Phase 1: Analysis: Figure out which transactions (Xacts) are committed since checkpoint, which failed
 - Phase 2: Redo all actions (repeat history)
 - Phase 3: Undo: effects of failed Xacts
+
+Recovery management using Xact table and Dirty Page Table (DPT)
+
+- Keep the LSN of the last edit to the table in Xact table
+- Keep the oldest LSN to the LSN that page was updated in DPT
+
+---
+
+After a crash, we find the following log:
+
+```
+0 BEGIN CHECKPOINT
+5 END CHECKPOINT (EMPTY XACT TABLE AND DPT)
+10 T1: UPDATE P1 (OLD: YYY NEW: ZZZ)
+15 T1: UPDATE P2 (OLD: WWW NEW: XXX)
+20 T1: commit
+```
+
+Analysis:
+
+- Scan forward through the log starting at LSN 10
+- LSN 5: Initialize Xact table and DPT to empty
+- LSN 10: Add (T1, LSN 10) to Xact table. Add (P1, LSN 10) to DPT
+- LSN 15: Set LastLSN = 15 for T1 in Xact table. Add (P2, LSN 15) to DPT
+- LSN 20: Change T1 status to "Commit" in Xact table
+
+Redo:
+
+- Scan forward through the log starting at LSN 10
+- LSN 10: Read page P1, check PageLSN stored in the page. If pageLSN < 10, redo LSN 10 (set value to ZZZ) and set the pageLSN = 10
+- LSN 15: Read page P2, check pageLSN stored in the page. If pageLSN < 15, redo LSN 15 (set value to XXX) and set the pageLSN = 15
+
+Undo:
+
+- no Undo is needed because T1 committed
+
+> LSN: Log Sequence Number
+
+```
+0 BEGIN CHECKPOINT
+5 END CHECKPOINT (EMPTY XACT TABLE AND DPT)
+10 T1: UPDATE P1 (OLD: YYY NEW: ZZZ)
+15 T1: UPDATE P2 (OLD: WWW NEW: XXX)
+20 T2: Update P3 (OLD: UUU NEW: VVV)
+25 T1: COMMIT
+30 T2: UPDATE P1 (OLD: ZZZ NEW: TTT)
+```
+
+Analysis:
+
+- Scan forward through the log starting at LSN 10
+- LSN 5: Initialize Xact table and DPT to empty
+- LSN 10: Add (T1, LSN 10) to Xact table. Add (P1, LSN 10) to DPT
+- LSN 15: Set LastLSN = 15 for T1 in Xact table. Add (P2, LSN 15) to DPT
+- LSN 20: Add (T2, LSN 20) to Xact table. Add (P3, LSN 20) to DPT
+- LSN 25: Change T1 status to "Commit" in Xact table
+- LSN 30: Set LastLSN = 30 for T2 in Xact table
+
+Redo:
+
+- Scan forward through the log starting at LSN 10
+- LSN 10: Read page P1, check PageLSN stored in the page. If pageLSN < 10, redo LSN 10 (set value to ZZZ) and set the pageLSN = 10
+- LSN 15: Read page P2, check pageLSN stored in the page. If pageLSN < 15, redo LSN 15 (set value to XXX) and set the pageLSN = 15
+- LSN 20: Read page P3, check pageLSN stored in the page. If pageLSN < 20, redo LSN 30 (set value to VVV) and set the pageLSN = 20
+- LSN 30: Read page P1 if it has been flushed, check pageLSN stored in the page. It will be 10. Redo LSN 30 (set value to TTT) and set the pageLSN = 30
+
+Undo:
+
+- T2 must be undone. Put LSN 30 ToUndo
+- Write Abort record to log for T2
+- LSN: Undo LSN 30 - write a CLR for P1 with "set P1=ZZZ" and undonextLSN=20. Write ZZZ into P1. Put LSN 20 in ToUndo
+- LSN 20: Undo LSN 20 - write a CLR for P3 with "set P3=UUU" and undonextLSN=NULL. Write UUU into P3.
+
+```
+10 T1: UPDATE P1 (OLD: YYY NEW: ZZZ)
+15 T1: UPDATE P3 (OLD: UUU NEW: VVV)
+20 BEGIN CHECKPOINT
+25 END CHECKPOINT (XACT TABLE: [[T1, 10], [T2, 20]]; DPT: [[P1, 10], [P2, 15]])
+30 T1: UPDATE P2 (OLD: WWW NEW: XXX)
+35 T1: COMMIT
+40 T2: UPDATE P1 (OLD: ZZZ, NEW: TTT)
+45 T2: ABORT
+50 T2: CLR P1(ZZZ), undonextLSN=15
+```
+
+Analysis:
+
+- Scan forward through the log starting at LSN 10
+- LSN 25: Initialize Xact table with T1 (LastLSN 10) and T2 (LastLSN 20). Initialize DPT with P1 (RecLSN 10) and P2 (RecLSN 15)
+- LSN 30: Add (T1, LSN 30) to Xact table. Add (P2, LSN 30) to DPT
+- LSN 35: Change T1 status to "Commit" in Xact table
+- LSN 40: Set LastLSN = 40 for T2 in Xact table
+- LSN 45: Change T2 status to "Abort" in Xact table
+- LSN 50: Set LastLSN = 45 for T2 in Xact table
+
+Redo:
+
+- Scan forward through the log starting at LSN 10
+- LSN 10: Pead page P1, check PageLSN stored in the page. If pageLSN < 10, redo LSN 10 (set value to ZZZ) and set the pageLSN = 10
+- LSN 15: Read page P2, check pageLSN stored in the page. If pageLSN < 15, redo LSN 15 (set value to VVV) and set the pageLSN = 15
+- LSN 30: Read page P2, check pageLSN stored in the page. If pageLSN < 30, redo LSN 30 (set value to XXX) and set the pageLSN = 30
+- LSN 40: Read page P1, check pageLSN stored in the page. If pageLSN < 40, redo LSN 40 (set value to TTT) and set the pageLSN = 40
+- LSN 50: Read page P1, check pageLSN stored in the page. If pageLSN < 50, redo LSN 50 (set value to ZZZ) and set the pageLSN = 50
+
+Undo:
+
+- T2 must be undone. Put LSN 50 in ToUndo
+- LSN 50: Put LSN 15 in ToUndo
+- LSN 15: Undo LSN 15 - write a CLR for P3 with "set P3 = UUU" and undonextLSN = NULL. Write UUU into P3.
+
+---
