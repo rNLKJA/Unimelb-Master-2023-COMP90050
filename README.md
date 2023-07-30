@@ -189,11 +189,19 @@
     - [Which one of the following actions will definitely not reduce any query cost?](#which-one-of-the-following-actions-will-definitely-not-reduce-any-query-cost)
     - [When a particular query is executed in a database for the first time, the query was executed in 100 ms. After executing the same query for a couple of more times, you have observed that the query execution is now faster, and taking about 50ms. Which of the following can be a reason for this improvement (assuming that all other factors in the database is unchanged)?](#when-a-particular-query-is-executed-in-a-database-for-the-first-time-the-query-was-executed-in-100-ms-after-executing-the-same-query-for-a-couple-of-more-times-you-have-observed-that-the-query-execution-is-now-faster-and-taking-about-50ms-which-of-the-following-can-be-a-reason-for-this-improvement-assuming-that-all-other-factors-in-the-database-is-unchanged)
     - [Select all the options from the following that are steps or tasks of a query optimizer. You need to choose multiple options if they are the answers.](#select-all-the-options-from-the-following-that-are-steps-or-tasks-of-a-query-optimizer-you-need-to-choose-multiple-options-if-they-are-the-answers)
+    - [Which statement is correct?](#which-statement-is-correct)
+    - [Which action is not suitable for solving a deadlock?](#which-action-is-not-suitable-for-solving-a-deadlock)
+    - [Which history is equivalent to a serial history?](#which-history-is-equivalent-to-a-serial-history)
+    - [Which statement is incorrect?](#which-statement-is-incorrect-1)
   - [Quiz 4](#quiz-4)
     - [Select the most suitable index for the following data and queries - we want to store the records of 10,000 families, where each family is a row in the database. Families are categorised as low-income, mid-income, and high-income. The most common queries in this database are – (i) find the total number of low-income families; (ii) find the total number of families with mid-income.](#select-the-most-suitable-index-for-the-following-data-and-queries---we-want-to-store-the-records-of-10000-families-where-each-family-is-a-row-in-the-database-families-are-categorised-as-low-income-mid-income-and-high-income-the-most-common-queries-in-this-database-are--i-find-the-total-number-of-low-income-families-ii-find-the-total-number-of-families-with-mid-income)
     - [Select the most suitable index for the following data and query – The data is the location (latitude and longitude) of all 5G antennas in Melbourne. The most common query in this database is, given any particular location in Melbourne, find the 5G antenna nearest to that location.](#select-the-most-suitable-index-for-the-following-data-and-query--the-data-is-the-location-latitude-and-longitude-of-all-5g-antennas-in-melbourne-the-most-common-query-in-this-database-is-given-any-particular-location-in-melbourne-find-the-5g-antenna-nearest-to-that-location)
     - [A company stores the records of its employees, where the employee IDs are between 1 to 10000. Assume there is a B+ tree index on the employee IDs. Which of the following statements is false?](#a-company-stores-the-records-of-its-employees-where-the-employee-ids-are-between-1-to-10000-assume-there-is-a-b-tree-index-on-the-employee-ids-which-of-the-following-statements-is-false)
     - [Which one of the following is not a property of an R-tree (or not true for an R-tree)?](#which-one-of-the-following-is-not-a-property-of-an-r-tree-or-not-true-for-an-r-tree)
+    - [In a tree structure of database objects, node A has two decendents, A1 and A2. Transaction X and Y need to access objects in the tree. Which of the following operations is allowed?](#in-a-tree-structure-of-database-objects-node-a-has-two-decendents-a1-and-a2-transaction-x-and-y-need-to-access-objects-in-the-tree-which-of-the-following-operations-is-allowed)
+    - [Which of the following statements is correct?](#which-of-the-following-statements-is-correct)
+    - [When should a transaction use forward validation to check for conflicts?](#when-should-a-transaction-use-forward-validation-to-check-for-conflicts)
+    - [Assume the write timestamp on object D is 10 and the maximum read timestamp on D is 20. Which of the following operations is allowed for Transaction T?](#assume-the-write-timestamp-on-object-d-is-10-and-the-maximum-read-timestamp-on-d-is-20-which-of-the-following-operations-is-allowed-for-transaction-t)
   - [Semaphores](#semaphores)
     - [Implementation of Exclusive mode Semaphore](#implementation-of-exclusive-mode-semaphore)
     - [Convoy avoding semaphore](#convoy-avoding-semaphore)
@@ -234,6 +242,10 @@
     - [Given the following two transactions, is it possible to have a deadlock situation?](#given-the-following-two-transactions-is-it-possible-to-have-a-deadlock-situation)
     - [Transaction T2 starts its execution after transaction T1 successfully commits. What conflicts are there between T1 and T2?](#transaction-t2-starts-its-execution-after-transaction-t1-successfully-commits-what-conflicts-are-there-between-t1-and-t2)
     - [The duration of locks are usually shorter in optimistic locking than two-phase locking, true or false?](#the-duration-of-locks-are-usually-shorter-in-optimistic-locking-than-two-phase-locking-true-or-false)
+    - [Which statement is true about RAID?](#which-statement-is-true-about-raid)
+    - [(not examinable) A distributed system runs multiple transactions with replicated data. Which of the following should be achieved by the system?](#not-examinable-a-distributed-system-runs-multiple-transactions-with-replicated-data-which-of-the-following-should-be-achieved-by-the-system)
+    - [Which statement is true about storage?](#which-statement-is-true-about-storage)
+    - [Which statement is true about recovery](#which-statement-is-true-about-recovery)
     - [What degree of isolation does the following transaction provide?](#what-degree-of-isolation-does-the-following-transaction-provide)
   - [Crach Recovery](#crach-recovery)
       - [Analysis Phase](#analysis-phase)
@@ -2968,6 +2980,36 @@ while (!cs(&counter, &temp, &new));
 - [x] Choose the cheapest plan based on estimated cost
 - [x] Generate different alternative query plans
 
+### Which statement is correct?
+
+- [ ] Semaphore uses more CPU time than spinlock
+- [ ] It is efficient to do concurrency control with Dekker's algorithm because the algorithm relies on hardware support
+- [x] Semaphores can be implemented in a way to allow first in first out to a set of processes
+- [ ] Spinlock is suitable when a process needs to wait a long period for acquiring a resource
+
+> Semaphore locks are more efficient than spinlocks because they do not require busy waiting. Spinlocks are more efficient than semaphores because they do not require context switching.
+
+### Which action is not suitable for solving a deadlock?
+
+- [ ] Force rollback after waiting for a maximum time on a lock
+- [ ] Use time outs for global deadlocks in distributed databases
+- [ ] If there was a cycle in resource dependency graph, rollback one or more transactions
+- [x] Let transactions to finish based on estimated values involved in the deadlock
+
+### Which history is equivalent to a serial history?
+
+- [ ] H = [<T1, R, O1>, <T2, W, O2>, <T3, R, O1>, <T3, R, O2>, <T2, W, O2>]
+- [ ] H = [<T1, R, O1>, <T2, W, O2>, <T3, W, O1>, <T3, R, O2>, <T2, R, O1>]
+- [x] H = [<T1, R, O1>, <T2, W, O2>, <T3, R, O1>, <T3, R, O2>, <T2, W, O1>]
+- [ ] H = [<T1, R, O1>, <T2, W, O2>, <T3, R, O1>, <T3, R, O2>, <T2, W, O1>]
+
+### Which statement is incorrect?
+
+- [ ] Increasing the number of locks may reduce concurrency
+- [ ] The lower the degree of isolation, the higher the concurrency level
+- [x] Having more lock types reduces concurrency
+- [ ] Strict two-phase locking is stricter than two-phase locking
+
 ---
 
 ## Quiz 4
@@ -2999,6 +3041,45 @@ while (!cs(&counter, &temp, &new));
 - [ ] R-trees are useful for indexing sets of rectangles and polygons
 - [ ] To find data items intersecting a given query region, the search starts from the root node of the R-tree
 - [x] Each node of an R-tree has 4 children
+
+### In a tree structure of database objects, node A has two decendents, A1 and A2. Transaction X and Y need to access objects in the tree. Which of the following operations is allowed?
+
+Request: +|- -> (next mode), +(granted), -(delayed)
+
+| Current Mode | None   | IS     | IX    | S    | SIX    | U    | X    |
+| ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
+| IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
+| IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | -(U) | -(SIX) | -(U) | -(X) |
+| X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+
+- [x] Transaction X puts IX lock on A then Transaction Y puts S lock on A1
+- [ ] Transaction X puts S lock on A then Transaction Y puts X lock on A1
+- [ ] Transaction X puts U lock on A1 then Transaction Y puts X lock on A2
+- [ ] Transaction X puts IS lock on A then Transaction Y puts X lock on A
+
+### Which of the following statements is correct?
+
+- [ ] Two-version locking allows more concurrency because other transactions can read an object while a transaction is commiting a change to the object.
+- [x] Snapshot isolation checks whether the object to be written is changed by other transactions before commit.
+- [ ] In nested transactions, sub-transaction at the same level that access the same object can acquuire the lock on the object from the parent at the same time
+- [ ] Optimistic concurrency control allows higher throughput because it does not need shared locks
+
+### When should a transaction use forward validation to check for conflicts?
+
+- [x] The transaction needs more choices to deal with conflicts
+- [ ] All other transactions are inactive
+- [ ] The transaction has doen backward validation earlier
+- [ ] The transaction has been commited
+
+### Assume the write timestamp on object D is 10 and the maximum read timestamp on D is 20. Which of the following operations is allowed for Transaction T?
+
+- [x] Write D if T's timestamp is 20
+- [ ] Write D if T's timestamp is 5
+- [ ] Read D if T's timestamp is 10
+- [ ] Read D if T's timestamp is 5
 
 ---
 
@@ -3550,6 +3631,34 @@ Commit
 - [ ] False
 
 Optimistic locking assumes no conflict will occur and allows transactions to proceed without locking the resources. Locks are only applied at the end of transaction during the validation phase. If no conflict is found, the transaction is committed, making the duration of locks shorter than in two-phase locking where resources are locked for the entire duration of the transaction.
+
+### Which statement is true about RAID?
+
+- [ ] In RAID 5, striping takes place at the byte level
+- [x] RAID 1 continues to operate as long as 1 disk functional
+- [ ] RAID 6 uses 3 partiy blocks
+- [ ] The MTTF of RAID 2 is longer than MTTF of RAID 0
+
+### (not examinable) A distributed system runs multiple transactions with replicated data. Which of the following should be achieved by the system?
+
+- [ ] When using 'read one/write all' scheme with two servers, one server combines data modified by different transactions and replicates the data to the other server with a single write operation
+- [x] When using 'available copies replication' scheme, a transaction needs to abort at commit time if a server failed after the transaction performed a write operation at the server
+- [ ] A read operation and write operation by the same transaction will require conflicting locks at a single server
+- [ ] The effects of the transactions should be the same as if they had been performed in parallel on multiple sets of objects
+
+### Which statement is true about storage?
+
+- [ ] A system buffer block resides in the private workarea of a transaction
+- [ ] When a transaction executes a write command, the system transfers one or more buffer blocks to disk immediately
+- [x] A transaction's read command or write can lead to data transfer from the disk if a relevant data item was not in memory
+- [ ] Stable storage may include the main memory from multiple machines
+
+### Which statement is true about recovery
+
+- [ ] Database buffer can be implemented on the disk (RAM base)
+- [ ] A log record about a write operation always contains an old value and a new value (not always true)
+- [x] If log records are buffered, a log record about a transaction's commit oepration must have been output to stable when the transaction enters the commit state
+- [ ] Recovery is more accurate with shadow-paging compared to log-based schemes (both recovery accurately)
 
 ---
 
