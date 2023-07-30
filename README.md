@@ -3655,10 +3655,14 @@ Dependencies are given as:
 - ![](images/2023-07-29-23-23-14.png)
 
 > Following the object operation order to draw the dependency graph.
+> Write and Read are not in conflict -> no dependency.
+> Find read and write operation on the same object. Draw an edge from the write operation to the read operation.
 
 10. Given the solution above for the previous question, can we say the history is equal to serial history? If yes, show one such history. If not, show that there is a wormhole.
 
 There exists a cycle in the dependency graph, i.e., there are wormhole transactions (e.g. T1 is before and after of T3 at the same time). Therefore, finding equivalent serial execution is not possible.
+
+> wormhole: a transaction that is before and after of another transaction at the same time. It is not possible to find equivalent serial execution. Equivalently if there is a loop in the dependency graph, there is a wormhole.
 
 11. Assume the following two transactions start at nearly the same time and there is no other concurrent transaction. The 2nd operation of both transactions is Xlock(B). Is there a potential problem if Transaction 1 performs the operation first? What if Transaction 2 performs the operation first?
 
