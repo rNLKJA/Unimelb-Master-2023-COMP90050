@@ -141,9 +141,8 @@
   - [Quiz 2](#quiz-2)
     - [Which of the following RAID settings has the highest storage utilisation when all disks have the same capacity.](#which-of-the-following-raid-settings-has-the-highest-storage-utilisation-when-all-disks-have-the-same-capacity)
     - [Both failvote and failfast systems can provide more reliable outputs (if there is majority agreement) than a single module system with no voting. True or False](#both-failvote-and-failfast-systems-can-provide-more-reliable-outputs-if-there-is-majority-agreement-than-a-single-module-system-with-no-voting-true-or-false)
-    - [Which of the following thecniques is NOT used to achieve a reliable communication?](#which-of-the-following-thecniques-is-not-used-to-achieve-a-reliable-communication)
     - [Which of the following techniques is NOT used to achieve a reliable communication?](#which-of-the-following-techniques-is-not-used-to-achieve-a-reliable-communication)
-      - [Which of the following is true for the cyclic redundancy check (CRC) technique?](#which-of-the-following-is-true-for-the-cyclic-redundancy-check-crc-technique)
+    - [Which of the following is true for the cyclic redundancy check (CRC) technique?](#which-of-the-following-is-true-for-the-cyclic-redundancy-check-crc-technique)
     - [A database table contains personal information of patients such as name and birthday. Which index technique is suitable if the table is frequently used for finding patients based on a range of birthday?](#a-database-table-contains-personal-information-of-patients-such-as-name-and-birthday-which-index-technique-is-suitable-if-the-table-is-frequently-used-for-finding-patients-based-on-a-range-of-birthday)
     - [Which statement is incorrect?](#which-statement-is-incorrect)
     - [Which of the following is true for transaction processing?](#which-of-the-following-is-true-for-transaction-processing)
@@ -1192,7 +1191,7 @@ B0, B1, B2, B3 are bytes of data of file.
 
 ## Fault Tolerance by Voting
 
-When we receive inconsistent readins from different disks, what action should be taken?
+When we receive inconsistent readings from different disks, what action should be taken?
 
 - A subset of disks read 2, while the rest read 5.
 
@@ -1216,6 +1215,8 @@ In both cases, define majority intuitively, as half plus one or: $\frac{n}{2} + 
   - Failfast system has better availability than failvoting (since failvote steops when there is no majority agreement)
 
 Failvote needs majority agreement to accept an action (e.g. Read/Write)
+
+> For both failvote and failfast vote, no tie is allowed. If there is a tie, the system stops or equivalent to no.
 
 ![](images/2023-06-26-18-20-50.png)
 
@@ -1283,7 +1284,7 @@ In a failfast system, which of the following cases we can accept an action?
 
 ## Fault Tolerance with Supermodule
 
-Probabiliyt of a particular module is not available = $P = \cfrac{1}{\text{MTTF}}$
+Probability of a particular module is not available = $P = \cfrac{1}{\text{MTTF}}$
 
 Probability that (n-1) modules are unavailable, $P_{n-1} = \cfrac{\text{MTTR}}{\text{MTTF}}^{n-1}$
 
@@ -1446,12 +1447,14 @@ Database Engine is a key component of a database management system. It is respon
 - Different types of queries from different types of users
 - Query evalution engine (communicate with storage engine)
 - The storage manager provide the interface between the low-level data stored in the database and the application programs and queries submitted to the system.
-- The storage manager implments several data structures as part of the physical system implementation:
+- The storage manager implements several data structures as part of the physical system implementation:
   1. Data files: the database itself
   2. Indices: to provide fast access to data item
   3. Data dictionary: metadata
 
 ## Query Processing Steps
+
+query reads by parsesr and translator $\rightarrow$ relational algebra expression $\rightarrow$ optimisation $\rightarrow$ execution plan $\rightarrow$ execution
 
 ![](images/2023-06-29-23-03-15.png)
 
@@ -1500,6 +1503,9 @@ Is the same as the following in relational algebra expression:
 $$
 \Pi_{A_1, A_2, ..., A_n}(\sigma_P(r_1 \times r_2 \times ... \times r_n))
 $$
+
+> $\times$: inner join
+> $\bowtie$: natural join
 
 ### Join Operations
 
@@ -2519,14 +2525,14 @@ Therefore, in terms of storage utilisation, RAID 0 with 3 disks has the highest 
 Both failvote and failfast system can provide more reliable outputs than a single module system with no voting, given that there is majority agreement. Let's examine each system.
 
 1. Failvote: In a failvote system, multiple modules or subsystems as used to perform a task, and the outputs of these modules are compared through voting. If there is a majority agreement among the modules, the output is considered reliable. This approach increases the system's reliability because it reduces the chances of a single module producing an erroneous result. By comparing outputs and considering the majority, the system can potentially overcome errors of failures in individual modules, improving overall accuracy.
-   2, Failfast: A failfast system operates similarly to a failvote system, but with a slightly different approach. In a failfast system, the modules or subsystems provide their outputs, and the system compares them. However, instead of waiting for majority agreement, the system accepts the output of the first module that provides a result. This approach assumes that the first module to produce an output is likely to be correct. By quickly accepting the first output, the system reduces the impact of potential errors in other modules, providing a faster and potentially more reliable result.
+2. Failfast: A failfast system operates similarly to a failvote system, but with a slightly different approach. In a failfast system, the modules or subsystems provide their outputs, and the system compares them. However, instead of waiting for majority agreement, the system accepts the output of the first module that provides a result. This approach assumes that the first module to produce an output is likely to be correct. By quickly accepting the first output, the system reduces the impact of potential errors in other modules, providing a faster and potentially more reliable result.
 
 In both cases, the failvote and failfast systems benefit from the inclusion of multiple modules or subsystems, which increases the likelihood of obtaining reliable outputs. This is in contrast to a single module system with no voting, where there is no redundancy or agreement mechanism to mitigate the risk of errors or failures in the module.
 
-### Which of the following thecniques is NOT used to achieve a reliable communication?
+### Which of the following techniques is NOT used to achieve a reliable communication?
 
 - [ ] Update the stable storage information if any data is received or transmitted, or any acknowledgement received
-- [ ]Use a stable storage to store information related to received data, transmitted data and acknowledgements
+- [ ] Use a stable storage to store information related to received data, transmitted data and acknowledgements
 - [ ] Sending acknowledgement after receiving a message
 - [x] Delete all records from the stable storage after a message has been transmitted successfully
 
@@ -2540,17 +2546,7 @@ Based on the above explanations, the technique that is NOT used to achieve relia
 
 Deleting records from the stable storage after successful transmission would not be a reliable approach, as it removes the history and evidence of the communication. It is important to maintain a record of transmitted data, received data, and acknowledgements to ensure reliability and traceability in the communication process.
 
-### Which of the following techniques is NOT used to achieve a reliable communication?
-
-- [ ] Update the stable storage information if any data is received or transmitted, or any acknowledgement received
-
-- [ ] Use a stable storage to store information related to received data, transmitted data and acknowledgements
-
-- [ ] Sending acknowledgement after receiving a message
-
-- [x] Delete all records from the stable storage after a message has been transmitted successfully
-
-#### Which of the following is true for the cyclic redundancy check (CRC) technique?
+### Which of the following is true for the cyclic redundancy check (CRC) technique?
 
 - [x] CRC can be used to detect data error in a disk block
 - [ ] CRC can be used to repair data error in a disk block
