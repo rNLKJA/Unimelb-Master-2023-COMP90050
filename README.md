@@ -511,15 +511,15 @@ $\text{Disk access time}=\text{seek time} + \text{rotational time} + \cfrac{\tex
 > - transfer length = 4 kb
 > - bandwidth = 4mb/sec = 4 \* 1024 kb / 1000 ms = 4.096 kb / ms
 >   Substituting the values in the formula, we get
->
->   $$
->   \begin{aligned}
->   \text{Disk access time} &=\text{seek time} + \text{rotational time} + \cfrac{\text{transfer length}}{\text{bandwith}} \\
->   &= 12 \text{ms} + 4 \text{ms} + (4\text{kb} / 4.096 \text{kb/ms}) \\
->   &= 16 \text{ms} + 0.976 \text{ms} \\
->   &= 16.976 \text{ms}
->   \end{aligned}
->   $$
+
+$$
+\begin{aligned}
+\text{Disk access time} &=\text{seek time} + \text{rotational time} + \cfrac{\text{transfer length}}{\text{bandwith}} \\
+&= 12 \text{ms} + 4 \text{ms} + (4\text{kb} / 4.096 \text{kb/ms}) \\
+&= 16 \text{ms} + 0.976 \text{ms} \\
+&= 16.976 \text{ms}
+\end{aligned}
+$$
 
 - Seek time is the time required to position the actuator arm over the appropriate track.
 
