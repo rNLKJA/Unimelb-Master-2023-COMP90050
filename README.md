@@ -3050,9 +3050,9 @@ Request: +|- -> (next mode), +(granted), -(delayed)
 | ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
 | IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
 | IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| S            | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | +(S) | -(SIX) | -(U) | -(X) |
 | SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| U            | +(U)   | +(U)   | -(IX) | -(U) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | +(U) | -(SIX) | -(U) | -(X) |
 | X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
 
 - [x] Transaction X puts IX lock on A then Transaction Y puts S lock on A1
@@ -3531,9 +3531,9 @@ Request: +|- -> (next mode), +(granted), -(delayed)
 | ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
 | IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
 | IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| S            | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | +(S) | -(SIX) | -(U) | -(X) |
 | SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| U            | +(U)   | +(U)   | -(IX) | -(U) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | +(U) | -(SIX) | -(U) | -(X) |
 | X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
 
 > Column: type of locks request by other transactions
@@ -4731,16 +4731,28 @@ What data to summarize
 12. Unlock(A)
 ```
 
-1. Discuss why two-phase locking guarantees serializability.
+> Two-phase: expansion phase and shrinking phase
 
-Because two-phase locking guarantees that the locks are acquired in a serial order, and the locks are released in a reverse order. This means that the transactions will not be able to access the data that is locked by another transaction, and the transactions will not release the locks before they are done with the data. This ensures that the transactions are executed in a serial order.
+- The line 3, 6, 9, 12 results to early shrinking.
+- 3 and 10 violate the two phase locking, it obtains lock on a resource twice.
+- Thus line 3 and line 10 cause the issues.
+
+2. Discuss why two-phase locking guarantees serializability.
+
+Consider two transaction T1 and T2. In a scenario where a cycle might form, T1 would need to lock an item X, then T2 would have to lock an item Y, and then T1 would need to lock Y (already held by T2), and T2 would need to lock X (already held by T1). This is a deadlock situation and forms a cycle in the precedence graph.
+
+But under 2PL, once a transaction (T1 or T2) releases a lock (say on X or Y), it cannot obtain any new locks. Therefore, the scenario above can't happen, because if T1 releases X and T2 release Y, neither can lock another item (Y by T1 or X by T2). This avoids the possibility of a cycle in the precedence graph.
+
+Therefore, the strict discipline of 2PL to separate lock acquistion and release into two distinct phases prevents circular wait conditions (or cycles in the precedence graph), which in turn guarantees serializability.
+
+> Because two-phase locking guarantees that the locks are acquired in a serial order, and the locks are released in a reverse order. This means that the transactions will not be able to access the data that is locked by another transaction, and the transactions will not release the locks before they are done with the data. This ensures that the transactions are executed in a serial order.
 
 3. The following transactions are issued in a system at the same time. Answer for both scenarios.
 
 - Scenario 1: When the value of A is 3, which of the following transactions can run concurrently from the beginning till commit (that is, all operations and locks are compatible to run concurrently with another one) and which ones need to be delayed? Please give explanation for the delayed transactions.
 - Scenario 2: When the value of A is 2, which of the following transactions can run concurrently from the beginning till commit (that is, all operations and locks are compatible to run concurrently with another one) and which ones need to be delayed? Please give explanation for the delayed transactions.
 
-![](images/2023-07-29-23-51-09.png)
+<img src="images/2023-07-29-23-51-09.png" width=300px />
 
 Request: +|- -> (next mode), +(granted), -(delayed)
 
@@ -4748,9 +4760,9 @@ Request: +|- -> (next mode), +(granted), -(delayed)
 | ------------ | ------ | ------ | ----- | ---- | ------ | ---- | ---- |
 | IS           | +(IS)  | +(IS)  | +(IX) | +(S) | +(SIX) | -(U) | -(X) |
 | IX           | +(IX)  | +(IX)  | +(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| S            | +(S)   | +(S)   | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
+| S            | +(S)   | +(S)   | -(IX) | +(S) | -(SIX) | -(U) | -(X) |
 | SIX          | +(SIX) | +(SIX) | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
-| U            | +(U)   | +(U)   | -(IX) | -(U) | -(SIX) | -(U) | -(X) |
+| U            | +(U)   | +(U)   | -(IX) | +(U) | -(SIX) | -(U) | -(X) |
 | X            | +(X)   | -(IS)  | -(IX) | -(S) | -(SIX) | -(U) | -(X) |
 
 Scenario 1: None of the transactions can run concurrently. T2's update lock and T3's IX conflict with each other, and the subsequent X locks for A == 3 will conflict. T3's IX lock conflicts with T1's Slock. Although T1's shared lock and T2's update lock are compatible if T1 gets the lock first, for A == 3, T2's Xlock request will conflict with T1's shared lock. So only one can run at a time while the other transactions must be delayed.
