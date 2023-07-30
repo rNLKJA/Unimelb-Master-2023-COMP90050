@@ -295,6 +295,7 @@
   - [Data Warehousing](#data-warehousing)
     - [Data Warehouse Design Issues](#data-warehouse-design-issues)
     - [ARIES: Algorithm for Recovery Management](#aries-algorithm-for-recovery-management)
+  - [Past Exam Questions](#past-exam-questions)
 
 ## Administration Information
 
@@ -5034,9 +5035,9 @@ Undo:
 
 ```
 10 T1: UPDATE P1 (OLD: YYY NEW: ZZZ)
-15 T1: UPDATE P3 (OLD: UUU NEW: VVV)
+15 T2: UPDATE P3 (OLD: UUU NEW: VVV)
 20 BEGIN CHECKPOINT
-25 END CHECKPOINT (XACT TABLE: [[T1, 10], [T2, 20]]; DPT: [[P1, 10], [P2, 15]])
+25 END CHECKPOINT (XACT TABLE: [[T1, 10], [T2, 20]]; DPT: [[T1, 10], [T2, 15]])
 30 T1: UPDATE P2 (OLD: WWW NEW: XXX)
 35 T1: COMMIT
 40 T2: UPDATE P1 (OLD: ZZZ, NEW: TTT)
@@ -5070,3 +5071,32 @@ Undo:
 - LSN 15: Undo LSN 15 - write a CLR for P3 with "set P3 = UUU" and undonextLSN = NULL. Write UUU into P3.
 
 ---
+
+## Past Exam Questions
+
+Relation T1 has 2,000 records stored in 50 blocks that can be read consecutively. Realtion T2 has 500 records stored in 20 blocks can be read consecutively. For a SQL query with a join operation, the query optimizer chooses to use block nested-loop join. Should the outer relation be T1 or T2 based on the cost in the worst case?
+
+- If T1 is the outer relation: The number of block transfers is 50\*20 + 50 + 1050. The number of seeks is 2\*50 = 100.
+- If T2 is the outer relation: The number of block transfers is 20\*50 + 20 = 1020. The number of seeks is 2\*20 = 40.
+
+Based on these numbers, the outer relation should be T2 as it can lead to lower costs.
+
+> When T1 is the outer relation which has 50 blocks (for block nested-loop join):
+>
+> - For each block of T1, we first need 1 seek. Then we need a second seek to find the first block from T2 before we perform the join operation between the first block from T1, with all the blocks from T2.
+>
+> This step needs to be repeated 50 times, and each time we did 2 seeks (1 for T1, 1 for T2). Hence the total number of seeks will be 2\*50.
+
+---
+
+- Logical reads: read from buffer/cache
+- Physical reads: read from disk
+
+- Latches and locks serve different but complementary roles in a database system. Latches provide a low-level mechanism for physical consistency, mainly for in-memory structures, and are entreily managed by the system. Locks provide a higher-level mechanism for logical consistency, can be aplied to various types of database objets, and can be managed both by the system and users.
+- When a transaction needs to read/write from a page in the buffer pool, a latch (that is, some kind of lock) is taken on that page so that this page is not evicted from buffer pool. Immediately after read/write opeartion, the latch is released.
+
+- flushed = written back to disk
+- CLR = compensating log record
+
+- a block nested loop join will have a lower cost than a page nested loop join.
+- algorithms for block-nested and page-nested joins are similar.
