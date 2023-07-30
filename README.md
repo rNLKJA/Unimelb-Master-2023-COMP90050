@@ -510,7 +510,8 @@ $\text{Disk access time}=\text{seek time} + \text{rotational time} + \cfrac{\tex
 > - rotational time = 4 ms
 > - transfer length = 4 kb
 > - bandwidth = 4mb/sec = 4 \* 1024 kb / 1000 ms = 4.096 kb / ms
->   Substituting the values in the formula, we get:
+>   Substituting the values in the formula, we get
+>
 >   $$
 >   \begin{aligned}
 >   \text{Disk access time} &=\text{seek time} + \text{rotational time} + \cfrac{\text{transfer length}}{\text{bandwith}} \\
@@ -5100,3 +5101,8 @@ Based on these numbers, the outer relation should be T2 as it can lead to lower 
 
 - a block nested loop join will have a lower cost than a page nested loop join.
 - algorithms for block-nested and page-nested joins are similar.
+
+- MTTF: Mean Time To Failure
+- MTTP: Mean Time To Repair
+
+- supoermodule: a collection of modules that are related to each other and are managed as a unit.
