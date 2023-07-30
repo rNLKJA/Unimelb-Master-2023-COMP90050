@@ -3502,7 +3502,21 @@ Optimistic locking assumes no conflict will occur and allows transactions to pro
 
 1. Discuss why the isolation proerpty of ACID properties will apply to both an Online shopping platform as well as an Online banking system despite that they are different appliations dealing with different data.
 
-Both types of systems may need to serve a large number of customers at any given time. For achieving consistency, both systems require that a transaction does not use the values that have been modified by another uncommitted transaction. A naive approach to achieve this is handling one customer at a time. But the efficiency of the service would be extremely low with this approach. Therefore, the systems should allow different transactions to run concurrently. At the same time, the changes to the data are made as if the transactions run on a serial schedule, i.e., a transaction runs as if it is the only transaction in the system and does not become aware of other concurrent transactions which is the objective of isolation. Isolation helps with achieving a high level of efficiency while maintaining the consistency of the data that is manipulated.
+- Discuss what is the isolation
+
+  Isolation: Concurrent execution should not cause application programs (transactions) to malfunction. In database, it refers to the requirement that other operations cannot access or see the data in an intermediate state during a transaction. It helps prevent dirty read, non-repeatable read, and phantom read.
+
+- Discuss the similarities between the two business
+
+  Both types of systems may need to serve a large number of customers at any given time.
+
+- Why isolation is important for the two businesses
+
+  For achiving consistency, both systems require that a transaction does not use the values have been modified by other uncommitted transaction.
+
+A naive approach to achieve this is handling one customer at a time. But the efficiency of the service would be extremely low with this approach. Therefore, the systems should allow different transactions to run concurrently.
+
+At the same time, the changes to the data are made as if the transactions run on a serial schedule, i.e., a transaction runs as if it is the only transaction in the system and does not become aware of other concurrent transactions which is the objective of isolation. Isolation helps with achieving a high level of efficiency while maintaining the consistency of the data that is manipulated.
 
 2. A bank with millions of customers provides a bonus to each of its customer at the end of the year. The bonus is updated in the database as a flat transaction shown below. Discuss example and the associated issue(s) that can happen with such execution. Is it good choice to use flat transaction here?
 
