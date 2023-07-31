@@ -3169,7 +3169,9 @@ Which of the following is not a property of snapshot isolation?
 - [ ] Atomicity is not preserved
 - [ ] Not serializable
 - [ ] Usually more efficient than two-phase, well-formed locking
-- [ ] May do dirty reads
+- [x] May do dirty reads
+
+> Snapshot Isoloation is a concurrency control mechanism that aims to allow multiple transactions to concurrently read and write data without interfering with each other. It is based on the concept of providing each transaction with a "snapshot" or the database at a certain point in time, and all reads within the transaction see the state of the database as of that snapshot.
 
 The duration of locks are usually shorter in optimistic locking than two-phase locking, true of false?
 
