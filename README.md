@@ -278,7 +278,14 @@
   - [The CAP Theorem](#the-cap-theorem)
   - [Large-Scale Databases](#large-scale-databases)
     - [Type of Consistency](#type-of-consistency)
+      - [Strong consistency: after the update completes, any subsequent access will return the same updated value.](#strong-consistency-after-the-update-completes-any-subsequent-access-will-return-the-same-updated-value)
+      - [Weak consistency: it is not guaranteed that subsequent accesses will return the updated value.](#weak-consistency-it-is-not-guaranteed-that-subsequent-accesses-will-return-the-updated-value)
       - [Eventual consistency:](#eventual-consistency)
+      - [Causal consistency: processes that have causal relationship will see consistent data.](#causal-consistency-processes-that-have-causal-relationship-will-see-consistent-data)
+      - [Read-your-write consistency: a process always access the data item after it's update operation and never sees an older value.](#read-your-write-consistency-a-process-always-access-the-data-item-after-its-update-operation-and-never-sees-an-older-value)
+      - [Session consistency:](#session-consistency)
+      - [Monotonic read consistency: if a process has seens a particualr value of data item, any subsequent processes will never return any previous values.](#monotonic-read-consistency-if-a-process-has-seens-a-particualr-value-of-data-item-any-subsequent-processes-will-never-return-any-previous-values)
+      - [Monotonic write consistency: the system guarantees to serialize the writes by the same process.](#monotonic-write-consistency-the-system-guarantees-to-serialize-the-writes-by-the-same-process)
     - [Dynamic Tradeoff between Consistency and Availability](#dynamic-tradeoff-between-consistency-and-availability)
     - [Heterogeneity: Segmenting Consistency and Availability](#heterogeneity-segmenting-consistency-and-availability)
     - [Data Partitioning](#data-partitioning)
@@ -4530,7 +4537,7 @@ For distributed transactions to work:
 
 Initial balance of x and y is $0.
 
-The behaviour above cannot occur if A and B did not exist (that is, if we had only onoe server).
+The behaviour above cannot occur if A and B did not exist (that is, if we had only one server).
 
 ### Transactions with replicated data
 
@@ -4595,27 +4602,27 @@ Therefore, in order to have strong guarantees on Availability and Partition Tole
 
 ### Type of Consistency
 
-Strong consistency: after the update completes, any subsequent access will return the same updated value.
+#### Strong consistency: after the update completes, any subsequent access will return the same updated value.
 
-Weak consistency: it is not guaranteed that subsequent accesses will return the updated value.
+#### Weak consistency: it is not guaranteed that subsequent accesses will return the updated value.
 
 #### Eventual consistency:
 
 - Specific form of weak consistency
 - It is guaranteed that if no new updates are made to updated value (e.g., propagate updates to replicas in a lazy fashion)
 
-Causal consistency: processes that have causal relationship will see consistent data.
+#### Causal consistency: processes that have causal relationship will see consistent data.
 
-Read-your-write consistency: a process always access the data item after it's update operation and never sees an older value.
+#### Read-your-write consistency: a process always access the data item after it's update operation and never sees an older value.
 
-Session consistency:
+#### Session consistency:
 
 - As long as session exists, system guarantees read-your-write consistency.
 - Guarantees do not overlap sessions.
 
-Monotonic read consistency: if a process has seens a particualr value of data item, any subsequent processes will never return any previous values.
+#### Monotonic read consistency: if a process has seens a particualr value of data item, any subsequent processes will never return any previous values.
 
-Monotonic write consistency: the system guarantees to serialize the writes by the same process.
+#### Monotonic write consistency: the system guarantees to serialize the writes by the same process.
 
 In practice:
 
@@ -4652,7 +4659,7 @@ Different data may require different consistency and availability.
 
 Example:
 
-- shopping cart: high availability, responsive, can sometimes suffer anomalies.
+- Shopping cart: high availability, responsive, can sometimes suffer anomalies.
 - Product information need to be available, slight variation in inventory is sufferable.
 - Checkout, billing, shipping records must be consistent.
 
@@ -4767,9 +4774,11 @@ A data warehouse is a repository (archive) or information gathered from multiple
 
 ![](images/2023-07-25-23-00-02.png)
 
+> Data warehousing involves the storage of processed, cleaned, and integrated data for the purpose of reporting and data analysis. The main goal of a data warehouse is to provide an integrated and centralized view of an organization's data, which can be used for business intelligence, reporting, and analysis.
+
 ### Data Warehouse Design Issues
 
-When and how to gather data:
+1. When and how to gather data:
 
 - **Source driven architecture**: data sources transmit new information to warehouse, either continuously or periodically. (e.g. at night)
 - **Destination driven architecture**: warehouse periodically requests new information from data sources
@@ -4779,21 +4788,21 @@ Keeping warehouse exactly synchronized with data sources (e.g., using two-phase 
 - usually OK to have slightly out-of-date data at warehouse
 - data/updates are periodically downloaded from online transaction processing (OLTP) systems (most of the DBMS work we have seen so far)
 
-What schema to use
+2. What schema to use
 
 - Depends on purpose
 - Schema integration
 
-Data cleasing
+3. Data cleasing
 
 - e.g. correct mistakes in addresses (misspellings, zip code errors)
 - Merge address lists from different sources and purge duplicates
 
-How to propagate updates
+4. How to propagate updates
 
 - The data stored in a data warehouse is documented with an element of time, either explicitly or implicitly.
 
-What data to summarize
+5. What data to summarize
 
 - Raw data may be too large to store
 - Aggregate values (totals/subtotals) often suffice
@@ -4801,7 +4810,7 @@ What data to summarize
 
 ---
 
-**WHy not just use cloud?**
+**Why not just use cloud?**
 
 - Privacy: data is sensitive
 - Cost
