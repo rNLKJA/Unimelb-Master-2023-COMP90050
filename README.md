@@ -2898,19 +2898,27 @@ There is no difference between start and restart in TP based system.
 ## Concurrency Problems
 
 > <img src="images/2023-07-13-22-30-15.png" width=300 />
+>
 > Concurrent transactions can cause issues in Database - need concurrency control.
 > In database, some file may be used by multiple transactions. If one transaction is updating the file, other transactions should not be able to read the file.
 >
 > <img src="images/2023-07-13-22-32-24.png" width=300 />
+>
 > C,D is fine.
 
 Multiple concurrently running transactions may cause conflicts. Still we try to allow concurrent runs as much as possible for a better performance, while avoiding conflicts as much as possible.
 
-What we need to know:
+**What we need to know:**
 
 - What are the possible conflicts/dependencies
 - Given a set of concurrent transactions, can we determine whether there will be any conflict or not?
 - Is there nay way to re-order the execution of transactions to avoid conflicts (without making any change to the intended final output/final state) of the database?
+
+> 1. Identify the possible conflicts or dependencies via construct a dependency graph
+> 2. Determine whether there is any conflict or not for given set of concurrent transactions
+> 3. try to reorder the execution of transactions to avoid conflicts
+>
+> As a result, we want to resolve conflicts and preserve database consistency.
 
 ---
 
@@ -2930,6 +2938,8 @@ Different ways for concurrency control
 - Uses busy waiting.
 - Efficient if the lock contention (that is frequency of access to the locks) is low
 
+> Dekker's algorithm is a programming approach to solve the concurrency issue, however code might become complicated if more than two processes are involved (problem complexity depends on the number of transactions).
+
 ### **OS supported primitives (through interruption call)**: expensive, independent of number of processes, machine independent
 
 - through an interrupt call, the lock request is passed to the OS
@@ -2944,6 +2954,8 @@ Different ways for concurrency control
 - use busy waiting
 - algorithm does not depend on number of processes
 - are very efficient for low lock contentions - all BD systems use them
+
+> Busy waiting: a process that waits for a condition to be satisfied by checking the condition at regular intervals.
 
 ---
 
@@ -2981,6 +2993,8 @@ The following code may have lost values
 Instead, we can use the atomic operation of compare and swap instruction
 
 ```c
+
+// compare and swap: cs
 boolean cs(int *cell, int *old, int *new) {
   // the following is executed atomically
   if (*cell == *old) { // is this value modified by other transactions?
@@ -3003,7 +3017,7 @@ while (!cs(&counter, &temp, &new));
 
 > **Exclusive access**
 >
-> In the content of a database management system (DBMS), exclude access refers to a level of access control that allows only one user or transaction to manipulate a specific resource exclusively at any given time. This means that when exclusive access is granted to a user or transacction, no other user or transaction can concurrently access or modify the same resource until the exclusive access is released.
+> In the content of a database management system (DBMS), exclude access refers to a level of access control that allows only one user or transaction to manipulate a specific resource exclusively at any given time. This means that when exclusive access is granted to a user or transaction, no other user or transaction can concurrently access or modify the same resource until the exclusive access is released.
 >
 > Exclusive access ensure data integrity and consistency by preventing conflicts and concurrency issues that could arise when multiple users or transactions attempt to modify the same resource, such as inserting, updating or deleting recordings during that time.
 
@@ -3038,8 +3052,6 @@ while (!cs(&counter, &temp, &new));
 - [ ] It is efficient to do concurrency control with Dekker's algorithm because the algorithm relies on hardware support
 - [x] Semaphores can be implemented in a way to allow first in first out to a set of processes
 - [ ] Spinlock is suitable when a process needs to wait a long period for acquiring a resource
-
-> Semaphore locks are more efficient than spinlocks because they do not require busy waiting. Spinlocks are more efficient than semaphores because they do not require context switching.
 
 ### Which action is not suitable for solving a deadlock?
 
@@ -3139,7 +3151,7 @@ Request: +|- -> (next mode), +(granted), -(delayed)
 
 Semaphores derive from the corresponding mechanism used for trains: a train may proceed through a section of track only if the semaphore is clear. Once the train passes, the semaphore is set until the train exists that section of track.
 
-Computer semaphores have a get() routine that acquuires the semaphore (perhaps waiting until it is free) and a dualt give() routine that returns the semaphore to the free state, perhaps signaling (waking up) a waiting process.
+Computer semaphores have a `get()` routine that acquuires the semaphore (perhaps waiting until it is free) and a dual `give()` routine that returns the semaphore to the free state, perhaps signaling (waking up) a waiting process.
 
 Semaphores are very simple locks, indeed, they are used to implement general-purpose locks.
 
