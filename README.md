@@ -159,7 +159,7 @@
     - [Types of Actions](#types-of-actions)
   - [Embedded SQL example in C](#embedded-sql-example-in-c)
     - [Host variables](#host-variables)
-    - [Data Typtes](#data-typtes)
+    - [Data Types](#data-types)
     - [Error Handling](#error-handling)
     - [Singleton SELECT](#singleton-select)
   - [Flat Transaction](#flat-transaction)
@@ -2631,7 +2631,7 @@ string query = "SELECT * FROM login WHERE user = ? AND pass = ?" + request.getPa
 
 Transaction - A unit of work in a database
 
-- A transaction can have any number and type of opeartions in it
+- A transaction can have any number and type of operations in it
 - Either happens as a whole or not
 - Transactions ideally have four properties, commonly knwon as ACID properties
 
@@ -2727,9 +2727,9 @@ int main() {
 
 ### Host variables
 
-Declared in a section enclosed by the BEGIN DECLARE SECTION and END DECLARE SECTION. WHile accessing these variables, they are prefixed by a colon `:`. The colon is essential to distinguish between host variables and database objects (for example tables and columns).
+Declared in a section enclosed by the `BEGIN DECLARE SECTION` and `END DECLARE SECTION`. WHile accessing these variables, they are prefixed by a colon `:`. The colon is essential to distinguish between host variables and database objects (for example tables and columns).
 
-### Data Typtes
+### Data Types
 
 The data types supported by a DBMS and a host language can be quite different. Host variables play a dual role:
 
@@ -2740,7 +2740,7 @@ If there is no host language type corresponding to a DBMS date type, DBMS automa
 
 ### Error Handling
 
-The DBMS reports run-time errorss to the applications program through an SQL Communications Area (SQLCA) by INCLUDE SQLCA. The WHENEVER...GOTO statement tells the pre-processor to generate error-handling code to process errors returned by the DBMS.
+The DBMS reports run-time errorss to the applications program through an SQL Communications Area (SQLCA) by `#INCLUDE SQLCA`. The WHENEVER...GOTO statement tells the pre-processor to generate error-handling code to process errors returned by the DBMS.
 
 ### Singleton SELECT
 
@@ -2823,7 +2823,7 @@ IncreaseSalary()
 
 <img src="images/2023-07-06-16-56-50.png" width=350px />
 
-> Reading: Chained transactions
+<!-- > Reading: Chained transactions -->
 
 <!-- TODO: Reading: Chained transactions  -->
 
@@ -2838,7 +2838,7 @@ Nested transaction does not encounter the problem with ACID properties. If one t
 ##### **Commit Rule**
 
 - A subtransaction can either commit or abort, however, commit cannot take place unless the parent itself commits.
-- Subtransactions have A, C, and I properties but not D property unless all its ancestors commit.
+- Subtransactions have Atomicity, Consistency, and Isolation properties but not D property unless all its ancestors commit.
 - Commit of a sub transaction makes its results available only to its parents.
 
 ##### **Rollback Rule**
@@ -2847,7 +2847,7 @@ Nested transaction does not encounter the problem with ACID properties. If one t
 
 ##### **Visibility Rule**
 
-Changes made by a subtransaction are visible to the parent only when the subtransaction commits. ALl objects of parent are visible to its children. Implication of this is that the parent should not be modify objects while children are accessing them. This is not a problem as parent does not run in parallel with its children.
+Changes made by a subtransaction are visible to the parent only when the subtransaction commits. All objects of parent are visible to its children. Implication of this is that the parent should not be modify objects while children are accessing them. This is not a problem as parent does not run in parallel with its children.
 
 > What if a crash happens during a nested transaction?
 >
@@ -2868,6 +2868,8 @@ Integrates other system components and manages resources.
 <img src="images/2023-07-13-22-18-21.png" width=350 />
 
 ### TP monitor services
+
+> TPM: Transaction Processing Monitor $\rightarrow$ TP Monitor
 
 #### Heterogeneity
 
