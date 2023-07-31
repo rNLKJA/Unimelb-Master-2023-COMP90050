@@ -3229,7 +3229,7 @@ void unlock(Xsemphore *sem) {
 
 ### Convoy avoding semaphore
 
-The previous implememntation may result a long list of waiting processes - called convoy.
+The previous implementation may result a long list of waiting processes - called convoy.
 
 To avoid convoys, a process may simply free the semaphore (set the queue to null) and then wake up every process in the list after usage.
 
@@ -3297,7 +3297,7 @@ Periodically check the resource dependency graph for cycles. If a cycle exists -
 
 > Allow waiting for a maximum time on a lock then force Rollback. Many successful systems (IBM, Tandem) have chosen this approach.
 
-Many distributed database systems maintain only local dependency graphs and use tiem outs for global deadlocks.
+Many distributed database systems maintain only local dependency graphs and use time outs for global deadlocks.
 
 Deadlocks are rare, however, they do occur and the database has to deal with them when they occur.
 
@@ -4056,7 +4056,7 @@ Choose the right recovery model for your application.
 
 Types of recovery models in MS SQL server:
 
-- Simple: No logs, but has backups. Recovery is doen from the last backup.
+- Simple: No logs, but has backups. Recovery is done from the last backup.
 - Full: Uses logs plus backups, regular checkpoints.
 - Bulk-logged: Logs are not maintained for each individual writes, but for multiple writes together.
 
@@ -4076,11 +4076,11 @@ WHERE name = 'model'
 
 - Goals and requirements of your organization/task
 - The nature of your data and usage pattern
-- COnstraint on resources
+- Constraint on resources
 
 **Design backup strategy**
 
-- Full disk backup vs. partial - Are changes likely to occur in only a small part of the databsae or in a large part of the database?
+- Full disk backup vs. partial - Are changes likely to occur in only a small part of the database or in a large part of the database?
 - How frequently data changes
   - If frequent: use differential backup that captures only the changes since the last full database backup
 - Space requirement of the backups depending on the resource
@@ -4163,7 +4163,7 @@ A simple scheme to guarantee Atomicity & Durability?
 
 ### Motivation
 
-Atomicity: Transacctions may abort ("Rollback"). e.g. T6
+Atomicity: Transactions may abort ("Rollback"). e.g. T6
 
 Durability: What if DBMS stops running? (causes?)
 
@@ -5123,3 +5123,8 @@ Based on these numbers, the outer relation should be T2 as it can lead to lower 
 - MTTP: Mean Time To Repair
 
 - supoermodule: a collection of modules that are related to each other and are managed as a unit.
+
+- Livelock is a situation in concurrent programming where two or more threads or processes are stuck in a constant cycle of trying to resolve a resource conflict, but none of them make progress. Unlike a deadlock, where threads are blocked and cannot proceed, in a livelock, threads are actively executing, but their actions prevent the system from making any meaningful progress.
+- Livelocks typically occur when threads or processes are trying to be polite and accommodating, and they keep rolling back, hoping that the situation will resolve itself. However, due to the nature of the conflict, the threads end up repeatedly interfering with each other, preventing any of them from successfully completing their tasks.
+
+- Casual consistency: If process P1 writes a value to a data item and then writes a different value to another data item, then any other process that reads both data items will see the values written by P1 in the same order.
