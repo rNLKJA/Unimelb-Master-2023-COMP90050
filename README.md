@@ -229,7 +229,7 @@
     - [Degree 0](#degree-0)
   - [Concurrent transactions - Conflicts and Performance issues](#concurrent-transactions---conflicts-and-performance-issues)
   - [Granularity of Locks](#granularity-of-locks)
-      - [Intention mode locks](#intention-mode-locks)
+    - [Intention mode locks](#intention-mode-locks)
     - [Actual granular locks in practice](#actual-granular-locks-in-practice)
     - [Isolation Concepts ...](#isolation-concepts-)
     - [Isolocation Concepts ... Tree locking and Intent Lock Modes](#isolocation-concepts--tree-locking-and-intent-lock-modes)
@@ -247,9 +247,9 @@
     - [Which statement is true about recovery](#which-statement-is-true-about-recovery)
     - [What degree of isolation does the following transaction provide?](#what-degree-of-isolation-does-the-following-transaction-provide)
   - [Crach Recovery](#crach-recovery)
-      - [Analysis Phase](#analysis-phase)
-      - [The REDO Phase](#the-redo-phase)
-      - [The UNDO Phase](#the-undo-phase)
+    - [Analysis Phase](#analysis-phase)
+    - [The REDO Phase](#the-redo-phase)
+    - [The UNDO Phase](#the-undo-phase)
     - [Review the ACID properties](#review-the-acid-properties)
     - [Assumptions](#assumptions)
     - [Motivation](#motivation)
@@ -5137,3 +5137,213 @@ Based on these numbers, the outer relation should be T2 as it can lead to lower 
 - Livelocks typically occur when threads or processes are trying to be polite and accommodating, and they keep rolling back, hoping that the situation will resolve itself. However, due to the nature of the conflict, the threads end up repeatedly interfering with each other, preventing any of them from successfully completing their tasks.
 
 - Casual consistency: If process P1 writes a value to a data item and then writes a different value to another data item, then any other process that reads both data items will see the values written by P1 in the same order.
+
+---
+
+**Are solid state drives becoming faster than hard disk drives in general?**
+
+Yes, solid state drives are generally faster than hard disk drives. The reason that SSDs do not have any moving part, which helps with the elimination of seek/rotation latency.
+
+**Which of the following RAID configurations has the highest disk space utilization when all disks have the same capacity? The utilization is the ratio of the size of data, excluding mirroring and parity, to the total capacity. Your answer needs to show explanations with calculations:**
+
+- RAID 0 with 3 disks: it stores contiguous blocks of data of a file across different disks. There is no mirroring or parity in RAID 0. Therefore, the utilization is 3/3 = 100%.
+- RAID 1 with 4 disks: it uses mirroring, where each block of data is copied to another disk. Therefore, the utilization is 2/4 = 50%.
+- RAID 3 with 3 disks: it uses a dedicate parity disk. Therefore, the utilization of a RAID 3 with 3 disks is (3-1)/3 = 66.67%.
+- RAID 4 with 3 disks: it uses a dedicate parity disk. Te utilization of a RAID 4 with 3 disks is (3-1)/3 = 66.67%.
+
+**Is the duration of locks usually shorter in optimistic concurrency control than in two-phase locking? Briefly explain your answer**
+
+Yes, the duration of locks is usually short in optimistic concurrency control than in two-phase locking. In the two phase locking, all lock oeprations must precede object accesses. For achieving serialiability, data objects are normally locked earlier in a transaction then unlocked towards the end of the transaction in two-phase locking with a locking (growing) and a unlocking phase (shrinking). Optimistic case only needs to take locks when it is time to commit. Therefore, the duration of locks in optimistic case can be signficantly shorter than in two-phase locking.
+
+**A failfast system has 8 devices. Assume 5 out of 8 devices are unavailable but there are still agreeing devices. Can the system continue to operate in this scenario and why?**
+
+Failfast requuires that a majority of the available modules have agreeing output. The system can continue to operate because a majority of the available devices, i.e., 2 out of 3 available devices have agreeing output.
+
+**Given the below operation for a transaction T1, please list the lines that this transaction is executing that cannot happen with two-phase locking. Briefly explain. Then please rewrite the transaction operations in a way that we can call the exeuction order as strict two-phase locking based execution order.**
+
+|     | T1        |
+| --- | --------- |
+| 1   | Slock(A)  |
+| 2   | Read(A)   |
+| 3   | Unlock(A) |
+| 4   | Slock(B)  |
+| 5   | Read(B)   |
+| 6   | Unlock(B) |
+| 7   | Xlock(C)  |
+| 8   | Write(C)  |
+| 9   | Unlock(C) |
+| 10  | Xlock(A)  |
+| 11  | Write(A)  |
+| 12  | Unlock(A) |
+
+Line 4, 7, 10 cannot happen with two-phase locking because the first unlock operation is in line 3. There cannot be lock operation after the start of the shrinking phase, i.e., the transaction cannot get further locks after the first unlock operation. To make the execution order as strict two-phase locking based, the transaction can be written as follows:
+
+|     | T1        |
+| --- | --------- |
+| 1   | Xlock(A)  |
+| 2   | Slock(B)  |
+| 3   | Xlock(C)  |
+| 4   | Read(A)   |
+| 5   | Read(B)   |
+| 6   | Write(C)  |
+| 7   | Write(A)  |
+| 8   | Unlock(A) |
+| 9   | Unlock(B) |
+| 10  | Unlock(C) |
+
+**Relation T1 has 2,000 records stored in 50 blocks that can be read consecutively. Relation T2 has 500 records stored in 20 blocks that can be read consecutively. For a SQL query with a join operation, the query optimizer chooses to use block nested loop join. Should the outer relation be T1 or T2 based on the cost in the worst case? Briefly explain your answer.**
+
+If T1 is the outer relation: The number of block transfers is 50 + 20 * 50 = 1050. The number of seeks is 2*50 = 100.
+
+If T2 is the outer relation: The number of block transfers is 20 + 50 * 20 = 1020. The number of seeks is 2*20 = 40.
+
+Based on these numbers, the outer relation should be T2 as it can lead to lower costs.
+
+**history H of transactions is <(T1,R,O1), (T3,W,O5), (T3,W,O1), (T2,R,O5), (T2,W,O2), (T5,R,O4), (T1,R,O2),(T5,R,O3)>. What are the dependency relations in this history? Is this history equal to a serial execution, briefly explain? Is it equal to a serial execution if the second item in the history was changed to (T3, R, O5), resulting in a history <(T1,R,O1), (T3,R,O5), (T3,W,O1), (T2,R,O5), (T2,W,O2), (T5,R,O4), (T1,R,O2), (T5,R,O3)> ? Your answer needs to show explanations.**
+
+In this first case, dependency relations are DEP(H) = {<T1, O1, T3>, <T3, O5, T2>, <T2, O2, T1>}. Serial execution equivalence is not possible. This because there exists a wormhold transaction (e.g. T1 is before and after T3).
+
+If (T3, W, O5) was changed to (T3, R, O5), the depedency relation would be DEP(H) = {<T1, O1, T3>, <T2, O2, T1>}, which removes the wormhole transaction and makes it possible to be equal to a serial exeuction.
+
+**Assume memory access time is M, cache access time is C and hit ratio is H. In scenario 1, M=1000C and H= 30%. In scenario 2, M=10C and H=90%. Which scenario has the best effective access time EA? Answer needs to show the computation steps.**
+
+In scenario 1: EA = H _ C + (1-H) _ M = 0.3 _ C + 0.7 _ 1000C = 700.3C
+In scenario 2: EA = H _ C + (1-H) _ M = 0.9 _ C + 0.1 _ 10C = 1.9C
+
+Scenario 2 has the best effective access time.
+
+**Given a message 1010100 and a polynomial $x^3+x^2$, compute the 3-bit CRC. Show the computation steps.**
+
+Polynomial = 1100
+
+```
+1010100 000
+1100
+-----------
+0110100 000
+ 1100
+-----------
+0010100 000
+  1100
+-----------
+0001000 000
+   1100
+-----------
+0000100 000
+    1100
+-----------
+0000010 000
+     11 00
+-----------
+0000001 000
+      1 100
+-----------
+0000000 100
+```
+
+The remainder is 100, which is the result of CRC.
+
+**What is the difference between two-phase locking and strict two-phase locking and where would it matter? Discuss a problem that the strict version addresses.**
+
+In two-phase locking, all the locks are acquired in one phase and the locks are released in another phase before the commit time. In strict two-phase locking, the locks are not released before the commit, i.e., the locks are released at commit. Strict two-phase locking can lead to lower concurrency and lower efficiency compared to two-phase locking because locks are hold for a longer time. However, strict two-phase locking can help with preventing cascading aborts because it ensures that transactions only read values that were commited.
+
+**A database system makes checkpoints while logging transaction operations. The system crashes and needs to be recovered. Which transactions should be redone/undone/ignored given the following log records? What are the value of A and B after recovery**
+
+```
+<T0 start>
+<T0, A, 1000, 1500>
+<T1 start>
+<T1, B, 2000, 2100>
+<T1 commit>
+<T2 start>
+<T2, B, 2100, 2200>
+<checkpoint>
+<T2 commit>
+<T0, A, 1500, 1600>
+System crash at this point.
+```
+
+T0 should be undone, T1 should be ignored. T2 should be redone. After recovery, A is 1000 and B is 2200.
+
+**Two transactions T1 and T2 start to run at the same time. T1 needs to modify A1 and T2 needs to read A3. The following diagram shows a plan of granular locks for the two transactions. What would be the problem with this plan? How to rectify the problem?**
+
+![](images/2023-08-01-10-32-41.png)
+
+The problem is that the two transactions need to get incompatible locks at the same node. Specifically, T1's X lock is not compatible with T2's S lock on node A. Consequently, one of the transaction must be delayed until the other transaction releases the lock on A. To rectify the problem, T1 can get IX lock on A and T2 can get IS lock on A. Then T1 can get X lock on A1, which the transactions needs to modify. T2 can get S lock on A3, which the transaction needs to read. By doing so, the two transactions can run in parallel, leading to a higher concurrency.
+
+**In one paragraph, compare Relational DB systems with Object Oriented DB systems.**
+
+Relational Database system is a database management system that is based on the relational model and stored as tables. It can handle comparatively simple data and the very applicable to store data in columns and rows. It is commonly applied in SQL since it is very reliable and relatively fast. However, in some case, it will become less efficient when the number of tables incresase. While object Oriented Database Systems can handle much larger and more complex data, and stored as objects directly. Since structure of data is complex due to the involvement of different data types. Moreover, Object Oriented DB system is rarely used in real life and processing time is slow.
+
+**We have seen the B+tree concept for indexing in class. These trees are deemed as an improvement over binary trees with their large fan out, e.g. in range of 100s.**
+
+- What is the benefit of making such a decision with fan outs, especially in the context of DBMSs? Briefly explain.
+  - For better search efficiency because it is a balanced tree. The average search efficiency is $O(\log n)$
+- What are the benefits and disadvantages of using B+tree in comparison to using hashing? Briefly explain.
+  - Benefits of using a B+tree in comparison to using hash indexing are concludes as following: B+tree is more suitable for multi-attribute data, and duplicated data can be stored as well. In addition to that, as B+tree is balanced, it will be easier to search data. However the disadvantage of using B+tree is that it is more complex to implement and relatively expensive.
+
+**Given the following transaction history h we are told that k, l, m, n, o, and p are transactions, and operations are Read and Write operations which are labeled as R and W, and operations are done on the objects labeled as a, b, c, d, e: h = < (k,R,a),(m,W,a),(m,W,b),(n,R,b),(k,W,c),(l,W,e),(o,R,c),(o,R,d), (p,W,d) > Please find the DEP(h) and draw as a simple graph version as well. Then using the concept of wormholes explain whether this history is equal to a serial history or not, i.e., if this history is not equal to a serial history then give a wormhole example, and if it is then give a serial execution of these transactions that this history is equal to. Briefly explain your steps with sentences while answering this question.**
+
+![](images/2023-08-01-11-09-26.png)
+
+DEP(H) = {<k,a,m>, <m,b,n>, <o,d,p>}
+
+The dependency graph is shown above. Thus all transactions are executed serially with no cycles. In other words, it is equivalent to a serial history (no wormhole transactions).
+
+**What is cascading aborts? Does two-phase locking address them? If it does, explain how, but if it does not, then give a locking-based strategy that may address them, and then explain briefly how that strategy that you gave will address them.**
+
+The cascading aborts is a situation in which the abort or rollback of one transaction forces the abort of another transaction to avoid the second transaction from reading uncommited data. However, two-phase lockign does not address the cascading aborts. Due to the fact that Strict Two-Phase Locking do unlock after commit.
+
+**Given the k-d tree below with point data, where black labeled dots represent spatial coordinate data, and the rectangular area is divided into regions with the division order given with numbers: draw the associated k-d tree as a tree structure with leaves labeled as the data labels given below. Assume left subarea of a division goes to a left subtree, and lower subarea of a division also goes to a left subtree. The figure for the k-tree follows:**
+
+![](images/2023-08-01-11-13-26.png)
+
+![](images/2023-08-01-11-14-55.png)
+
+**We want to use the Cyclic Redundancy Check method for data storage as a means to deal with errors. Please compute the additional bits that we need to store with the original data, given the following information. Show your steps and calculations. Original data is 11100001 and your divisor polynomial is x4 + x2 + x + 1.**
+
+Polynomial = 10111
+
+```
+11100001 0000
+10111
+-------------
+01011001 0000
+ 10111
+-------------
+00000101 0000
+     101 11
+-------------
+00000000 1100
+```
+
+The remainder is 1100, which is the result CRC.
+
+**Compare ACID and BASE properties; what do they aim each; what are their differences, and advantages or disadvantages if a DBMS designer follows one or the other set. Briefly explain.**
+
+ACID properties refer to Atomicity, Consistency, Isolation and Durability, it can guarantee data validity despite any errors occur. Atomicity means either all actions happen or not. Consistency means we assume all transactions are correct. Isolation refers to either happen before T or after T but not at the same time. And lastly, Durability indicates that state changes committed by a transactio survivie failures. I aims for concurrently running transactions, further reduce waiting and improve throughput and resource utilization. While BASE properties are concluding as Basically Available, Soft-state and Eventual Consistency. The diesn of idea provides higher availability over consistency overall. So as BASE properties can further improve efficiency but will maintain a weak consistency.
+
+**Shadow paging is a mechanism one can use in database recovery. It is said it is an approach where almost no recovery effort is needed after a crash. Explain why this may be the case**
+
+The genearl idea of Shadow-paging is to make a copy of old data. And maintain two-page tables during lifetime of a transaction. Two pages are involved, current page table and shadow page table. Current page table is only used for data access. While shadow page table is store in the non-volatile storage and will never be modifies during execution. Thus, there is no need to redo or undo, which means no overhead from crash is in inexpensive and fast.
+
+**Given some data to be put on disks, which one of the following RAID configurations will have the best MTTF? Calculate each case and show your calculations with simple explanations. Assume individual MTTF of the disks in this question are the same.**
+
+- RAID 0 with 3 disks: P(fail) = p + p + p = 3p, probability of failure: 1/3 \* MTTF(disk)
+- RAID 1 with 4 disks: P(fail) = p _ p _ p \* p = p^4, probability of failure: MTTF(disk)^4
+- RAID 3 with 3 disks: P(fail) = 3!/2! _ p _ p = 3p^2, probability of failure: 1/3 \* MTTF(disk)^2
+- RAID 4 with 3 disks: P(fail) = 3!/2! _ p _ p = 3p^2, probability of failure: 1/3 \* MTTF(disk)^2
+
+Therefore, RAID 1 with 4 disks will have the best MTTF.
+
+**What is the difference between Optimistic Concurrency control mechanism versus a Snapshot Isolation-based one. What is the implication of this difference? Briefly explain.**
+
+A classical Optimistic Concurrency Control mechanism only take locks when it is time to commit and check conflict at commit time. The benefits of Optimistic Concurrency Control are that it allows higher throughput and will not access one object at the same time. Furthermore, it will introduce more concurrency and more parallel operations. While Snapshot Isolation follows Optimistic Concurrency Control which states that transaction will not conflict with each other. It checks more write over read.
+
+**Relation A has 1,000 records stored in 40 blocks that can be read consecutively. Relation B has 800 records stored in 50 blocks that can be read consecutively. For a SQL query with a join operation that joins these two relations, the query optimizer chooses to use block nested-loop join. Should the outer relation be A or B based on the costs that you may derive using the information above? Can we decide on this choice using the information provided? If so, show your calculations and then give your answer, if not briefly explain why not.**
+
+If A as the outer relationship, the block transfers = 40 _ 50 + 40 = 2040 block transfers and 2 _ 40 = 80 seeks.
+
+If B as the outer relationship, the block transfers = 50 _ 40 + 50 = 2050 block transfers and 2 _ 50 = 100 seeks.
+
+As calculated above, A should be chosen as the outer relation because the lower cost.
