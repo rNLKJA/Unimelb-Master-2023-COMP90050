@@ -145,8 +145,9 @@ export class CostModel {
 
     const pk = SCHEMA[table].primaryKey;
     if (pk && eq.includes(pk)) {
-      const cost = log2(n) * k.seekLevel;
-      if (cost < best.cost) best = { kind: "rowid", table, rows: 1, cost };
+      // SQLite always resolves an equality on the INTEGER PRIMARY KEY with a
+      // rowid lookup, even on tables small enough that a scan would be as fast.
+      return { kind: "rowid", table, rows: 1, cost: log2(n) * k.seekLevel };
     } else if (pk) {
       const r = access.ranges.find((x) => x.column === pk);
       if (r) {
