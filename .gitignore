@@ -1,3 +1,33 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+*.swp
 
-.vscode/extensions.json
+# Large media from the original repo (recordings were never committed)
 *.mp4
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.pnpm-store/
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment and deployment
+.env
+.env*
+!.env.example
+.vercel
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
