@@ -3,7 +3,7 @@ import type { PlanNode } from "@/lib/engine/explain";
 
 const OP_STYLE: Record<PlanNode["op"], string> = {
   search: "text-mint",
-  scan: "text-amber",
+  scan: "text-amber-ink",
   temp: "text-violet",
   other: "text-muted-foreground",
 };

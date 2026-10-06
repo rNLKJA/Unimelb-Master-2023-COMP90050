@@ -168,45 +168,8 @@ export function ConsoleApp() {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[19rem_minmax(0,1fr)]">
-      <aside
-        className="space-y-5 lg:sticky lg:top-20 lg:self-start"
-        aria-label="Database and indexes"
-      >
-        <Panel className="space-y-4 p-4">
-          <Segmented
-            label="Data size"
-            value={scale}
-            disabled={!ready && state.status !== "error"}
-            onChange={(v) => reload(v)}
-            options={Object.values(SCALES).map((s) => ({
-              value: s.id,
-              label: s.label.split(" · ")[0],
-              hint: s.label,
-            }))}
-          />
-          <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs">
-            <span className="font-mono">
-              {state.info
-                ? `${formatBytes(state.info.dataBytes)} · SQLite ${state.info.sqliteVersion ?? ""}`
-                : state.phase}
-            </span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => reload(scale)}
-              disabled={!ready && state.status !== "error"}
-              title="Reload a pristine copy of the database"
-            >
-              <RefreshCw className="size-3.5" aria-hidden /> Reset
-            </Button>
-          </div>
-        </Panel>
-        <IndexPanel indexes={state.indexes} disabled={!ready} onAction={indexAction} />
-        <SchemaPanel rows={state.info?.rows ?? null} />
-      </aside>
-
-      <section className="min-w-0 space-y-5" aria-label="SQL console">
+      {/* The query editor comes first in the DOM so phones reach it before the sidebar. */}
+      <section className="min-w-0 space-y-5 lg:col-start-2 lg:row-start-1" aria-label="SQL console">
         {state.status === "error" && (
           <Panel className="border-coral/50 p-5 text-sm">
             <p className="flex items-center gap-2 font-medium">
@@ -222,6 +185,7 @@ export function ConsoleApp() {
 
         <Panel>
           <PanelHeader
+            level={2}
             title="Query"
             sub="One statement at a time. Ctrl/⌘ + Enter runs it. The database lives only in this tab."
           />
@@ -310,7 +274,7 @@ export function ConsoleApp() {
                       measured {formatMs(state.result.ms)}
                       {state.result.runs > 1 ? ` (median of ${state.result.runs} runs)` : ""} ·{" "}
                       {state.result.changes > 0
-                        ? `${formatInt(state.result.changes)} rows changed`
+                        ? `${formatInt(state.result.changes)} row${state.result.changes === 1 ? "" : "s"} changed`
                         : `${formatInt(state.result.rows.length)}${state.result.truncated ? "+" : ""} row${
                             state.result.rows.length === 1 ? "" : "s"
                           }`}
@@ -332,6 +296,43 @@ export function ConsoleApp() {
           )}
         </div>
       </section>
+      <aside
+        className="space-y-5 lg:sticky lg:top-20 lg:col-start-1 lg:row-start-1 lg:self-start"
+        aria-label="Database and indexes"
+      >
+        <Panel className="space-y-4 p-4">
+          <Segmented
+            label="Data size"
+            value={scale}
+            disabled={!ready && state.status !== "error"}
+            onChange={(v) => reload(v)}
+            options={Object.values(SCALES).map((s) => ({
+              value: s.id,
+              label: s.label.split(" · ")[0],
+              hint: s.label,
+            }))}
+          />
+          <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs">
+            <span className="font-mono">
+              {state.info
+                ? `${formatBytes(state.info.dataBytes)} · SQLite ${state.info.sqliteVersion ?? ""}`
+                : state.phase}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => reload(scale)}
+              disabled={!ready && state.status !== "error"}
+              title="Reload a pristine copy of the database"
+            >
+              <RefreshCw className="size-3.5" aria-hidden /> Reset
+            </Button>
+          </div>
+        </Panel>
+        <IndexPanel indexes={state.indexes} disabled={!ready} onAction={indexAction} />
+        <SchemaPanel rows={state.info?.rows ?? null} />
+      </aside>
     </div>
   );
 }

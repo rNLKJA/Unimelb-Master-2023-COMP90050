@@ -24,7 +24,7 @@ export const ADVISORS: AdvisorInfo[] = [
   {
     id: "none",
     name: "No index",
-    short: "NoIndex",
+    short: "No index",
     year: 0,
     family: "baseline",
     paper: null,
@@ -55,7 +55,7 @@ export const ADVISORS: AdvisorInfo[] = [
   {
     id: "db2advis",
     name: "DB2 Advisor",
-    short: "DB2Advis",
+    short: "DB2 Adv.",
     year: 2000,
     family: "linear-programming",
     paper: "db2-advisor",

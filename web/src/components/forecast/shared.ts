@@ -36,3 +36,10 @@ export const STRATEGY_COLORS: Record<string, string> = {
   proactive: "var(--mint)",
   oracle: "var(--violet)",
 };
+
+/** Text-safe variants of STRATEGY_COLORS (at least 4.5:1 on the page in both themes). */
+export const STRATEGY_TEXT_COLORS: Record<string, string> = {
+  ...STRATEGY_COLORS,
+  none: "var(--muted-foreground)",
+  static: "var(--amber-ink)",
+};

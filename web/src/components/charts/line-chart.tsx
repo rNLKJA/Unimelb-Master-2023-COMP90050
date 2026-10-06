@@ -40,6 +40,28 @@ interface Props {
 }
 
 const PAD = { top: 14, right: 16, bottom: 28, left: 56 };
+/** Advance of one 10px IBM Plex Mono glyph. */
+const MONO_CHAR_PX = 6.1;
+
+/**
+ * Fit each marker's label between its line and the next marker (or the plot's
+ * right edge): shorten it with an ellipsis when it would collide, and drop it
+ * when not even a few characters fit. The full label stays in a <title>.
+ */
+function placeMarkerLabels(markers: Marker[], x: (i: number) => number, right: number) {
+  const sorted = [...markers].sort((a, b) => a.x - b.x);
+  return sorted.map((marker, i) => {
+    const end = i + 1 < sorted.length ? x(sorted[i + 1].x) : right;
+    const fits = Math.floor((end - x(marker.x) - 10) / MONO_CHAR_PX);
+    const text =
+      fits >= marker.label.length
+        ? marker.label
+        : fits >= 4
+          ? `${marker.label.slice(0, fits - 1).trimEnd()}…`
+          : null;
+    return { marker, text };
+  });
+}
 
 export function LineChart({
   series,
@@ -185,8 +207,9 @@ export function LineChart({
             {(xTickLabel ?? xLabel)(i)}
           </text>
         ))}
-        {markers.map((m) => (
+        {placeMarkerLabels(markers, x, PAD.left + innerW).map(({ marker: m, text }) => (
           <g key={`${m.x}-${m.label}`}>
+            <title>{m.label}</title>
             <line
               x1={x(m.x)}
               x2={x(m.x)}
@@ -195,13 +218,15 @@ export function LineChart({
               className="stroke-muted-foreground/50"
               strokeDasharray="3 3"
             />
-            <text
-              x={x(m.x) + 4}
-              y={PAD.top + 10}
-              className="fill-muted-foreground font-mono text-[10px]"
-            >
-              {m.label}
-            </text>
+            {text && (
+              <text
+                x={x(m.x) + 4}
+                y={PAD.top + 10}
+                className="fill-muted-foreground font-mono text-[10px]"
+              >
+                {text}
+              </text>
+            )}
           </g>
         ))}
         <g clipPath={`url(#${clip})`}>

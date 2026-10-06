@@ -60,7 +60,7 @@ export function WhatIfPanel({
             <ul className="text-muted-foreground space-y-0.5 font-mono text-xs">
               {w.paths.map((p, i) => (
                 <li key={i}>
-                  <span aria-hidden className={p.kind === "scan" ? "text-amber" : "text-mint"}>
+                  <span aria-hidden className={p.kind === "scan" ? "text-amber-ink" : "text-mint"}>
                     {i === 0 ? "▸ " : "└ "}
                   </span>
                   {describe(p)}
@@ -68,8 +68,8 @@ export function WhatIfPanel({
               ))}
             </ul>
             {w.candidates.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[24rem] text-xs">
+              <div className="relative overflow-x-auto">
+                <table className="w-full text-xs">
                   <caption className="text-muted-foreground mb-1.5 text-left text-xs">
                     Candidate indexes (AutoAdmin&apos;s syntactically relevant set), cheapest first
                   </caption>
@@ -81,7 +81,10 @@ export function WhatIfPanel({
                       <th scope="col" className="py-1.5 pr-2 text-right font-medium">
                         est. cost
                       </th>
-                      <th scope="col" className="py-1.5 pr-2 text-right font-medium">
+                      <th
+                        scope="col"
+                        className="hidden py-1.5 pr-2 text-right font-medium sm:table-cell"
+                      >
                         size
                       </th>
                       <th scope="col" className="py-1.5 text-right font-medium">
@@ -94,8 +97,15 @@ export function WhatIfPanel({
                       const change = c.cost / w.cost - 1;
                       return (
                         <tr key={c.id} className="border-border/50 border-b last:border-0">
-                          <th scope="row" className="py-1 pr-2 text-left font-mono font-normal">
-                            {c.id}
+                          <th
+                            scope="row"
+                            className="py-1 pr-2 text-left font-mono font-normal break-words"
+                          >
+                            {c.index.table}(<wbr />
+                            {c.index.columns.join(", ")})
+                            <span className="text-muted-foreground block sm:hidden">
+                              {formatBytes(c.bytes)}
+                            </span>
                           </th>
                           <td className="tabular py-1 pr-2 text-right font-mono whitespace-nowrap">
                             {formatMs(c.cost)}{" "}
@@ -105,7 +115,7 @@ export function WhatIfPanel({
                               {change < -0.01 ? `${(change * 100).toFixed(0)}%` : "±0"}
                             </span>
                           </td>
-                          <td className="text-muted-foreground tabular py-1 pr-2 text-right font-mono whitespace-nowrap">
+                          <td className="text-muted-foreground tabular hidden py-1 pr-2 text-right font-mono whitespace-nowrap sm:table-cell">
                             {formatBytes(c.bytes)}
                           </td>
                           <td className="py-1 text-right">

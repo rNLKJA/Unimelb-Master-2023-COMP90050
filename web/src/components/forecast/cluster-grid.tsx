@@ -26,7 +26,7 @@ export function ClusterGrid({ view }: { view: ForecastView }) {
       <p className="text-muted-foreground font-mono text-xs">
         ρ = {view.settings.rho.toFixed(2)} → {view.clusters.length} cluster
         {view.clusters.length === 1 ? "" : "s"} from {view.templates.length} templates ·{" "}
-        <span className={ok ? "text-mint" : "text-amber"}>
+        <span className={ok ? "text-mint" : "text-amber-ink"}>
           {ok ? "matches the three hidden behaviours" : "differs from the three hidden behaviours"}
         </span>
       </p>

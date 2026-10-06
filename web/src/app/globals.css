@@ -23,6 +23,7 @@
   --color-mint: var(--mint);
   --color-mint-soft: var(--mint-soft);
   --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
   --color-coral: var(--coral);
   --color-sky: var(--sky);
   --color-violet: var(--violet);
@@ -72,7 +73,8 @@
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.56 0.12 166);
+  /* 0.50 lightness keeps mint text and white-on-mint buttons above 4.5:1 (WCAG AA) */
+  --primary: oklch(0.5 0.12 166);
   --primary-foreground: oklch(0.99 0.01 166);
   --secondary: oklch(0.94 0.014 252);
   --secondary-foreground: var(--foreground);
@@ -83,12 +85,14 @@
   --destructive: oklch(0.56 0.2 25);
   --border: oklch(0.885 0.018 255);
   --input: oklch(0.86 0.02 255);
-  --ring: oklch(0.56 0.12 166);
+  --ring: oklch(0.5 0.12 166);
 
-  --mint: oklch(0.56 0.12 166);
+  --mint: oklch(0.5 0.12 166);
   --mint-soft: oklch(0.93 0.04 166);
   --amber: oklch(0.66 0.14 70);
-  --coral: oklch(0.6 0.17 22);
+  /* amber is a fill colour; text uses the darker ink (about 5:1 on white) */
+  --amber-ink: oklch(0.52 0.12 70);
+  --coral: oklch(0.55 0.17 22);
   --sky: oklch(0.56 0.13 245);
   --violet: oklch(0.52 0.16 295);
 
@@ -139,6 +143,7 @@
   --mint: oklch(0.86 0.14 166);
   --mint-soft: oklch(0.32 0.07 168);
   --amber: oklch(0.83 0.13 80);
+  --amber-ink: var(--amber);
   --coral: oklch(0.74 0.15 18);
   --sky: oklch(0.76 0.11 240);
   --violet: oklch(0.74 0.12 295);

@@ -7,7 +7,7 @@ import { Panel, PanelHeader } from "@/components/shared/section";
 import { formatBytes, formatMs } from "@/lib/format";
 import { indexTimeline, type ForecastView } from "@/lib/forecast/view";
 import { cn } from "@/lib/utils";
-import { dayName, hourLabel, STRATEGY_COLORS } from "./shared";
+import { dayName, hourLabel, STRATEGY_COLORS, STRATEGY_TEXT_COLORS } from "./shared";
 
 const SEGMENTS = [
   { key: "query", label: "Estimated query time", color: "var(--seg-exec)" },
@@ -73,7 +73,10 @@ export function LoopResults({ view }: { view: ForecastView }) {
             <dl className="grid gap-2 text-xs sm:grid-cols-2">
               {strategies.map((s) => (
                 <div key={s.id} className="flex gap-2">
-                  <dt className="shrink-0 font-medium" style={{ color: STRATEGY_COLORS[s.id] }}>
+                  <dt
+                    className="shrink-0 font-medium"
+                    style={{ color: STRATEGY_TEXT_COLORS[s.id] }}
+                  >
                     {s.label}
                   </dt>
                   <dd className="text-muted-foreground">{s.blurb}</dd>

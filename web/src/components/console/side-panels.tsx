@@ -31,6 +31,7 @@ export function IndexPanel({
   return (
     <Panel>
       <PanelHeader
+        level={2}
         title="Secondary indexes"
         sub={
           indexes.length
@@ -141,7 +142,11 @@ export function IndexPanel({
 export function SchemaPanel({ rows }: { rows: Record<TableName, number> | null }) {
   return (
     <Panel>
-      <PanelHeader title="Schema" sub="A TPC-H-shaped database generated in your browser." />
+      <PanelHeader
+        level={2}
+        title="Schema"
+        sub="A TPC-H-shaped database generated in your browser."
+      />
       <ul className="divide-border/70 divide-y">
         {TABLE_NAMES.map((t) => (
           <li key={t}>
@@ -160,7 +165,7 @@ export function SchemaPanel({ rows }: { rows: Record<TableName, number> | null }
                   >
                     <span className="text-foreground/90 flex items-center gap-1.5">
                       {c.name === SCHEMA[t].primaryKey && (
-                        <KeyRound className="text-amber size-3" aria-label="primary key" />
+                        <KeyRound className="text-amber-ink size-3" aria-label="primary key" />
                       )}
                       {c.name}
                     </span>

@@ -1,3 +1,4 @@
+import { Fragment, useId } from "react";
 import { AUTONOMY_LEVELS } from "@/lib/survey/report";
 import { cn } from "@/lib/utils";
 
@@ -85,19 +86,96 @@ function Box({
   );
 }
 
+const STAGES: { part: Exclude<Part, "all">; title: string; lines: string[] }[] = [
+  {
+    part: "predictor",
+    title: "Workload predictor",
+    lines: [
+      "templatise → cluster → forecast arrival rates",
+      "QB5000 · LR, LSTM, kernel regression",
+    ],
+  },
+  {
+    part: "tuner",
+    title: "Tuners",
+    lines: ["what to change", "index advisors · knob tuners · MB2"],
+  },
+  {
+    part: "organiser",
+    title: "Organiser",
+    lines: ["when and in what order", "receding-horizon planning · PilotBot0"],
+  },
+];
+
+/** The same loop as a vertical stack, legible on phones (the SVG would shrink to ~7px text). */
+function ArchitectureStack({ highlight, className }: { highlight: Part; className?: string }) {
+  const on = (p: Part) => highlight === "all" || highlight === p;
+  const arrow = (
+    <li aria-hidden className="text-muted-foreground -my-0.5 text-center font-mono text-sm">
+      ↓
+    </li>
+  );
+  return (
+    <ol
+      className={cn("space-y-1.5", className)}
+      aria-label="Self-driving database architecture: a workload predictor feeds tuners, an organiser applies their actions to the DBMS, and observed runtimes flow back"
+    >
+      <li className="border-border bg-surface-2 mx-auto w-fit rounded-full border px-4 py-1 font-mono text-xs">
+        incoming queries
+      </li>
+      {STAGES.map((s) => (
+        <Fragment key={s.part}>
+          {arrow}
+          <li
+            className={cn(
+              "rounded-lg border px-3.5 py-2.5 transition-opacity duration-500",
+              on(s.part) ? "border-mint bg-mint-soft" : "border-border bg-surface opacity-60",
+            )}
+          >
+            <span className="font-display block text-base font-semibold">{s.title}</span>
+            {s.lines.map((l) => (
+              <span key={l} className="text-muted-foreground block font-mono text-xs">
+                {l}
+              </span>
+            ))}
+          </li>
+        </Fragment>
+      ))}
+      {arrow}
+      <li className="border-border bg-surface-2 rounded-lg border px-3.5 py-2 text-center">
+        <span className="font-display text-base font-semibold">DBMS</span>
+        <span className="text-mint block font-mono text-xs">
+          ↺ observed runtimes feed back (the bandit&apos;s reward)
+        </span>
+      </li>
+    </ol>
+  );
+}
+
 /** Kossmann & Schlosser's predictor / tuner / organiser loop, annotated with the systems we surveyed. */
 export function ArchitectureDiagram({ highlight }: { highlight: Part }) {
+  return (
+    <>
+      <ArchitectureStack highlight={highlight} className="sm:hidden" />
+      <ArchitectureSvg highlight={highlight} />
+    </>
+  );
+}
+
+function ArchitectureSvg({ highlight }: { highlight: Part }) {
   const on = (p: Part) => highlight === "all" || highlight === p;
+  // The diagram appears more than once per page; each copy needs its own marker id.
+  const arrow = `arrow-${useId().replace(/[^\w-]/g, "")}`;
   return (
     <svg
       viewBox="0 0 520 430"
-      className="h-auto w-full"
+      className="hidden h-auto w-full sm:block"
       role="img"
       aria-label="Self-driving database architecture: a workload predictor feeds tuners, an organiser applies their actions to the DBMS, and observed runtimes flow back"
     >
       <defs>
         <marker
-          id="arrow"
+          id={arrow}
           viewBox="0 0 10 10"
           refX="9"
           refY="5"
@@ -123,7 +201,7 @@ export function ArchitectureDiagram({ highlight }: { highlight: Part }) {
         d="M260 42 V70"
         className="stroke-muted-foreground"
         strokeWidth={1.5}
-        markerEnd="url(#arrow)"
+        markerEnd={`url(#${arrow})`}
       />
       <Box
         x={20}
@@ -141,7 +219,7 @@ export function ArchitectureDiagram({ highlight }: { highlight: Part }) {
         d="M260 160 V188"
         className="stroke-muted-foreground"
         strokeWidth={1.5}
-        markerEnd="url(#arrow)"
+        markerEnd={`url(#${arrow})`}
       />
       <Box
         x={20}
@@ -165,13 +243,13 @@ export function ArchitectureDiagram({ highlight }: { highlight: Part }) {
         d="M250 242 H268"
         className="stroke-muted-foreground"
         strokeWidth={1.5}
-        markerEnd="url(#arrow)"
+        markerEnd={`url(#${arrow})`}
       />
       <path
         d="M385 294 V322"
         className="stroke-muted-foreground"
         strokeWidth={1.5}
-        markerEnd="url(#arrow)"
+        markerEnd={`url(#${arrow})`}
       />
       <rect
         x={270}
@@ -194,7 +272,7 @@ export function ArchitectureDiagram({ highlight }: { highlight: Part }) {
         className="stroke-mint"
         strokeWidth={1.5}
         strokeDasharray="5 4"
-        markerEnd="url(#arrow)"
+        markerEnd={`url(#${arrow})`}
         fill="none"
       />
       <text x={140} y={392} className="fill-muted-foreground font-mono text-[11px]">

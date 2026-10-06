@@ -374,7 +374,11 @@ export function TemplateTable({ state }: { state: ArenaState }) {
                 Template
               </th>
               {runs.map(([id]) => (
-                <th key={id} scope="col" className="py-2 pr-3 text-right font-medium">
+                <th
+                  key={id}
+                  scope="col"
+                  className="py-2 pr-3 text-right font-medium whitespace-nowrap"
+                >
                   <span className="inline-flex items-center gap-1.5">
                     <span
                       className="size-2 rounded-full"
@@ -401,7 +405,7 @@ export function TemplateTable({ state }: { state: ArenaState }) {
                     <td
                       key={runs[i][0]}
                       className={cn(
-                        "tabular py-1.5 pr-3 text-right font-mono text-xs",
+                        "tabular py-1.5 pr-3 text-right font-mono text-xs whitespace-nowrap",
                         v !== null && v === min && present.length > 1
                           ? "text-mint"
                           : "text-muted-foreground",

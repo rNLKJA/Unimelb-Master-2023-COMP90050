@@ -58,12 +58,13 @@ export function BreakdownBars({ rows, segments, format, max, caption, className 
           </tbody>
         </table>
       </div>
-      <div aria-hidden className="space-y-2">
+      {/* One parent grid (rows are subgrids) so every bar shares the same track and scale. */}
+      <div
+        aria-hidden
+        className="grid grid-cols-[minmax(6.5rem,9rem)_minmax(0,1fr)_auto] gap-x-3 gap-y-2"
+      >
         {rows.map((r) => (
-          <div
-            key={r.id}
-            className="grid grid-cols-[minmax(6.5rem,9rem)_1fr_auto] items-center gap-3"
-          >
+          <div key={r.id} className="col-span-3 grid grid-cols-subgrid items-center">
             <div
               className={cn(
                 "truncate text-sm",

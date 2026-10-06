@@ -42,45 +42,22 @@ export function PanelHeader({
   title,
   sub,
   right,
+  level = 3,
 }: {
   title: string;
   sub?: React.ReactNode;
   right?: React.ReactNode;
+  /** Heading level; panels directly under a page's h1 should use 2. */
+  level?: 2 | 3;
 }) {
+  const Heading = level === 2 ? "h2" : "h3";
   return (
     <div className="border-border flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3 sm:px-5">
       <div className="min-w-0">
-        <h3 className="font-display text-base font-semibold">{title}</h3>
+        <Heading className="font-display text-base font-semibold">{title}</Heading>
         {sub && <p className="text-muted-foreground mt-0.5 text-xs">{sub}</p>}
       </div>
       {right}
-    </div>
-  );
-}
-
-export function Stat({
-  label,
-  value,
-  sub,
-  tone,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  tone?: "mint" | "default";
-}) {
-  return (
-    <div className="min-w-0">
-      <p className="kicker">{label}</p>
-      <p
-        className={cn(
-          "font-display tabular mt-1 text-2xl font-semibold",
-          tone === "mint" && "text-mint",
-        )}
-      >
-        {value}
-      </p>
-      {sub && <p className="text-muted-foreground mt-0.5 text-xs">{sub}</p>}
     </div>
   );
 }
