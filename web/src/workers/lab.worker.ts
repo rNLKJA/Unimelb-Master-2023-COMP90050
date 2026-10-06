@@ -15,7 +15,14 @@ import { computeStats, databaseBytes, type DatabaseStats } from "@/lib/db/stats"
 import { CostModel } from "@/lib/engine/cost-model";
 import type { Executor } from "@/lib/engine/executor";
 import { ModelExecutor } from "@/lib/engine/model-executor";
-import { SqliteExecutor, explain, loadDatabase, tune } from "@/lib/engine/sqlite-executor";
+import {
+  SqliteExecutor,
+  explain,
+  isReadOnly,
+  loadDatabase,
+  totalChanges,
+  tune,
+} from "@/lib/engine/sqlite-executor";
 import { createIndexSql, indexName, type IndexDef } from "@/lib/engine/types";
 import {
   FORECAST_DB_SCALE,
@@ -200,7 +207,7 @@ async function openConsole(scale: ScalePreset["id"], seed: number) {
 }
 
 const MAX_ROWS = 200;
-const isRead = (sql: string) => /^\s*(SELECT|WITH|VALUES)\b/i.test(sql);
+const looksLikeQuery = (sql: string) => /^\s*(SELECT|WITH|VALUES)\b/i.test(sql);
 
 /** Run a prepared statement to completion, keeping at most MAX_ROWS rows. */
 function drain(db: Database, sql: string, keep: boolean) {
@@ -233,11 +240,14 @@ function execConsole(sql: string, exampleId?: string) {
   } catch {
     plan = [];
   }
+  const readOnly = looksLikeQuery(sql) && isReadOnly(db, sql);
+  const before = totalChanges(db);
   const first = drain(db, sql, true);
-  const changes = db.getRowsModified();
+  const changes = totalChanges(db) - before;
   const times = [first.ms];
   // Reads that finish quickly are timed twice more; the median is reported.
-  if (isRead(sql) && first.ms < 100)
+  // Anything that writes (including WITH … UPDATE) runs exactly once.
+  if (readOnly && changes === 0 && first.ms < 100)
     for (let i = 0; i < 2; i++) times.push(drain(db, sql, false).ms);
   times.sort((a, b) => a - b);
 
@@ -259,7 +269,7 @@ function execConsole(sql: string, exampleId?: string) {
       ms: times[times.length >> 1],
       runs: times.length,
       plan,
-      changes: isRead(sql) ? 0 : changes,
+      changes,
       whatIf,
     },
   });

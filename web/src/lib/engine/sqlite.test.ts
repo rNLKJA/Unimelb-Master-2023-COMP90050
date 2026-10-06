@@ -10,7 +10,7 @@ import { smallDb, sqlJs } from "@/lib/test/fixtures";
 import { mulberry32 } from "@/lib/random";
 import { TEMPLATES, TEMPLATE_BY_ID } from "@/lib/workload/templates";
 import { CostModel } from "./cost-model";
-import { SqliteExecutor, loadDatabase } from "./sqlite-executor";
+import { SqliteExecutor, isReadOnly, loadDatabase, totalChanges } from "./sqlite-executor";
 import { indexId, type IndexDef, type QueryInstance } from "./types";
 
 const { data, stats } = smallDb();
@@ -114,5 +114,30 @@ describe("SQLite engine", () => {
     const indexes = ex.database.exec("SELECT COUNT(*) FROM sqlite_master WHERE type = 'index'")[0]
       .values[0][0];
     expect(indexes).toBe(0);
+  });
+});
+
+describe("console statement classification", () => {
+  it("tells reads from writes by their bytecode, not their first keyword", async () => {
+    const db = new SQL.Database();
+    db.run("CREATE TABLE t (id INTEGER PRIMARY KEY, v INTEGER)");
+    db.run("INSERT INTO t (v) VALUES (13), (20)");
+    expect(isReadOnly(db, "SELECT * FROM t")).toBe(true);
+    expect(isReadOnly(db, "WITH x AS (SELECT 1) SELECT * FROM t, x")).toBe(true);
+    expect(isReadOnly(db, "VALUES (1)")).toBe(true);
+    expect(isReadOnly(db, "WITH x AS (SELECT 3 AS d) UPDATE t SET v = v + (SELECT d FROM x)")).toBe(
+      false,
+    );
+    expect(isReadOnly(db, "WITH x AS (SELECT 1) DELETE FROM t")).toBe(false);
+    expect(isReadOnly(db, "CREATE INDEX t_v ON t (v)")).toBe(false);
+    expect(isReadOnly(db, "SELECT * FROM missing")).toBe(false);
+
+    const before = totalChanges(db);
+    db.run("WITH x AS (SELECT 3 AS d) UPDATE t SET v = v + (SELECT d FROM x) WHERE id = 1");
+    expect(totalChanges(db) - before).toBe(1);
+    db.exec("SELECT * FROM t");
+    expect(totalChanges(db) - before).toBe(1); // a later read changes nothing
+    expect(db.exec("SELECT v FROM t WHERE id = 1")[0].values[0][0]).toBe(16);
+    db.close();
   });
 });

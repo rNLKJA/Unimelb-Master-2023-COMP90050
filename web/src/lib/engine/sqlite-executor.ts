@@ -68,6 +68,46 @@ export function explain(db: Database, sql: string): PlanNode[] {
   return buildPlanTree(rows);
 }
 
+/** Opcodes that modify the database file (EXPLAIN's bytecode listing). */
+const WRITE_OPCODES = new Set([
+  "OpenWrite",
+  "Insert",
+  "Delete",
+  "IdxInsert",
+  "IdxDelete",
+  "Clear",
+  "Destroy",
+  "CreateBtree",
+  "DropTable",
+  "DropIndex",
+  "SetCookie",
+]);
+
+/**
+ * Whether a statement only reads, decided the way sqlite3_stmt_readonly() does:
+ * from its compiled bytecode (a write transaction or a write opcode), not from
+ * its first keyword, so `WITH … UPDATE` counts as a write. Statements that do
+ * not compile count as writes.
+ */
+export function isReadOnly(db: Database, sql: string): boolean {
+  try {
+    const res = db.exec(`EXPLAIN ${sql}`);
+    const [cols, values] = [res[0]?.columns ?? [], res[0]?.values ?? []];
+    const op = cols.indexOf("opcode");
+    const p2 = cols.indexOf("p2");
+    if (op < 0) return false;
+    return !values.some(
+      (v) => WRITE_OPCODES.has(String(v[op])) || (v[op] === "Transaction" && Number(v[p2]) !== 0),
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Rows inserted, updated or deleted on this connection so far (sqlite3_total_changes). */
+export const totalChanges = (db: Database) =>
+  Number(db.exec("SELECT total_changes()")[0].values[0][0]);
+
 /** Bytes in pages that hold data (page count minus the free list). */
 const pageBytes = (db: Database) => {
   const pragma = (name: string) => Number(db.exec(`PRAGMA ${name}`)[0].values[0][0]);

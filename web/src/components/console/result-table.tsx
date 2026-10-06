@@ -8,7 +8,10 @@ export function ResultTable({ result }: { result: ConsoleResult }) {
     return (
       <Panel className="text-muted-foreground px-4 py-3 text-sm">
         The statement returned no columns
-        {result.changes > 0 ? ` and changed ${result.changes.toLocaleString("en-AU")} rows` : ""}.
+        {result.changes > 0
+          ? ` and changed ${result.changes.toLocaleString("en-AU")} row${result.changes === 1 ? "" : "s"}`
+          : ""}
+        .
       </Panel>
     );
   }
