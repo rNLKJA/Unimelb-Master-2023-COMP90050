@@ -20,10 +20,6 @@ export function formatInt(n: number): string {
   return Math.round(n).toLocaleString("en-AU");
 }
 
-export function formatPct(x: number, digits = 0): string {
-  return `${(x * 100).toFixed(digits)}%`;
-}
-
 /** "Nice" axis ticks for [0, max]. */
 export function niceTicks(max: number, count = 4): number[] {
   if (!(max > 0)) return [0];

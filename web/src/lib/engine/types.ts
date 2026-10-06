@@ -15,14 +15,6 @@ export function indexName(ix: IndexDef): string {
   return `ix_${ix.table}__${ix.columns.join("__")}`;
 }
 
-export function sameIndex(a: IndexDef, b: IndexDef): boolean {
-  return (
-    a.table === b.table &&
-    a.columns.length === b.columns.length &&
-    a.columns.every((c, i) => c === b.columns[i])
-  );
-}
-
 export function createIndexSql(ix: IndexDef): string {
   return `CREATE INDEX ${indexName(ix)} ON ${ix.table} (${ix.columns.join(", ")})`;
 }

@@ -176,21 +176,6 @@ export function comparisons(rows: BreakdownRow[] = TABLE_2): Comparison[] {
   return out;
 }
 
-/** Index-selection eras as the report and slides tell the story. */
-export const ERAS = [
-  { start: 1985, label: "Heuristics", systems: ["DROP (1985)", "AutoAdmin (1997)"] },
-  {
-    start: 2000,
-    label: "Constraints & linear programming",
-    systems: ["DB2 Advisor (2000)", "CoPhy (2011)"],
-  },
-  {
-    start: 2017,
-    label: "Machine learning",
-    systems: ["Dexter (2017)", "MAB (2021)", "Budget-aware MCTS (2022)"],
-  },
-] as const;
-
 /** Key coursework dates, from the project brief and the submitted files. */
 export const COURSEWORK_DATES = [
   { date: "2023-07-02", label: "Group formed and topic submitted (Self-driving databases)" },

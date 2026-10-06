@@ -56,14 +56,3 @@ export function generateTrace({ days, seed }: { days: number; seed: number }): T
   }
   return { hours, series, groupOf };
 }
-
-/** Sum a series into buckets of `size` hours. */
-export function bucket(series: number[], size: number): number[] {
-  const out: number[] = [];
-  for (let i = 0; i + size <= series.length; i += size) {
-    let s = 0;
-    for (let j = i; j < i + size; j++) s += series[j];
-    out.push(s);
-  }
-  return out;
-}

@@ -304,7 +304,3 @@ export class CostModel {
     return this.scanCost(ix.table) + n * log2(n) * this.k.buildRow + n * this.k.indexRow;
   }
 }
-
-export function configBytes(model: CostModel, config: IndexDef[]): number {
-  return config.reduce((s, ix) => s + model.indexBytes(ix), 0);
-}
