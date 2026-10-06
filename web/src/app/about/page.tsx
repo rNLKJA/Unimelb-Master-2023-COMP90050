@@ -165,7 +165,12 @@ export default function AboutPage() {
             plan choices. Parity tests also pin every number the site repeats from the report.
           </p>
         </SectionHeading>
-        <div className="border-border bg-surface mt-8 overflow-x-auto rounded-xl border">
+        <div
+          role="region"
+          aria-label="How faithful each port is"
+          tabIndex={0}
+          className="border-border bg-surface mt-8 overflow-x-auto rounded-xl border focus-visible:-outline-offset-2"
+        >
           <table className="w-full min-w-[40rem] text-sm">
             <thead>
               <tr className="border-border text-muted-foreground border-b text-left text-xs">

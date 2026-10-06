@@ -12,7 +12,12 @@ export function HeroConsole() {
           sqlite 3.49 · wasm · round 4 of 25
         </span>
       </div>
-      <pre className="overflow-x-auto px-4 py-4 font-mono text-[11px] leading-[1.7] sm:text-[12.5px]">
+      <pre
+        role="region"
+        aria-label="Illustration of one arena round"
+        tabIndex={0}
+        className="overflow-x-auto px-4 py-4 font-mono text-[11px] leading-[1.7] focus-visible:-outline-offset-2 sm:text-[12.5px]"
+      >
         <code>
           <span className="text-white/45">sqlite&gt; </span>
           <span className="text-[oklch(0.83_0.13_80)]">EXPLAIN QUERY PLAN</span>

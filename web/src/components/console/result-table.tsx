@@ -28,7 +28,12 @@ export function ResultTable({ result }: { result: ConsoleResult }) {
         }
       />
       {result.rows.length > 0 && (
-        <div className="max-h-[28rem] overflow-auto">
+        <div
+          role="region"
+          aria-label="Query result"
+          tabIndex={0}
+          className="max-h-[28rem] overflow-auto focus-visible:-outline-offset-2"
+        >
           <table className="w-full text-xs">
             <thead className="bg-surface sticky top-0">
               <tr className="border-border border-b">

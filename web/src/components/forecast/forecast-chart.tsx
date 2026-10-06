@@ -100,7 +100,12 @@ export function ForecastChart({ view }: { view: ForecastView }) {
           title="Accuracy on the test week"
           sub="Mean squared error of log(1 + volume); lower is better."
         />
-        <div className="overflow-x-auto p-4 sm:p-5">
+        <div
+          role="region"
+          aria-label="Forecast accuracy by cluster"
+          tabIndex={0}
+          className="overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
+        >
           <table className="w-full min-w-[18rem] text-sm">
             <thead>
               <tr className="border-border text-muted-foreground border-b text-xs">

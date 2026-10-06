@@ -79,7 +79,12 @@ export function Leaderboard({ state }: { state: ArenaState }) {
             highlight: best?.id === r.id,
           }))}
         />
-        <div className="overflow-x-auto">
+        <div
+          role="region"
+          aria-label="Total workload time by advisor"
+          tabIndex={0}
+          className="overflow-x-auto focus-visible:-outline-offset-2"
+        >
           <table className="w-full min-w-[34rem] text-sm">
             <thead>
               <tr className="border-border text-muted-foreground border-b text-left text-xs">
@@ -287,7 +292,12 @@ export function ConfigMap({ state }: { state: ArenaState }) {
           />
         }
       />
-      <div className="overflow-x-auto p-4 sm:p-5">
+      <div
+        role="region"
+        aria-label="Index timeline"
+        tabIndex={0}
+        className="overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
+      >
         {indexes.length === 0 ? (
           <p className="text-muted-foreground text-sm">{name(id)} did not build any index.</p>
         ) : (
@@ -366,7 +376,12 @@ export function TemplateTable({ state }: { state: ArenaState }) {
         title="Where the time goes"
         sub="Per-template execution time per round, averaged over the last five rounds that ran it."
       />
-      <div className="overflow-x-auto p-4 sm:p-5">
+      <div
+        role="region"
+        aria-label="Per-template execution time"
+        tabIndex={0}
+        className="overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
+      >
         <table className="w-full min-w-[36rem] text-sm">
           <thead>
             <tr className="border-border text-muted-foreground border-b text-xs">
@@ -462,7 +477,12 @@ export function MabInspector({ state }: { state: ArenaState }) {
             No arm had a positive score this round, so no index was kept.
           </p>
         ) : (
-          <div className="overflow-x-auto">
+          <div
+            role="region"
+            aria-label="Bandit arm scores"
+            tabIndex={0}
+            className="overflow-x-auto focus-visible:-outline-offset-2"
+          >
             <table className="w-full min-w-[34rem] text-sm">
               <thead>
                 <tr className="border-border text-muted-foreground border-b text-xs">

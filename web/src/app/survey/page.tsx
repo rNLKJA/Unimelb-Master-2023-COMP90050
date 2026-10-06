@@ -86,7 +86,12 @@ export default function SurveyPage() {
           <div className="border-border bg-surface rounded-2xl border p-5">
             <Table2Chart />
           </div>
-          <div className="border-border bg-surface overflow-x-auto rounded-2xl border">
+          <div
+            role="region"
+            aria-label="Report Table 2 as a table"
+            tabIndex={0}
+            className="border-border bg-surface overflow-x-auto rounded-2xl border focus-visible:-outline-offset-2"
+          >
             <table className="w-full min-w-[30rem] text-sm">
               <caption className="sr-only">
                 Total time breakdown for analytical workloads (minutes)

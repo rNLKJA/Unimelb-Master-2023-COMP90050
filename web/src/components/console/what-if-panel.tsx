@@ -68,7 +68,12 @@ export function WhatIfPanel({
               ))}
             </ul>
             {w.candidates.length > 0 ? (
-              <div className="relative overflow-x-auto">
+              <div
+                role="region"
+                aria-label="Candidate indexes"
+                tabIndex={0}
+                className="relative overflow-x-auto focus-visible:-outline-offset-2"
+              >
                 <table className="w-full text-xs">
                   <caption className="text-muted-foreground mb-1.5 text-left text-xs">
                     Candidate indexes (AutoAdmin&apos;s syntactically relevant set), cheapest first

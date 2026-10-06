@@ -9,7 +9,7 @@ export default function NotFound() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
       <figure className="border-border overflow-hidden rounded-xl border bg-[oklch(0.17_0.032_262)] text-[oklch(0.9_0.02_250)]">
-        <pre className="overflow-x-auto px-5 py-5 font-mono text-[13px] leading-relaxed">
+        <pre className="px-4 py-5 font-mono text-[11.5px] leading-relaxed break-words whitespace-pre-wrap sm:px-5 sm:text-[13px]">
           <code>
             <span className="text-white/45">sqlite&gt; </span>SELECT * FROM pages WHERE path = ?;
             {"\n"}
