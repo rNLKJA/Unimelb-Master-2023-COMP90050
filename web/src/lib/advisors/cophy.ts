@@ -15,7 +15,7 @@
  * result says whether optimality was proven.
  */
 import type { CostModel } from "@/lib/engine/cost-model";
-import { indexId, type IndexDef, type QueryInstance } from "@/lib/engine/types";
+import type { IndexDef, QueryInstance } from "@/lib/engine/types";
 import { indexableColumns, joinColumnOf, syntacticCandidates } from "./candidates";
 import type { OfflineAlgorithm } from "./types";
 import { WhatIfWorkload } from "./workload-cost";
@@ -163,6 +163,21 @@ export function solveCophy(
   };
   visit(0, 0, base);
 
+  // 4. Among optimal solutions prefer the smallest. The search tries "include"
+  // first and keeps the first optimum it meets, which can carry indexes the
+  // objective never uses (l_suppkey,l_shipmode next to l_shipmode,l_suppkey).
+  // An IP solver is equally indifferent to them, but building them costs real
+  // time in the arena, so drop any index whose removal leaves the objective
+  // unchanged, largest first.
+  const keep = new Uint8Array(all.length);
+  bestSet.forEach((c) => (keep[c] = 1));
+  for (const c of [...bestSet].sort((a, b) => sizes[b] - sizes[a])) {
+    keep[c] = 0;
+    if (objective(keep, keep) > bestCost + 1e-9 * Math.max(1, Math.abs(bestCost))) keep[c] = 1;
+  }
+  bestSet = bestSet.filter((c) => keep[c]);
+  bestCost = objective(keep, keep);
+
   return {
     config: bestSet.map((c) => all[c]),
     cost: bestCost,
@@ -175,6 +190,3 @@ export function solveCophy(
 
 export const cophy: OfflineAlgorithm = ({ workload, budgetBytes, model }) =>
   solveCophy(workload, model, { budgetBytes }).config;
-
-/** Index ids of a configuration, sorted (handy for comparisons). */
-export const configKey = (config: IndexDef[]) => config.map(indexId).sort().join(" | ");

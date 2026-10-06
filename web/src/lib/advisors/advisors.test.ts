@@ -102,6 +102,26 @@ describe("offline advisors", () => {
     expect(sw.cost(solved.config)).toBeCloseTo(exact.cost, 9);
   });
 
+  it("CoPhy returns no redundant index, however loose the budget", () => {
+    for (const factor of [0.5, 1, 2, 3]) {
+      const solved = solveCophy(workload, model, { budgetBytes: factor * budget });
+      const cost = w.cost(solved.config);
+      expect(solved.cost).toBeCloseTo(cost, 6);
+      for (const ix of solved.config) {
+        const without = solved.config.filter((other) => other !== ix);
+        expect(w.cost(without), `${indexId(ix)} at ${factor}x`).toBeGreaterThan(cost + 1e-9);
+      }
+    }
+  });
+
+  it("a looser budget never makes CoPhy build more for the same cost", () => {
+    const at2 = solveCophy(workload, model, { budgetBytes: 2 * budget });
+    const at3 = solveCophy(workload, model, { budgetBytes: 3 * budget });
+    if (Math.abs(at2.cost - at3.cost) < 1e-9 * at2.cost)
+      expect(w.bytes(at3.config)).toBeLessThanOrEqual(w.bytes(at2.config));
+    else expect(at3.cost).toBeLessThan(at2.cost);
+  });
+
   it("Greedy(m, k) with m = k is exhaustive", () => {
     const small = workload.filter((q) => ["Q1", "Q10", "Q11"].includes(q.template));
     const sw = new WhatIfWorkload(model, small);
