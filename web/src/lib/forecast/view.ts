@@ -80,6 +80,8 @@ export interface ForecastView {
   clusters: ClusterView[];
   loop: {
     windowHours: number;
+    /** Horizon of the forecasts the forecast-driven tuner used (>= windowHours). */
+    forecastHorizon: number;
     windows: number[];
     budgetBytes: number;
     strategies: StrategyView[];
@@ -141,7 +143,13 @@ export function buildForecastView(stats: DatabaseStats, settings: ForecastSettin
       mse: { lr: c.mse.lr, kr: c.mse.kr, hybrid: c.mse.hybrid },
       spikes: c.hybrid.filter((h, i) => h !== c.lr[i]).length,
     })),
-    loop: { windowHours: loop.windowHours, windows: loop.windows, budgetBytes, strategies },
+    loop: {
+      windowHours: loop.windowHours,
+      forecastHorizon: loop.forecastHorizon,
+      windows: loop.windows,
+      budgetBytes,
+      strategies,
+    },
     totalStatements: Object.values(forecast.trace.series).reduce(
       (s, xs) => s + xs.reduce((a, b) => a + b, 0),
       0,

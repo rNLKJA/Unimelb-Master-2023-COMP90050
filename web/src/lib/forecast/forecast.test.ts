@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { databaseBytes } from "@/lib/db/stats";
 import { smallDb } from "@/lib/test/fixtures";
 import { clusterTemplates, cosine } from "./cluster";
-import { DEFAULT_FORECAST, runForecast, runTuningLoop } from "./lab";
+import { DEFAULT_FORECAST, loopForecaster, runForecast, runTuningLoop } from "./lab";
 import { KernelRegression, LinearRegression, hybrid, makeDataset } from "./models";
 import { templatize } from "./templatize";
 
@@ -76,4 +76,39 @@ describe("self-driving loop", () => {
     expect(t.reactive).toBeLessThan(t.none);
     expect(t.static).toBeLessThan(t.none);
   });
+});
+
+describe("self-driving loop never looks ahead", () => {
+  // The organiser builds a window's configuration before the window starts, so
+  // the forecast it tunes for must not change when anything from `start` on
+  // changes. Checked for every horizon and window the lab's controls offer.
+  const base = runForecast(DEFAULT_FORECAST).trace;
+  const scrambled = (from: number) => ({
+    ...base,
+    series: Object.fromEntries(
+      Object.entries(base.series).map(([t, s], k) => [
+        t,
+        s.map((v, h) => (h < from ? v : (v * (k + 2) + 37 * ((h * 7 + k) % 11)) % 400)),
+      ]),
+    ),
+  });
+
+  for (const horizon of [1, 3, 6, 12, 24]) {
+    for (const windowHours of [1, 3, 6]) {
+      it(`horizon ${horizon} h, window ${windowHours} h`, () => {
+        const opts = { ...DEFAULT_FORECAST, horizon };
+        const original = runForecast({ ...opts, trace: base });
+        const start = original.testStart + 4 * windowHours;
+        const perturbed = runForecast({ ...opts, trace: scrambled(start) });
+        const a = loopForecaster(original, windowHours);
+        const b = loopForecaster(perturbed, windowHours);
+        expect(a.horizon).toBeGreaterThanOrEqual(windowHours);
+        expect([...b.window(start)]).toEqual([...a.window(start)]);
+        // ...whereas the next window is allowed to (and does) react to the new data.
+        expect([...b.window(start + a.horizon + windowHours)]).not.toEqual([
+          ...a.window(start + a.horizon + windowHours),
+        ]);
+      });
+    }
+  }
 });

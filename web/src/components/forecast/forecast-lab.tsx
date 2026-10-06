@@ -177,7 +177,12 @@ export function ForecastLab({ initial }: { initial: ForecastView }) {
             before each {view.loop.windowHours}-hour window starts. The tuner is AutoAdmin&apos;s
             Greedy search under a {Math.round(view.settings.budget * 100)}% storage budget; costs
             are the what-if model&apos;s estimates in milliseconds for the test week&apos;s real
-            statements, plus the time to build each new index.
+            statements, plus the time to build each new index. The forecast-driven tuner only sees
+            data from before each window: it uses {view.loop.forecastHorizon}-hour-ahead forecasts
+            {view.loop.forecastHorizon > view.settings.horizon
+              ? `, refitted for the loop because a ${view.settings.horizon}-hour forecast of a ${view.loop.windowHours}-hour window would peek inside it`
+              : ""}
+            .
           </StepHeading>
           <LoopResults view={view} />
         </section>
