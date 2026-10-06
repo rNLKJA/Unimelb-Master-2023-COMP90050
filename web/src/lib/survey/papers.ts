@@ -39,7 +39,7 @@ export interface Paper {
   summary: string;
   reportRef?: number;
   erratum?: string;
-  /** Kept in the coursework reading list (coursework/project/). */
+  /** On the group's reading list (coursework/project/REFERENCES.md). */
   readingList?: boolean;
   /** Advisor id in the arena, if implemented. */
   arena?: string;
@@ -378,11 +378,11 @@ export const PAPERS: Paper[] = [
   {
     id: "agrawal-2000",
     system: "Indexes + views",
-    title: "Automated Selection of Materialized Views and Indexes in SQL Databases",
+    title: "Automated Selection of Materialized Views and Indexes for SQL Databases",
     authors: "Agrawal, Chaudhuri & Narasayya",
     venue: "VLDB",
     year: 2000,
-    url: dblp("Automated Selection of Materialized Views and Indexes in SQL Databases"),
+    url: dblp("Automated Selection of Materialized Views and Indexes for SQL Databases"),
     component: "index-selection",
     technique: "heuristic",
     summary:

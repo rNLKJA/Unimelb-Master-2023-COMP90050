@@ -55,9 +55,8 @@ No backend and no database server: every page is static, and all computation hap
 │   ├── README.md              what is inside and how to read it
 │   ├── NOTES.md               the long-form COMP90050 revision notes (formerly the root README)
 │   ├── images/                screenshots referenced by the notes
-│   ├── presentation/          Group 40's report drafts and slide deck (PDF)
-│   ├── project/               project brief and the survey reading list
-│   ├── lectures/, tutorials/  course material kept from the original repository
+│   ├── presentation/          Group 40's report drafts and slide deck (PDF, student numbers redacted)
+│   ├── project/REFERENCES.md  the survey's reading list, as citations
 │   └── _archive/              the pre-2026 README, verbatim
 └── web/                       the deployable Next.js app (Vercel root)
     ├── scripts/copy-sqlite-wasm.mjs   copies sql.js's .wasm into public/vendor/ before dev/build
@@ -114,4 +113,4 @@ The algorithms belong to their authors; see the survey map for full references, 
 
 ## Academic integrity
 
-The original report drafts and slides are preserved unchanged under [`coursework/presentation/`](coursework/presentation/) for reference and are not served by the website. The site paraphrases the assignment brief rather than reproducing it, and paper summaries are our own words. If you are taking COMP90050 or a similar subject, do your own work: submitting any part of this repository as your own is academic misconduct.
+The original report drafts and slides are preserved under [`coursework/presentation/`](coursework/presentation/) for reference (with the team's student numbers and e-mail addresses redacted) and are not served by the website. University teaching material, the assignment brief and third-party papers were removed from the current tree in 2026; see [`coursework/README.md`](coursework/README.md#what-changed-in-2026). The site paraphrases the assignment brief rather than reproducing it, and paper summaries are our own words. If you are taking COMP90050 or a similar subject, do your own work: submitting any part of this repository as your own is academic misconduct.
