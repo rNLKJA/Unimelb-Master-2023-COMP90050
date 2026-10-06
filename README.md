@@ -10,7 +10,7 @@ An interactive revival of Group 40's survey on **self-driving databases** for CO
 [![SQLite](https://img.shields.io/badge/SQLite-3.49%20WASM-003B57?style=flat-square&logo=sqlite)](https://sql.js.org)
 [![CI](https://github.com/rNLKJA/Unimelb-Master-2023-COMP90050/actions/workflows/ci.yml/badge.svg)](https://github.com/rNLKJA/Unimelb-Master-2023-COMP90050/actions/workflows/ci.yml)
 
-**Live demo:** _coming soon (Vercel project `comp90050-self-driving-db`)_
+**Live demo:** [comp90050-self-driving-db.vercel.app](https://comp90050-self-driving-db.vercel.app)
 
 </div>
 
@@ -43,7 +43,7 @@ The survey was written, not implemented. This revival implements the algorithms 
 - Hand-rolled SVG charts, `lucide-react` icons
 - **Vitest** unit and parity tests, ESLint, Prettier, GitHub Actions CI, Vercel hosting
 
-No backend and no database server: every page is static, and all computation happens either at build time or in the visitor's browser.
+No backend and no database server: every page is static, and all computation happens either at build time or in the visitor's browser. Nothing a visitor does is stored: each tab gets its own in-memory SQLite database, discarded when the tab closes, so there are no records to inspect and no environment variables to set.
 
 ## Repository structure
 
@@ -75,6 +75,10 @@ No backend and no database server: every page is static, and all computation hap
             ├── console/       starter statements and the what-if report
             └── survey/        report facts (Tables 1 and 2), taxonomy of surveyed papers
 ```
+
+## Deployment
+
+The site is a Vercel project (`comp90050-self-driving-db`) whose root directory is `web/`. From `web/`, `vercel deploy --prod` builds it with the Next.js defaults; every route is prerendered, so the free tier serves it as static files.
 
 ## Local development
 
