@@ -1,7 +1,7 @@
 "use client";
 
 import { Database, FlaskConical, LoaderCircle, TriangleAlert } from "lucide-react";
-import { useCallback, useReducer, useState } from "react";
+import { useCallback, useReducer, useRef, useState } from "react";
 import { ADVISOR_BY_ID } from "@/lib/advisors/registry";
 import { formatBytes, formatInt, formatMs } from "@/lib/format";
 import { useLabWorker } from "@/hooks/use-lab-worker";
@@ -24,11 +24,19 @@ export function ArenaApp() {
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const onMessage = useCallback((msg: LabResponse) => dispatch({ type: "msg", msg }), []);
   const { post, restart } = useLabWorker(onMessage);
+  const results = useRef<HTMLElement>(null);
 
   const run = (c: ArenaConfig = config) => {
     restart();
     dispatch({ type: "start", config: c });
     post({ type: "arena:run", config: c });
+    // On phones the settings sit above the results; bring the progress into view.
+    if (window.matchMedia("(max-width: 1023px)").matches)
+      results.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const runDefault = () => {
+    setConfig(DEFAULT_CONFIG);
+    run(DEFAULT_CONFIG);
   };
   const stop = () => {
     restart();
@@ -60,7 +68,14 @@ export function ArenaApp() {
         </Panel>
       </aside>
 
-      <section aria-label="Results" className="min-w-0 space-y-5">
+      <section
+        ref={results}
+        aria-labelledby="arena-results"
+        className="min-w-0 scroll-mt-20 space-y-5"
+      >
+        <h2 id="arena-results" className="sr-only">
+          Results
+        </h2>
         <Panel className="overflow-hidden">
           <div
             className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-5"
@@ -80,9 +95,13 @@ export function ArenaApp() {
                   : state.phase
                 : state.status === "done"
                   ? `Finished in ${formatMs(state.elapsedMs ?? 0)}`
-                  : state.status === "error"
-                    ? "The experiment failed"
-                    : "Ready"}
+                  : state.status === "stopped"
+                    ? hasResults
+                      ? "Stopped. The rounds that finished are shown below."
+                      : "Stopped before the first round finished."
+                    : state.status === "error"
+                      ? "The experiment failed"
+                      : "Ready"}
             </span>
             {state.setup && (
               <span className="text-muted-foreground font-mono text-xs">
@@ -126,7 +145,7 @@ export function ArenaApp() {
           <Panel className="bg-console-grid relative overflow-hidden">
             <div className="from-surface/40 to-surface relative bg-gradient-to-b p-6 sm:p-10">
               <FlaskConical className="text-mint size-8" aria-hidden />
-              <h2 className="mt-4 text-2xl font-semibold">Pick a workload, then press run</h2>
+              <h3 className="mt-4 text-2xl font-semibold">Pick a workload, then press run</h3>
               <div className="prose-lab mt-3 max-w-2xl text-sm">
                 <p>
                   The worker generates a TPC-H-like database (about 30,000 line items at size S),
@@ -141,7 +160,7 @@ export function ArenaApp() {
                   every round from observed runtimes.
                 </p>
               </div>
-              <Button className="mt-5" onClick={() => run()} disabled={running}>
+              <Button className="mt-5" onClick={runDefault} disabled={running}>
                 Run the default experiment
               </Button>
             </div>

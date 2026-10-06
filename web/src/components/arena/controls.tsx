@@ -208,12 +208,28 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
       </details>
 
       <div className="flex gap-2">
+        {/* Distinct keys: reusing one <button> and flipping it to type="submit" inside
+            the Stop click would let the browser submit the form and restart the run. */}
         {running ? (
-          <Button type="button" variant="outline" className="flex-1" onClick={onStop}>
+          <Button
+            key="stop"
+            type="button"
+            variant="outline"
+            className="flex-1"
+            onClick={(e) => {
+              e.preventDefault();
+              onStop();
+            }}
+          >
             <Square className="size-3.5" aria-hidden /> Stop
           </Button>
         ) : (
-          <Button type="submit" className="flex-1" disabled={config.advisors.length === 0}>
+          <Button
+            key="run"
+            type="submit"
+            className="flex-1"
+            disabled={config.advisors.length === 0}
+          >
             <Play className="size-3.5" aria-hidden /> Run experiment
           </Button>
         )}

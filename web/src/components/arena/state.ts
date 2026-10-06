@@ -14,7 +14,7 @@ export interface AdvisorRun {
 }
 
 export interface ArenaState {
-  status: "idle" | "running" | "done" | "error";
+  status: "idle" | "running" | "done" | "stopped" | "error";
   phase: string;
   config: ArenaConfig | null;
   setup: { info: DatabaseInfo; budgetBytes: number; workload: WorkloadSummary } | null;
@@ -42,8 +42,12 @@ export function reducer(state: ArenaState, action: Action): ArenaState {
   if (action.type === "start")
     return { ...INITIAL, status: "running", phase: "Starting the worker", config: action.config };
   if (action.type === "stop")
-    return { ...state, status: state.setup ? "done" : "idle", phase: "Stopped", current: null };
+    return state.status === "running"
+      ? { ...state, status: "stopped", phase: "Stopped", current: null }
+      : state;
   const msg = action.msg;
+  // A stopped or finished run must not be revived by a late message.
+  if (state.status !== "running") return state;
   switch (msg.type) {
     case "status":
       return { ...state, phase: msg.phase };

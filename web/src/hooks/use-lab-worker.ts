@@ -27,18 +27,18 @@ export function useLabWorker(onMessage: (msg: LabResponse) => void) {
 
   const post = useCallback((req: LabRequest) => ensure().postMessage(req), [ensure]);
 
+  /** Stop the current worker; messages it already queued are dropped. */
   const restart = useCallback(() => {
-    worker.current?.terminate();
+    const w = worker.current;
+    if (w) {
+      w.onmessage = null;
+      w.onerror = null;
+      w.terminate();
+    }
     worker.current = null;
   }, []);
 
-  useEffect(
-    () => () => {
-      worker.current?.terminate();
-      worker.current = null;
-    },
-    [],
-  );
+  useEffect(() => restart, [restart]);
 
   return { post, restart };
 }
