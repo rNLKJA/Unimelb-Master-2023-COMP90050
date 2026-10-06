@@ -246,8 +246,9 @@ export default function HomePage() {
         >
           <p>
             Our report followed Kossmann et al.&apos;s timeline: greedy heuristics first, then
-            integer programming, then machine learning. Four of these algorithms run in the arena
-            exactly as their papers describe them.
+            integer programming, then machine learning. Five of them run in the arena; the{" "}
+            <Link href="/about#fidelity">About page</Link> lists where each port departs from its
+            paper.
           </p>
         </SectionHeading>
         <div className="mt-10">

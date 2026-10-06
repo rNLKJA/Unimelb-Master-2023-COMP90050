@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { NAV } from "@/lib/site";
+
+export const metadata: Metadata = { title: "Page not found" };
 
 export default function NotFound() {
   return (

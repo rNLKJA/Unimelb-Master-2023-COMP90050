@@ -52,7 +52,7 @@ const FIDELITY: { name: string; what: string; differs: string }[] = [
 
 const STACKS = {
   original: [
-    "A 19-page LaTeX report and a 35-slide deck (PDF)",
+    "A 20-page LaTeX report (draft) and a 35-slide deck (PDF)",
     "Figures and results quoted from the surveyed papers",
     "No implementation: the brief asked for a written survey",
   ],

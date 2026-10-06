@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const alt = "Self-Driving DB Lab — COMP90050 Group 40";
@@ -9,8 +11,17 @@ const MINT = "#7ce8c4";
 const INK = "#e8eef8";
 const MUTED = "#8e9bb5";
 
+/** IBM Plex from @fontsource (the site's own type family; Satori reads .woff, not .woff2). */
+const plex = (pkg: string, file: string) =>
+  readFile(join(process.cwd(), "node_modules", "@fontsource", pkg, "files", file));
+
 /** Social card: the arena's cumulative-time race in miniature. */
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const [condensed600, condensed400, mono400] = await Promise.all([
+    plex("ibm-plex-sans-condensed", "ibm-plex-sans-condensed-latin-600-normal.woff"),
+    plex("ibm-plex-sans-condensed", "ibm-plex-sans-condensed-latin-400-normal.woff"),
+    plex("ibm-plex-mono", "ibm-plex-mono-latin-400-normal.woff"),
+  ]);
   const lines = [
     { color: MUTED, pts: "0,250 600,40" },
     { color: "#f2c46b", pts: "0,250 120,215 240,170 360,130 480,95 600,62" },
@@ -28,16 +39,22 @@ export default function OpengraphImage() {
         background: NAVY,
         padding: 64,
         color: INK,
-        fontFamily: "monospace",
+        fontFamily: "Plex Mono",
       }}
     >
       <div style={{ display: "flex", fontSize: 24, color: MINT, letterSpacing: 3 }}>
         COMP90050 · GROUP 40 · UNIVERSITY OF MELBOURNE
       </div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", flexDirection: "column", maxWidth: 560 }}>
+        <div style={{ display: "flex", flexDirection: "column", maxWidth: 640 }}>
           <div
-            style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.02, fontFamily: "sans-serif" }}
+            style={{
+              fontSize: 80,
+              fontWeight: 600,
+              lineHeight: 1.02,
+              fontFamily: "Plex Condensed",
+              letterSpacing: -1.5,
+            }}
           >
             Self-Driving DB Lab
           </div>
@@ -47,13 +64,14 @@ export default function OpengraphImage() {
               color: MUTED,
               marginTop: 20,
               lineHeight: 1.35,
-              fontFamily: "sans-serif",
+              fontFamily: "Plex Condensed",
+              fontWeight: 400,
             }}
           >
             Index advisors from 1985 to 2023 race on a live SQLite database in your browser.
           </div>
         </div>
-        <svg width="420" height="260" viewBox="0 0 600 260">
+        <svg width="380" height="236" viewBox="0 0 600 260">
           {[60, 120, 180, 240].map((y) => (
             <line key={y} x1="0" x2="600" y1={y} y2={y} stroke="#1f2b44" strokeWidth="2" />
           ))}
@@ -73,6 +91,13 @@ export default function OpengraphImage() {
         DROP · AutoAdmin · DB2 Advisor · CoPhy · C²UCB bandit · QB5000
       </div>
     </div>,
-    size,
+    {
+      ...size,
+      fonts: [
+        { name: "Plex Condensed", data: condensed600, weight: 600, style: "normal" },
+        { name: "Plex Condensed", data: condensed400, weight: 400, style: "normal" },
+        { name: "Plex Mono", data: mono400, weight: 400, style: "normal" },
+      ],
+    },
   );
 }
