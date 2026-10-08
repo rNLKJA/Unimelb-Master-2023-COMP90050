@@ -1,3 +1,13 @@
 
 .vscode/extensions.json
 *.mp4
+
+# University and third-party material, kept privately and not published here
+**/lectures/
+**/tutorials/
+**/project/*.pdf
+**/project/indexing/
+**/project/intro/
+**/presentation/*turnitin*
+*.vtt
+*RecordingnewChat.txt
