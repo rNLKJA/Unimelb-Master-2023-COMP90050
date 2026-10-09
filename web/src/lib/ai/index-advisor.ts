@@ -13,7 +13,7 @@ import type { DatabaseStats } from "@/lib/db/stats";
 import { CostModel } from "@/lib/engine/cost-model";
 import { indexId, type IndexDef } from "@/lib/engine/types";
 import { formatBytes, formatInt } from "@/lib/format";
-import { wilson, type ProportionInterval } from "@/lib/stats";
+import { bootstrapCI, wilson, type BootstrapInterval, type ProportionInterval } from "@/lib/stats";
 import type { ScenarioId } from "@/lib/workload/scenarios";
 import type { AuditEntry } from "./audit-log";
 import { callStructured, type StructuredResult } from "./client";
@@ -315,46 +315,93 @@ export async function proposeIndexes(
 
 /* ---------------- invalid-proposal rate ---------------- */
 
-export interface InvalidRates {
-  /** Proposed indexes the validator rejected, over all proposed indexes. */
-  indexes: ProportionInterval;
-  /** Calls whose reply was unusable (malformed, cut off, refused) or had any rejected index, over calls the model answered. */
+/**
+ * The invalid-proposal rate for one model under one set of instructions on
+ * one dataset. Rates are never pooled across providers, models (the one that
+ * answered, so a refusal fallback counts as its own model), prompt versions
+ * or datasets, because a pooled rate describes none of them.
+ */
+export interface InvalidRateGroup {
+  key: string;
+  provider: string;
+  /** The model that answered (or the one requested, if the provider did not say). */
+  model: string;
+  promptVersion: string;
+  dataset: string;
+  /**
+   * Calls whose reply was unusable (malformed, cut off, refused) or had any
+   * rejected index, over calls the model answered. Calls are the independent
+   * unit, so this one gets a Wilson interval.
+   */
   calls: ProportionInterval;
   /** Unusable replies among those calls. */
   unusable: number;
+  /**
+   * Proposed indexes the validator rejected, over all proposed indexes. Indexes
+   * from one reply share its mistakes (one misread schema rejects several), so
+   * the interval is a percentile bootstrap that resamples whole calls.
+   */
+  indexes: BootstrapInterval & { rejected: number; proposed: number };
   /** Rejections by reason. */
   byReason: Partial<Record<string, number>>;
-  /** Calls that failed for infrastructure reasons (key, quota, network), excluded above. */
+}
+
+export interface InvalidRates {
+  groups: InvalidRateGroup[];
+  /** Calls that failed for infrastructure reasons (key, quota, network, cancelled), excluded above. */
   infrastructure: number;
 }
 
-/** Invalid-proposal rates over the LLM advisor's calls in the audit log, with Wilson intervals. */
+/** Invalid-proposal rates over the LLM advisor's calls in the audit log, one row per model group. */
 export function invalidRates(entries: readonly AuditEntry[]): InvalidRates {
   const calls = entries.filter((e) => e.kind === "call" && e.feature === "llm-index-advisor");
   const answered = calls.filter((e) => !e.error || isModelFailure(e.errorKind));
-  const unusable = answered.filter((e) => e.error).length;
-  let proposed = 0;
-  let rejected = 0;
-  let bad = unusable;
-  const byReason: Record<string, number> = {};
+  const byKey = new Map<string, AuditEntry[]>();
   for (const e of answered) {
-    if (e.error || !e.validation) continue;
-    const n = e.validation.accepted.length + e.validation.rejected.length;
-    proposed += n;
-    rejected += e.validation.rejected.length;
-    if (e.validation.rejected.length > 0) bad++;
-    for (const r of e.validation.rejected) {
-      const reason = r.reason.split(":")[0];
-      byReason[reason] = (byReason[reason] ?? 0) + 1;
-    }
+    const key = [e.provider, e.servedModel || e.model, e.input.promptVersion, e.input.dataset].join(
+      "\u0000",
+    );
+    byKey.set(key, [...(byKey.get(key) ?? []), e]);
   }
-  return {
-    indexes: wilson(rejected, proposed),
-    calls: wilson(bad, answered.length),
-    unusable,
-    byReason,
-    infrastructure: calls.length - answered.length,
-  };
+  const groups = [...byKey.entries()].map(([key, es]): InvalidRateGroup => {
+    const unusable = es.filter((e) => e.error).length;
+    const scored = es.filter((e) => !e.error && e.validation);
+    const rejected = scored.map((e) => e.validation!.rejected.length);
+    const proposed = scored.map(
+      (e) => e.validation!.accepted.length + e.validation!.rejected.length,
+    );
+    const byReason: Record<string, number> = {};
+    for (const e of scored)
+      for (const r of e.validation!.rejected) {
+        const reason = r.reason.split(":")[0];
+        byReason[reason] = (byReason[reason] ?? 0) + 1;
+      }
+    const sum = (xs: number[]) => xs.reduce((t, x) => t + x, 0);
+    const bad = unusable + rejected.filter((x) => x > 0).length;
+    const ci = bootstrapCI(scored.length, (idx) => {
+      let r = 0;
+      let p = 0;
+      for (let i = 0; i < idx.length; i++) {
+        r += rejected[idx[i]];
+        p += proposed[idx[i]];
+      }
+      return p > 0 ? r / p : NaN;
+    });
+    const first = es[0];
+    return {
+      key,
+      provider: first.provider,
+      model: first.servedModel || first.model,
+      promptVersion: first.input.promptVersion,
+      dataset: first.input.dataset,
+      calls: wilson(bad, es.length),
+      unusable,
+      indexes: { ...ci, rejected: sum(rejected), proposed: sum(proposed) },
+      byReason,
+    };
+  });
+  groups.sort((a, b) => b.calls.n - a.calls.n || a.key.localeCompare(b.key));
+  return { groups, infrastructure: calls.length - answered.length };
 }
 
 /** The validator's verdict as the audit log stores it ("code: detail" per rejection). */

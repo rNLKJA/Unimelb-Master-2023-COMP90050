@@ -4,6 +4,7 @@ import { Download, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AiGeneratedLabel } from "@/components/ai/ai-label";
+import { InvalidRateGroups } from "@/components/ai/invalid-rates";
 import { Panel } from "@/components/shared/section";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,10 +17,11 @@ import {
   type AuditEntry,
 } from "@/lib/ai/audit-log";
 import { invalidRates } from "@/lib/ai/index-advisor";
+import { isModelFailure } from "@/lib/ai/types";
 import { download } from "@/lib/csv";
 import { formatBytes, formatInt, formatMs } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { formatInterval, pctChange } from "@/lib/stats/format";
+import { pctChange } from "@/lib/stats/format";
 
 const DECISION_STYLE: Record<AuditEntry["decision"], string> = {
   pending: "border-amber/60 text-amber-ink",
@@ -88,15 +90,7 @@ export function AuditLogView() {
             label="Proposals with a human decision"
             value={`${counts.decided} / ${counts.proposals}`}
           />
-          <Stat
-            label="Proposed indexes rejected by the validator"
-            value={rates.indexes.n > 0 ? `${(rates.indexes.estimate * 100).toFixed(0)}%` : "–"}
-            sub={
-              rates.indexes.n > 0
-                ? `${rates.indexes.k} of ${rates.indexes.n} · 95% CI ${formatInterval(rates.indexes, (x) => `${(x * 100).toFixed(0)}%`)}`
-                : "no proposals yet"
-            }
-          />
+          <Stat label="Measurements" value={counts.measurements} />
         </dl>
         <div className="flex flex-wrap items-center gap-2">
           <Button
@@ -138,6 +132,15 @@ export function AuditLogView() {
         </div>
       </div>
 
+      {rates.groups.length > 0 ? (
+        <Panel className="p-4 sm:p-5">
+          <h2 className="mb-3 text-base font-semibold">
+            Invalid-proposal rate by model, prompt version and dataset
+          </h2>
+          <InvalidRateGroups rates={rates} />
+        </Panel>
+      ) : null}
+
       {calls.length === 0 ? (
         <Panel className="p-8 text-center text-sm">
           <p className="text-muted-foreground">Nothing recorded in this browser yet.</p>
@@ -166,7 +169,14 @@ export function AuditLogView() {
                     LLM index advisor · {e.input.dataset === "louvre" ? "Louvre" : "TPC-H-like"} ·{" "}
                     {e.input.scenario}
                   </span>
-                  <AiGeneratedLabel model={e.servedModel ?? e.model} />
+                  {!e.error || isModelFailure(e.errorKind) ? (
+                    <AiGeneratedLabel model={e.servedModel ?? e.model} />
+                  ) : (
+                    <span className="border-border text-muted-foreground rounded-full border px-2 py-0.5">
+                      call failed · no output ·{" "}
+                      <span className="font-mono">{e.servedModel ?? e.model}</span>
+                    </span>
+                  )}
                   <span
                     className={cn(
                       "rounded-full border px-2 py-0.5 font-medium",
@@ -194,7 +204,7 @@ export function AuditLogView() {
                   </p>
                 )}
                 {(children.get(e.id) ?? []).map((m) =>
-                  m.output.measurement ? (
+                  m.output.measurement && m.output.measurement.comparisons.length > 0 ? (
                     <p key={m.id} className="text-muted-foreground mt-1 text-xs">
                       Measured {new Date(m.timestamp).toLocaleString("en-AU")} over{" "}
                       {m.output.measurement.replicates} replicates (
@@ -207,6 +217,12 @@ export function AuditLogView() {
                         )
                         .join(", ")}
                       .
+                      {m.output.measurement.matchesProposal === false ? (
+                        <span className="text-coral">
+                          {" "}
+                          Measured on settings the model did not see.
+                        </span>
+                      ) : null}
                     </p>
                   ) : null,
                 )}

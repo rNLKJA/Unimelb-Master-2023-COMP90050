@@ -1,6 +1,7 @@
 import "fake-indexeddb/auto";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { databaseBytes } from "@/lib/db/stats";
+import { wilson } from "@/lib/stats";
 import { louvreDb, smallDb, type LouvreFixture } from "@/lib/test/fixtures";
 import {
   appendEntry,
@@ -604,28 +605,89 @@ describe("audit log", () => {
 });
 
 describe("invalid-proposal rate", () => {
-  it("pools rejected indexes and flags calls, leaving infrastructure failures out", () => {
+  const twoBad = {
+    validation: {
+      accepted: ["a(b)"],
+      rejected: [
+        { index: "x(y)", reason: "unknown-table: no table named x" },
+        { index: "a(z)", reason: "unknown-column: a has no column z" },
+      ],
+    },
+  };
+
+  it("scores one model group, leaving infrastructure failures out", () => {
     const r = invalidRates([
+      entry({}),
+      entry(twoBad),
+      entry({ output: {}, validation: undefined, error: "malformed", errorKind: "invalid_output" }),
+      entry({ output: {}, validation: undefined, error: "no credit", errorKind: "quota" }),
+      entry({ output: {}, validation: undefined, error: "Cancelled.", errorKind: "aborted" }),
+      entry({ kind: "measurement" }),
+    ]);
+    expect(r.groups).toHaveLength(1);
+    const g = r.groups[0];
+    expect(g).toMatchObject({
+      provider: "anthropic",
+      model: "claude-haiku-4-5",
+      promptVersion: PROMPT_VERSION,
+      dataset: "louvre",
+      unusable: 1,
+    });
+    expect(g.indexes).toMatchObject({ rejected: 2, proposed: 5 });
+    expect(g.indexes.estimate).toBeCloseTo(0.4, 12);
+    expect(g.calls).toMatchObject({ k: 2, n: 3 });
+    expect(r.infrastructure).toBe(2);
+    expect(g.byReason).toEqual({ "unknown-table": 1, "unknown-column": 1 });
+  });
+
+  it("never pools models, prompt versions or datasets", () => {
+    const r = invalidRates([
+      entry({}),
+      entry({ ...twoBad, servedModel: "claude-sonnet-5-5", model: "claude-sonnet-5-5" }),
+      entry({ input: { ...entry().input, promptVersion: "older" } }),
+      entry({ input: { ...entry().input, dataset: "tpch" } }),
+      // a refusal fallback is scored as the model that answered
+      entry({ model: "claude-sonnet-5-5", servedModel: "claude-haiku-4-5" }),
+    ]);
+    expect(r.groups).toHaveLength(4);
+    const haiku = r.groups.find(
+      (g) =>
+        g.model === "claude-haiku-4-5" && g.dataset === "louvre" && g.promptVersion !== "older",
+    )!;
+    expect(haiku.calls.n).toBe(2);
+    expect(r.groups.find((g) => g.model === "claude-sonnet-5-5")!.calls.k).toBe(1);
+  });
+
+  it("resamples whole calls for the index-level interval", () => {
+    // Four calls of five indexes: one reply misreads the schema and loses all five.
+    const calls = [
+      entry({}),
+      entry({}),
       entry({}),
       entry({
         validation: {
-          accepted: ["a(b)"],
-          rejected: [
-            { index: "x(y)", reason: "unknown-table: no table named x" },
-            { index: "a(z)", reason: "unknown-column: a has no column z" },
-          ],
+          accepted: [],
+          rejected: Array.from({ length: 5 }, (_, i) => ({
+            index: `t(c${i})`,
+            reason: "unknown-table: no table named t",
+          })),
         },
       }),
-      entry({ output: {}, validation: undefined, error: "malformed", errorKind: "invalid_output" }),
-      entry({ output: {}, validation: undefined, error: "no credit", errorKind: "quota" }),
-      entry({ kind: "measurement" }),
-    ]);
-    expect(r.indexes).toMatchObject({ k: 2, n: 5 });
-    expect(r.calls).toMatchObject({ k: 2, n: 3 });
-    expect(r.unusable).toBe(1);
-    expect(r.infrastructure).toBe(1);
-    expect(r.byReason).toEqual({ "unknown-table": 1, "unknown-column": 1 });
-    expect(r.indexes.lower).toBeGreaterThan(0);
-    expect(r.indexes.upper).toBeLessThan(1);
+    ].map((e, i) =>
+      i < 3
+        ? {
+            ...e,
+            validation: { accepted: ["a(1)", "a(2)", "a(3)", "a(4)", "a(5)"], rejected: [] },
+          }
+        : e,
+    );
+    const g = invalidRates(calls).groups[0];
+    expect(g.indexes).toMatchObject({ rejected: 5, proposed: 20, n: 4 });
+    // Treating the 20 indexes as independent (Wilson) would give a far narrower interval.
+    const independent = wilson(5, 20);
+    expect(g.indexes.upper - g.indexes.lower).toBeGreaterThan(
+      independent.upper - independent.lower,
+    );
+    expect(g.indexes.upper).toBeGreaterThan(0.5);
   });
 });

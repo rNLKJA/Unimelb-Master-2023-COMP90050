@@ -1,14 +1,23 @@
-/** RFC 4180 CSV: quote cells with commas, quotes or line breaks. */
+/**
+ * RFC 4180 CSV: quote cells with commas, quotes or line breaks. Text cells
+ * that a spreadsheet would read as a formula (starting with =, +, -, @, a tab
+ * or a carriage return) get a leading apostrophe, following OWASP's
+ * CSV-injection guidance, because the audit log exports model-written text.
+ * Numbers are never prefixed, so negative values stay numeric.
+ */
 export type Cell = string | number | boolean | null | undefined;
+
+const FORMULA_START = /^[=+\-@\t\r]/;
 
 export function csvCell(v: Cell): string {
   if (v === null || v === undefined) return "";
-  const s =
+  let s =
     typeof v === "number"
       ? Number.isInteger(v)
         ? String(v)
         : String(Number(v.toFixed(6)))
       : String(v);
+  if (typeof v === "string" && FORMULA_START.test(s)) s = `'${s}`;
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 

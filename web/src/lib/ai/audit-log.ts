@@ -49,6 +49,18 @@ export interface MeasurementRecord {
     wins: number;
     losses: number;
   }[];
+  /** The settings the proposal was made for (absent in records from before October 2026's fix). */
+  proposedFor?: {
+    dataset: string;
+    scale: string;
+    seed: number;
+    scenario: string;
+    drift: number;
+    rounds: number;
+    budget: number;
+  };
+  /** Whether the benchmark replayed those settings (data, scenario, seed, rounds, budget). */
+  matchesProposal?: boolean;
 }
 
 export interface AuditEntry {
@@ -141,11 +153,14 @@ export async function appendEntry(entry: AuditEntry, secrets: (string | null)[] 
   changed();
 }
 
-/** Record the human decision on a stored call. Nothing else about it can change. */
-export async function updateDecision(id: string, patch: DecisionPatch) {
+/**
+ * Record the human decision on a stored call. Nothing else about it can
+ * change. Resolves false when there is no such record.
+ */
+export async function updateDecision(id: string, patch: DecisionPatch): Promise<boolean> {
   const current = (await tx<AuditEntry>(AUDIT_STORE, "readonly", (s) => s.get(id))) as
     AuditEntry | undefined;
-  if (!current) return;
+  if (!current) return false;
   const next: AuditEntry = {
     ...current,
     decision: patch.decision,
@@ -154,6 +169,7 @@ export async function updateDecision(id: string, patch: DecisionPatch) {
   };
   await tx(AUDIT_STORE, "readwrite", (s) => s.put(next));
   changed();
+  return true;
 }
 
 /** All records, newest first. */

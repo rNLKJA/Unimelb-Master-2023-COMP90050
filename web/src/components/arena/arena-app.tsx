@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useReducer, useRef, useState } from "react";
 import { LlmAdvisorPanel } from "@/components/ai/llm-advisor-panel";
+import { sameProposalSettings } from "@/lib/ai/measurement";
 import { ADVISOR_BY_ID } from "@/lib/advisors/registry";
 import { DATASETS, isDatasetId, type DatasetId } from "@/lib/datasets/registry";
 import { formatBytes, formatInt, formatMs } from "@/lib/format";
@@ -31,18 +32,17 @@ export function ArenaFromUrl() {
 }
 
 /**
- * A plan is proposed for one dataset and storage budget; changing either
- * drops it, because its indexes may no longer exist or fit.
+ * A plan is proposed for one set of settings (data, scenario, seed, rounds,
+ * budget); changing any of them drops it, because the model never saw that
+ * data or workload, and its indexes may no longer exist or fit.
  */
-function keepPlan(prev: ArenaConfig, next: ArenaConfig): ArenaConfig {
-  return next.llm && (next.dataset !== prev.dataset || next.budget !== prev.budget)
-    ? { ...next, llm: null }
-    : next;
+function keepPlan(next: ArenaConfig): ArenaConfig {
+  return next.llm && !sameProposalSettings(next.llm.request, next) ? { ...next, llm: null } : next;
 }
 
 export function ArenaApp({ initialDataset = "tpch" }: { initialDataset?: DatasetId }) {
   const [config, setRawConfig] = useState<ArenaConfig>(() => defaultConfig(initialDataset));
-  const setConfig = (next: ArenaConfig) => setRawConfig((prev) => keepPlan(prev, next));
+  const setConfig = (next: ArenaConfig) => setRawConfig(keepPlan(next));
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const onMessage = useCallback((msg: LabResponse) => dispatch({ type: "msg", msg }), []);
   const { post, restart } = useLabWorker(onMessage);
@@ -179,7 +179,12 @@ export function ArenaApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
               budget: config.budget,
             }}
             plan={config.llm}
-            onPlan={(plan) => setRawConfig((c) => ({ ...c, llm: plan }))}
+            onPlan={(plan) =>
+              // Accepting returns the settings to the ones the model saw.
+              setRawConfig((c) =>
+                plan ? { ...c, ...plan.request, llm: plan } : { ...c, llm: null },
+              )
+            }
           />
         )}
 

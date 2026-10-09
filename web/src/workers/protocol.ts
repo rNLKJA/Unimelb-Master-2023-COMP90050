@@ -24,6 +24,8 @@ export interface LlmPlan {
   /** "claude-haiku-4-5" etc. (the model that answered). */
   model: string;
   provider: Provider;
+  /** The settings the model was shown; the plan is dropped when the run's settings stop matching. */
+  request: LlmContextRequest;
 }
 
 export interface ArenaConfig {

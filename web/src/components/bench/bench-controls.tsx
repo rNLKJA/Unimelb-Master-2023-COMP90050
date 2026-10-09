@@ -36,6 +36,8 @@ export function BenchControls({ config, onChange, running, onRun, onStop }: Prop
   const dataset = DATASETS[config.dataset];
   const needsPlan = config.advisors.includes("llm") && !config.llm;
   const blocked = config.advisors.length === 0 || needsPlan;
+  // The sweep leaves the LLM out (its proposal was made for one workload).
+  const sweepBlocked = config.advisors.filter((a) => a !== "llm").length === 0;
   const runs = config.replicates * (config.advisors.length + 1);
 
   return (
@@ -260,11 +262,17 @@ export function BenchControls({ config, onChange, running, onRun, onStop }: Prop
           type="button"
           variant="outline"
           className="w-full"
-          disabled={running || blocked}
+          disabled={running || sweepBlocked}
           onClick={() => onRun(true)}
         >
           <Waves className="size-3.5" aria-hidden /> Drift sweep ({SWEEP.length} levels)
         </Button>
+        {config.advisors.includes("llm") && (
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            The drift sweep leaves the LLM advisor out: its proposal was made for one workload, and
+            the sweep runs five others.
+          </p>
+        )}
         <p className="text-muted-foreground text-xs leading-relaxed">
           {runs} runs of {config.rounds} rounds per benchmark
           {config.engine === "sqlite"

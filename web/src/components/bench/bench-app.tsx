@@ -5,18 +5,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { AiGeneratedLabel } from "@/components/ai/ai-label";
+import { InvalidRateGroups } from "@/components/ai/invalid-rates";
 import { LlmAdvisorPanel } from "@/components/ai/llm-advisor-panel";
 import { Panel, PanelHeader } from "@/components/shared/section";
 import { Button } from "@/components/ui/button";
 import { useLabWorker } from "@/hooks/use-lab-worker";
-import {
-  appendEntry,
-  listEntries,
-  newId,
-  onAuditChange,
-  type AuditEntry,
-} from "@/lib/ai/audit-log";
-import { invalidRates, REJECT_LABEL, type RejectCode } from "@/lib/ai/index-advisor";
+import { appendEntry, listEntries, onAuditChange, type AuditEntry } from "@/lib/ai/audit-log";
+import { invalidRates } from "@/lib/ai/index-advisor";
+import { measurementEntry, proposalSettings, sameProposalSettings } from "@/lib/ai/measurement";
 import type { AdvisorId } from "@/lib/advisors/types";
 import {
   replicatesToCsv,
@@ -27,7 +23,6 @@ import {
 import { download } from "@/lib/csv";
 import { DATASETS, isDatasetId, type DatasetId } from "@/lib/datasets/registry";
 import { formatBytes, formatMs } from "@/lib/format";
-import { formatInterval } from "@/lib/stats/format";
 import { SCENARIOS } from "@/lib/workload/scenarios";
 import type { BenchRunConfig, LabResponse } from "@/workers/protocol";
 import {
@@ -48,15 +43,18 @@ export function BenchFromUrl() {
   return <BenchApp key={initial} initialDataset={initial} />;
 }
 
-function keepPlan(prev: BenchRunConfig, next: BenchRunConfig): BenchRunConfig {
-  return next.llm && (next.dataset !== prev.dataset || next.budget !== prev.budget)
-    ? { ...next, llm: null }
-    : next;
+/**
+ * A plan is kept only while the settings match the ones the model was shown
+ * (data, scenario, seed, rounds, budget); otherwise it would be measured on a
+ * workload it never saw.
+ */
+function keepPlan(next: BenchRunConfig): BenchRunConfig {
+  return next.llm && !sameProposalSettings(next.llm.request, next) ? { ...next, llm: null } : next;
 }
 
 export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: DatasetId }) {
   const [config, setRaw] = useState<BenchRunConfig>(() => defaultBench(initialDataset));
-  const setConfig = (next: BenchRunConfig) => setRaw((prev) => keepPlan(prev, next));
+  const setConfig = (next: BenchRunConfig) => setRaw(keepPlan(next));
   const [state, dispatch] = useReducer(benchReducer, INITIAL);
   const [metric, setMetric] = useState<Metric>("total");
   const [baseline, setBaseline] = useState<AdvisorId>("autoadmin");
@@ -65,7 +63,10 @@ export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
   const results = useRef<HTMLElement>(null);
 
   const run = (sweep: boolean) => {
-    const c: BenchRunConfig = { ...config, sweep: sweep ? SWEEP : null };
+    // The sweep runs workloads the model never saw, so it leaves the LLM out.
+    const c: BenchRunConfig = sweep
+      ? { ...config, sweep: SWEEP, advisors: config.advisors.filter((a) => a !== "llm"), llm: null }
+      : { ...config, sweep: null };
     restart();
     dispatch({ type: "start", config: c });
     post({ type: "bench:run", config: c });
@@ -110,72 +111,28 @@ export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
           .summary
       : null);
 
-  // Measuring an approved LLM proposal appends a measurement record linked to its call.
+  // Measuring an approved LLM proposal appends a measurement record linked to
+  // its call, but only when the LLM advisor really ran and was compared.
   const recorded = useRef<string | null>(null);
   const budgetBytes = state.setup?.budgetBytes ?? 0;
   useEffect(() => {
-    if (state.status !== "done" || !used?.llm || !single) return;
+    if (state.status !== "done" || !used?.llm) return;
     const key = `${used.llm.auditId}:${state.elapsedMs}`;
     if (recorded.current === key) return;
     recorded.current = key;
-    const rs = groups.get(null) ?? [];
-    const means = summarise(rs, { metric: "buildRun" });
-    const against = (["autoadmin", "mab"] as const).flatMap((b) => {
-      const p = summarise(rs, { metric: "buildRun", baseline: b }).paired.find(
-        (x) => x.id === "llm",
-      );
-      return p
-        ? [
-            {
-              against: b,
-              ratio: p.ratio.estimate,
-              lower: p.ratio.lower,
-              upper: p.ratio.upper,
-              wins: p.sign.wins,
-              losses: p.sign.losses,
-            },
-          ]
-        : [];
-    });
-    const entry: AuditEntry = {
-      id: newId(),
-      parentId: used.llm.auditId,
-      kind: "measurement",
-      timestamp: new Date().toISOString(),
-      feature: "llm-index-advisor",
-      provider: used.llm.provider,
-      model: used.llm.model,
-      input: {
-        promptVersion: "measurement",
-        dataset: used.dataset,
-        scenario: used.scenario,
-        seed: used.seed,
-        rounds: used.rounds,
-        budgetBytes,
-        message: "",
+    const entry = measurementEntry(
+      {
+        ...proposalSettings(used),
+        engine: used.engine,
+        advisors: used.advisors,
+        sweep: used.sweep !== null,
+        llm: used.llm,
       },
-      output: {
-        measurement: {
-          dataset: used.dataset,
-          engine: used.engine,
-          scenario: used.scenario,
-          replicates: means.replicates,
-          seeds: means.seeds,
-          metric: "build + run",
-          advisors: means.advisors.map((a) => ({
-            id: a.id,
-            mean: a.mean.estimate,
-            lower: a.mean.lower,
-            upper: a.mean.upper,
-          })),
-          comparisons: against,
-        },
-      },
-      latencyMs: 0,
-      decision: "not-applicable",
-    };
-    void appendEntry(entry).catch(() => undefined);
-  }, [state.status, state.elapsedMs, used, single, groups, budgetBytes]);
+      groups.get(null) ?? [],
+      budgetBytes,
+    );
+    if (entry) void appendEntry(entry).catch(() => undefined);
+  }, [state.status, state.elapsedMs, used, groups, budgetBytes]);
 
   const running = state.status === "running";
   const total = state.setup?.total ?? (used ? used.replicates * (used.sweep?.length ?? 1) : 0);
@@ -330,15 +287,23 @@ export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
                   <p>
                     The benchmark repeats the arena R times, each on its own seeded workload, and
                     reports every advisor&apos;s mean cumulative workload time with a 95% bootstrap
-                    interval. Advisors replay the same workloads, so the comparison against the
-                    greedy what-if advisor (AutoAdmin) is paired: the difference, the change, the
-                    effect size d_z, an exact sign test and the share of replicates won.
+                    interval. Advisors replay the same workloads, in a seeded random order after one
+                    discarded warm-up replicate, so the comparison against the greedy what-if
+                    advisor (AutoAdmin) is paired: the difference, the change, the effect size d_z,
+                    an exact sign test and the share of replicates won.
+                  </p>
+                  <p>
+                    The intervals are conditional on this browser session: they describe how results
+                    vary from workload to workload, not from run to run. Running the same seeds
+                    again moves measured times by more than that, so compare two runs before
+                    trusting a small difference.
                   </p>
                   <p>
                     The bandit&apos;s regret is measured against a hindsight reference: the
-                    configuration CoPhy proves optimal, under the what-if model, for the whole
-                    workload. The drift sweep repeats everything at five levels between a static and
-                    a shifting workload. How each number is computed is on the{" "}
+                    configuration CoPhy&apos;s branch and bound finds best, under the what-if model,
+                    for the whole workload, and the page says whether it proved it optimal. The
+                    drift sweep repeats everything at five levels between a static and a shifting
+                    workload. How each number is computed is on the{" "}
                     <Link href="/methods#evaluation">methods page</Link>.
                   </p>
                 </div>
@@ -387,8 +352,8 @@ export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
                 )}
               </Panel>
               <DriftPanel points={sweepPoints} />
-              <MeansPanel summary={detail} />
-              <PairedPanel summary={detail} />
+              <MeansPanel summary={detail} llmModel={used.llm?.model} />
+              <PairedPanel summary={detail} llmModel={used.llm?.model} />
               <RegretPanel summary={detail} />
             </>
           )}
@@ -427,11 +392,17 @@ export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
             }}
             plan={config.llm}
             onPlan={(plan) =>
-              setRaw((c) => ({
-                ...c,
-                llm: plan,
-                advisors: plan && !c.advisors.includes("llm") ? [...c.advisors, "llm"] : c.advisors,
-              }))
+              setRaw((c) =>
+                plan
+                  ? {
+                      // Accepting returns the settings to the ones the model saw.
+                      ...c,
+                      ...plan.request,
+                      llm: plan,
+                      advisors: c.advisors.includes("llm") ? c.advisors : [...c.advisors, "llm"],
+                    }
+                  : { ...c, llm: null },
+              )
             }
           />
           <InvalidRatePanel />
@@ -441,7 +412,7 @@ export function BenchApp({ initialDataset = "tpch" }: { initialDataset?: Dataset
   );
 }
 
-/** The invalid-proposal rate over every LLM call logged in this browser. */
+/** The invalid-proposal rates of the LLM calls logged in this browser, per model group. */
 function InvalidRatePanel() {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   useEffect(() => {
@@ -452,55 +423,18 @@ function InvalidRatePanel() {
     load();
     return onAuditChange(load);
   }, []);
-  const r = invalidRates(entries);
-  const pctf = (x: number) => `${(x * 100).toFixed(0)}%`;
   return (
     <Panel>
       <PanelHeader
         title="Invalid-proposal rate"
-        sub="Over every LLM advisor call logged in this browser, with 95% Wilson intervals."
+        sub="Per model, prompt version and dataset, over the LLM advisor calls logged in this browser. 95% intervals."
       />
-      <dl className="space-y-4 p-4 text-sm sm:p-5">
-        <div>
-          <dt className="text-muted-foreground text-xs">Proposed indexes the validator rejected</dt>
-          <dd className="font-display tabular text-2xl font-semibold">
-            {r.indexes.n ? pctf(r.indexes.estimate) : "–"}
-          </dd>
-          <dd className="text-muted-foreground font-mono text-xs">
-            {r.indexes.n
-              ? `${r.indexes.k} of ${r.indexes.n} · ${formatInterval(r.indexes, pctf)}`
-              : "no proposals yet"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted-foreground text-xs">
-            Calls with an unusable reply or any rejected index
-          </dt>
-          <dd className="font-display tabular text-2xl font-semibold">
-            {r.calls.n ? pctf(r.calls.estimate) : "–"}
-          </dd>
-          <dd className="text-muted-foreground font-mono text-xs">
-            {r.calls.n ? `${r.calls.k} of ${r.calls.n} · ${formatInterval(r.calls, pctf)}` : "–"}
-            {r.unusable ? ` · ${r.unusable} unusable` : ""}
-          </dd>
-        </div>
-        {Object.keys(r.byReason).length > 0 && (
-          <div>
-            <dt className="text-muted-foreground text-xs">Rejections by reason</dt>
-            <dd className="mt-1 space-y-0.5 text-xs">
-              {Object.entries(r.byReason).map(([code, n]) => (
-                <p key={code}>
-                  {REJECT_LABEL[code as RejectCode] ?? code}: {n}
-                </p>
-              ))}
-            </dd>
-          </div>
-        )}
+      <div className="space-y-3 p-4 sm:p-5">
+        <InvalidRateGroups rates={invalidRates(entries)} />
         <p className="text-muted-foreground text-xs leading-relaxed">
-          Provider or network failures ({r.infrastructure}) are left out: they say nothing about the
-          model. <AiGeneratedLabel className="ml-0.5" /> marks every model output on the site.
+          Every model output is shown with an <AiGeneratedLabel className="mx-0.5" /> label.
         </p>
-      </dl>
+      </div>
     </Panel>
   );
 }

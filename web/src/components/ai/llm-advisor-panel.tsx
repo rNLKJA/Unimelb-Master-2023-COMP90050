@@ -33,6 +33,17 @@ import { formatBytes, formatInt, formatMs } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { LabResponse, LlmContextRequest, LlmPlan } from "@/workers/protocol";
 
+/** "Louvre · static · seed 2023 · 25 rounds · budget 200%". */
+export function describeRequest(r: LlmContextRequest): string {
+  return [
+    r.dataset === "louvre" ? "Louvre" : `TPC-H-like (${r.scale.toUpperCase()})`,
+    r.scenario === "drifting" ? `drifting ${r.drift.toFixed(2)}` : r.scenario,
+    `seed ${r.seed}`,
+    `${r.rounds} rounds`,
+    `budget ${Math.round(r.budget * 100)}%`,
+  ].join(" · ");
+}
+
 type Phase =
   | { kind: "idle" }
   | { kind: "context" }
@@ -48,6 +59,10 @@ type Phase =
       usage: TokenUsage | null;
       fallbackUsed: boolean;
       budgetBytes: number;
+      /** The settings the model was shown. */
+      request: LlmContextRequest;
+      /** Whether the call reached the audit log; a proposal that did not cannot be accepted. */
+      logged: boolean;
     }
   | { kind: "error"; message: string; keyProblem: boolean };
 
@@ -71,9 +86,12 @@ export function LlmAdvisorPanel({
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const abort = useRef<AbortController | null>(null);
+  /** The settings the pending request was built from. */
+  const asked = useRef<LlmContextRequest>(request);
 
   const ask = useCallback(
     async (context: LlmContext) => {
+      const askedFor = asked.current;
       const key = getKey(settings.provider);
       const model = modelFor(settings);
       const id = newId();
@@ -106,7 +124,7 @@ export function LlmAdvisorPanel({
         const validation = validateProposal(result.data, context.stats, {
           budgetBytes: context.budgetBytes,
         });
-        await appendEntry(
+        const logged = await appendEntry(
           {
             ...base,
             servedModel: result.servedModel,
@@ -118,7 +136,10 @@ export function LlmAdvisorPanel({
             decision: "pending",
           },
           [key],
-        ).catch(() => undefined);
+        ).then(
+          () => true,
+          () => false,
+        );
         setSelected(new Set(validation.accepted.map((a) => indexId(a.index))));
         setPhase({
           kind: "proposed",
@@ -131,11 +152,16 @@ export function LlmAdvisorPanel({
           usage: result.usage,
           fallbackUsed: result.fallbackUsed,
           budgetBytes: context.budgetBytes,
+          request: askedFor,
+          logged,
         });
       } catch (e) {
         const err = e instanceof AiError ? e : new AiError("network", { detail: String(e) });
-        if (err.kind !== "no_key" && err.kind !== "aborted") {
-          await appendEntry(
+        // Every call that left the browser is logged, cancelled ones included: a
+        // request cancelled after it reached the provider can still be billed.
+        const logged =
+          err.kind === "no_key" ||
+          (await appendEntry(
             {
               ...base,
               output: {},
@@ -146,14 +172,19 @@ export function LlmAdvisorPanel({
               errorKind: err.kind,
             },
             [key],
-          ).catch(() => undefined);
-        }
+          ).then(
+            () => true,
+            () => false,
+          ));
+        const unlogged = logged ? "" : " This call could not be written to the audit log.";
         setPhase(
           err.kind === "aborted"
-            ? { kind: "idle" }
+            ? logged
+              ? { kind: "idle" }
+              : { kind: "error", message: `Cancelled.${unlogged}`, keyProblem: false }
             : {
                 kind: "error",
-                message: err.message,
+                message: `${err.message}${unlogged}`,
                 keyProblem: err.kind === "no_key" || err.kind === "invalid_key",
               },
         );
@@ -175,6 +206,7 @@ export function LlmAdvisorPanel({
   const { post, restart } = useLabWorker(onMessage);
 
   const start = () => {
+    asked.current = request;
     setPhase({ kind: "context" });
     post({ type: "llm:context", request });
   };
@@ -188,9 +220,20 @@ export function LlmAdvisorPanel({
     if (phase.kind !== "proposed") return;
     const chosen = phase.validation.accepted.filter((a) => selected.has(indexId(a.index)));
     const finalConfig = decision === "rejected" ? [] : chosen.map((a) => indexId(a.index));
-    await updateDecision(phase.auditId, decisionPatch(decision, finalConfig)).catch(
-      () => undefined,
-    );
+    const recorded = await updateDecision(
+      phase.auditId,
+      decisionPatch(decision, finalConfig),
+    ).catch(() => false);
+    if (!recorded && decision !== "rejected") {
+      // No audit record, no build: the decision has to be on the record first.
+      setPhase({
+        kind: "error",
+        message:
+          "Your decision could not be written to the audit log, so the proposal was not applied. Check that this browser allows site storage (IndexedDB) and ask again.",
+        keyProblem: false,
+      });
+      return;
+    }
     onPlan(
       decision === "rejected"
         ? null
@@ -200,6 +243,7 @@ export function LlmAdvisorPanel({
             auditId: phase.auditId,
             model: phase.model,
             provider: phase.provider,
+            request: phase.request,
           },
     );
     setPhase({ kind: "idle" });
@@ -247,6 +291,10 @@ export function LlmAdvisorPanel({
             </p>
             <p className="text-muted-foreground mt-1 font-mono text-xs break-words">
               {plan.config.map(indexId).join(" · ") || "no indexes"}
+            </p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Proposed for {describeRequest(plan.request)}. Changing any of these settings discards
+              it, because the model never saw that data or workload.
             </p>
             <p className="text-muted-foreground mt-1 text-xs">
               Charged {formatMs(plan.latencyMs)} of recommendation time (the provider&apos;s
@@ -398,10 +446,21 @@ export function LlmAdvisorPanel({
                 </ul>
               </div>
             ) : null}
+            {!proposed.logged ? (
+              <p role="alert" className="border-coral/50 rounded-lg border p-3 text-sm">
+                <TriangleAlert className="text-coral mr-1.5 inline size-4" aria-hidden />
+                This call could not be written to the audit log (this browser may block site
+                storage), so it cannot be accepted. Nothing will be built from it.
+              </p>
+            ) : null}
+            <p className="text-muted-foreground text-xs">
+              Made for {describeRequest(proposed.request)}. Accepting returns the settings to these
+              if you have changed them since.
+            </p>
             <div className="border-border flex flex-wrap items-center gap-2 border-t pt-3">
               <Button
                 onClick={() => decide(allChosen ? "accepted" : "edited")}
-                disabled={selected.size === 0}
+                disabled={selected.size === 0 || !proposed.logged}
               >
                 <Check aria-hidden />
                 {allChosen ? "Accept" : `Accept ${selected.size} (edited)`}
