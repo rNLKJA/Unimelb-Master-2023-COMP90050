@@ -16,7 +16,7 @@
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "bench:report": "vitest run --config vitest.report.config.mts",
+    "bench:report": "node scripts/bench-report.mjs",
     "docs:sync": "node scripts/sync-docs.mjs"
   },
   "dependencies": {

@@ -10,7 +10,7 @@ import { whatIfReport } from "@/lib/console/what-if";
 import { DEFAULT_MAB, MabAdvisor } from "@/lib/advisors/mab/mab-advisor";
 import type { LlmContext } from "@/lib/ai/index-advisor";
 import { runAdvisor } from "@/lib/arena/run";
-import { runReplicate, type BenchEnv } from "@/lib/bench/benchmark";
+import { runReplicate, warmUp as warmUpBench, type BenchEnv } from "@/lib/bench/benchmark";
 import { readTables, sqliteBytes, valuePools } from "@/lib/datasets/louvre/data";
 import { LOUVRE_PROVENANCE } from "@/lib/datasets/louvre/schema";
 import { DATASETS, type DatasetId } from "@/lib/datasets/registry";
@@ -257,6 +257,7 @@ async function runBench(config: BenchRunConfig) {
   const total = levels.length * config.replicates;
   post({ type: "bench:setup", info: base.info, budgetBytes, total });
   let done = 0;
+  let warm = false;
   for (const drift of levels) {
     const cfg = {
       scenario: drift === null ? config.scenario : ("drifting" as const),
@@ -270,6 +271,12 @@ async function runBench(config: BenchRunConfig) {
       mabAlpha: config.mabAlpha,
       llm: config.llm ? { config: config.llm.config, latencyMs: config.llm.latencyMs } : undefined,
     };
+    if (!warm) {
+      // One discarded replicate first, so nothing timed runs on a cold engine.
+      post({ type: "status", phase: "Warming up (one discarded replicate)" });
+      warmUpBench(env, cfg);
+      warm = true;
+    }
     for (let r = 0; r < config.replicates; r++) {
       post({
         type: "status",

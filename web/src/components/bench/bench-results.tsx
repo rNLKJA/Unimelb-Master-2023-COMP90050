@@ -1,6 +1,7 @@
 "use client";
 
 import { Download } from "lucide-react";
+import { AiGeneratedLabel } from "@/components/ai/ai-label";
 import { advisorColor } from "@/components/arena/state";
 import { IntervalChart } from "@/components/charts/interval-chart";
 import { Legend, LineChart, type Series } from "@/components/charts/line-chart";
@@ -100,14 +101,34 @@ export function DisplayOptions({
   );
 }
 
+/** The advisor's long name, with the AI-generated label for the LLM advisor. */
+function AdvisorName({ id, llmModel }: { id: AdvisorId; llmModel?: string }) {
+  return (
+    <span className="flex items-center gap-2">
+      <Swatch id={id} />
+      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        {longName(id)}
+        {id === "llm" && <AiGeneratedLabel model={llmModel} />}
+      </span>
+    </span>
+  );
+}
+
+/** What the intervals describe, for the panel subtitles. */
+function intervalNote(s: BenchSummary) {
+  return s.intervals === "replicates"
+    ? `95% percentile-bootstrap intervals over the ${s.replicates} replicates of this browser session (B = ${s.bootstrap.B}, seed ${s.bootstrap.seed}). They describe workload-to-workload variation in this session only; re-running the same seeds moves the results by more.`
+    : `95% pigeonhole-bootstrap intervals over ${s.sessions} sessions x ${s.replicates} workload seeds (B = ${s.bootstrap.B}, seed ${s.bootstrap.seed}).`;
+}
+
 /** Mean workload time per advisor with bootstrap intervals. */
-export function MeansPanel({ summary }: { summary: BenchSummary }) {
+export function MeansPanel({ summary, llmModel }: { summary: BenchSummary; llmModel?: string }) {
   const rows = [...summary.advisors].sort((a, b) => a.mean.estimate - b.mean.estimate);
   return (
     <Panel>
       <PanelHeader
         title="Mean cumulative workload time"
-        sub={`${METRIC_LABEL[summary.metric]}, summed over all rounds, averaged over ${summary.replicates} replicates. Whiskers are 95% percentile-bootstrap intervals (B = ${summary.bootstrap.B}, seed ${summary.bootstrap.seed}).`}
+        sub={`${METRIC_LABEL[summary.metric]}, summed over all rounds, averaged over ${summary.replicates} replicates. Whiskers: ${intervalNote(summary)}`}
       />
       <div className="space-y-4 p-4 sm:p-5">
         <IntervalChart
@@ -141,10 +162,7 @@ export function MeansPanel({ summary }: { summary: BenchSummary }) {
               {rows.map((a) => (
                 <tr key={a.id} className="border-border/60 border-b last:border-0">
                   <th scope="row" className="py-2 pr-3 text-left font-normal">
-                    <span className="flex items-center gap-2">
-                      <Swatch id={a.id} />
-                      {longName(a.id)}
-                    </span>
+                    <AdvisorName id={a.id} llmModel={llmModel} />
                   </th>
                   <td className="tabular py-2 pr-3 text-right font-mono whitespace-nowrap">
                     {formatMs(a.mean.estimate)}
@@ -184,7 +202,7 @@ export function MeansPanel({ summary }: { summary: BenchSummary }) {
 }
 
 /** Paired comparisons against the chosen baseline. */
-export function PairedPanel({ summary }: { summary: BenchSummary }) {
+export function PairedPanel({ summary, llmModel }: { summary: BenchSummary; llmModel?: string }) {
   const rows = summary.paired;
   if (rows.length === 0) return null;
   const against = rows[0].against;
@@ -192,7 +210,7 @@ export function PairedPanel({ summary }: { summary: BenchSummary }) {
     <Panel>
       <PanelHeader
         title={`Paired comparison against ${longName(against)}`}
-        sub="Each replicate is a pair, because both advisors ran the same workload. Change is the ratio of means minus one, so negative means faster than the baseline. The effect size d_z is the mean difference over the SD of the differences. The sign test drops ties."
+        sub={`Each replicate is a pair, because both advisors ran the same workload. Change is the ratio of means minus one, so negative means faster than the baseline. The effect size d_z is the mean difference over the SD of the differences. The sign test drops ties. ${intervalNote(summary)}`}
       />
       <div className="space-y-4 p-4 sm:p-5">
         <IntervalChart
@@ -225,10 +243,7 @@ export function PairedPanel({ summary }: { summary: BenchSummary }) {
               {rows.map((p) => (
                 <tr key={p.id} className="border-border/60 border-b last:border-0">
                   <th scope="row" className="py-2 pr-3 text-left font-normal">
-                    <span className="flex items-center gap-2">
-                      <Swatch id={p.id} />
-                      {longName(p.id)}
-                    </span>
+                    <AdvisorName id={p.id} llmModel={llmModel} />
                   </th>
                   <td className="tabular py-2 pr-3 text-right font-mono text-xs whitespace-nowrap">
                     {formatSignedMs(p.difference.estimate)}{" "}
@@ -268,7 +283,8 @@ export function PairedPanel({ summary }: { summary: BenchSummary }) {
           With {summary.replicates} replicates the smallest possible sign-test p is{" "}
           {formatP(Math.min(1, 2 * Math.pow(0.5, summary.replicates)))}; read the effect sizes and
           intervals, not only p. Percentile-bootstrap intervals from few replicates are somewhat too
-          narrow.
+          narrow, and more replicates in one session cannot capture run-to-run variation: to check a
+          result, run the benchmark again and compare.
         </p>
       </div>
     </Panel>
@@ -279,6 +295,7 @@ export function PairedPanel({ summary }: { summary: BenchSummary }) {
 export function RegretPanel({ summary }: { summary: BenchSummary }) {
   const r = summary.regret;
   if (!r) return null;
+  const proven = r.reference.proven === r.reference.of;
   const series: Series[] = [
     {
       id: "regret",
@@ -292,7 +309,7 @@ export function RegretPanel({ summary }: { summary: BenchSummary }) {
     <Panel>
       <PanelHeader
         title="The bandit's regret"
-        sub="Cumulative time the bandit spent beyond the hindsight reference (the what-if-optimal fixed configuration for the whole workload, built before round 1), averaged over replicates. The band is a pointwise 95% bootstrap interval."
+        sub={`Cumulative time the bandit spent beyond the hindsight reference (${proven ? "the what-if-optimal fixed configuration" : "the best fixed configuration branch and bound found"} for the whole workload, built before round 1), averaged over replicates. The band is a pointwise 95% bootstrap interval.`}
       />
       <div className="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="min-w-0">
@@ -309,34 +326,50 @@ export function RegretPanel({ summary }: { summary: BenchSummary }) {
             ]}
           />
         </div>
-        <dl className="space-y-4 text-sm">
-          <div>
-            <dt className="text-muted-foreground text-xs">Final regret</dt>
-            <dd className="font-display tabular text-2xl font-semibold">
-              {r.final.estimate < 0 ? "−" : ""}
-              {formatMs(Math.abs(r.final.estimate))}
-            </dd>
-            <dd className="text-muted-foreground font-mono text-xs">
-              95% CI {ci(r.final, (x) => (x < 0 ? "−" : "") + formatMs(Math.abs(x)))}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground text-xs">
-              Relative to the reference&apos;s total
-            </dt>
-            <dd className="font-display tabular text-2xl font-semibold">
-              {(r.relative.estimate * 100).toFixed(0)}%
-            </dd>
-            <dd className="text-muted-foreground font-mono text-xs">
-              95% CI {ci(r.relative, (x) => `${(x * 100).toFixed(0)}%`)}
-            </dd>
-          </div>
+        <div className="space-y-4 text-sm">
+          <dl className="space-y-4">
+            <div>
+              <dt className="text-muted-foreground text-xs">Final regret</dt>
+              <dd className="font-display tabular text-2xl font-semibold">
+                {r.final.estimate < 0 ? "−" : ""}
+                {formatMs(Math.abs(r.final.estimate))}
+              </dd>
+              <dd className="text-muted-foreground font-mono text-xs">
+                95% CI {ci(r.final, (x) => (x < 0 ? "−" : "") + formatMs(Math.abs(x)))}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-xs">
+                Relative to the reference&apos;s total
+              </dt>
+              <dd className="font-display tabular text-2xl font-semibold">
+                {(r.relative.estimate * 100).toFixed(0)}%
+              </dd>
+              <dd className="text-muted-foreground font-mono text-xs">
+                95% CI {ci(r.relative, (x) => `${(x * 100).toFixed(0)}%`)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground text-xs">Reference proven optimal</dt>
+              <dd className={cn("tabular font-mono text-xs", !proven && "text-coral")}>
+                in {r.reference.proven} of {r.reference.of} replicates
+              </dd>
+            </div>
+          </dl>
+          {!proven && (
+            <p role="note" className="text-coral text-xs leading-relaxed">
+              Branch and bound ran out of nodes before proving optimality in{" "}
+              {r.reference.of - r.reference.proven} replicate
+              {r.reference.of - r.reference.proven === 1 ? "" : "s"}, so this regret is against the
+              best configuration found, not a proven optimum.
+            </p>
+          )}
           <p className="text-muted-foreground text-xs leading-relaxed">
             Regret starts below zero because the reference pays for all its indexes before round 1.
             It can end below zero too: the reference is optimal for the cost model, not for measured
             runtimes, and it never adapts.
           </p>
-        </dl>
+        </div>
       </div>
     </Panel>
   );

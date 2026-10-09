@@ -17,9 +17,23 @@
  * execution, as in the arena. "Build + run" (creation + execution) is reported
  * too, because an LLM's recommendation time is mostly network and provider
  * latency rather than anything about its advice.
+ *
+ * Inside a replicate the advisors run in a seeded random order, so no advisor
+ * always runs first on a cold engine, and callers run one discarded warm-up
+ * replicate (`warmUp`) before timing anything.
+ *
+ * What the intervals cover depends on the data. From one session (one browser
+ * worker, as on /benchmark) they resample replicates, so they describe
+ * workload-to-workload variation in that session only: re-running the same
+ * seeds in a fresh session moves the timings by more than that, because
+ * machine, JIT and heap state change between runs. When results carry several
+ * `session` numbers (`pnpm bench:report` runs independent processes over the
+ * same seeds), `summarise` uses a pigeonhole bootstrap over sessions x
+ * workload seeds, which includes run-to-run variation.
  */
 import { createAdvisor, type AdvisorExtras } from "@/lib/advisors/registry";
 import { DEFAULT_MAB } from "@/lib/advisors/mab/mab-advisor";
+import { HindsightAdvisor } from "@/lib/advisors/offline";
 import { toCsv } from "@/lib/csv";
 import type { AdvisorId } from "@/lib/advisors/types";
 import { runAdvisor, type RunTotals } from "@/lib/arena/run";
@@ -27,14 +41,13 @@ import type { DatabaseStats } from "@/lib/db/stats";
 import { CostModel } from "@/lib/engine/cost-model";
 import type { Executor } from "@/lib/engine/executor";
 import { indexId, type IndexDef } from "@/lib/engine/types";
+import { deriveSeed, mulberry32, shuffle } from "@/lib/random";
 import {
+  bootstrapCI,
   cohensDz,
   mean,
-  meanBootstrap,
-  meanCurveBootstrap,
-  pairedMeanDiffBootstrap,
-  pairedRatioBootstrap,
   pairedSignTest,
+  pigeonholeBootstrapCI,
   sd,
   STATS_SEED,
   wilson,
@@ -83,15 +96,35 @@ export interface AdvisorRun {
   /** Per-round total time (recommendation + creation + execution). */
   perRound: number[];
   finalConfig: string[];
+  /** The hindsight reference only: whether branch and bound proved its configuration optimal. */
+  reference?: { optimal: boolean; nodes: number };
 }
 
 export interface ReplicateResult {
   replicate: number;
   seed: number;
+  /** Independent session (fresh process or worker) the replicate ran in; absent means 0. */
+  session?: number;
+  /** The order the advisors ran in, a seeded shuffle per replicate. */
+  order: AdvisorId[];
   runs: Partial<Record<AdvisorId, AdvisorRun>>;
 }
 
 export const replicateSeed = (base: number, r: number) => base + r;
+
+/** The seeded order advisors run in on one replicate, so position effects average out. */
+export function advisorOrder(ids: readonly AdvisorId[], seed: number): AdvisorId[] {
+  return shuffle(mulberry32(deriveSeed(seed, "advisor-order")), ids);
+}
+
+/**
+ * One discarded replicate (workload seed `seed - 1`, which no measured
+ * replicate uses) so the WebAssembly and JavaScript JITs and SQLite's caches
+ * are warm before anything is timed.
+ */
+export function warmUp(env: BenchEnv, cfg: BenchConfig): void {
+  runReplicate(env, cfg, -1);
+}
 
 /** Run every advisor (and the hindsight reference) on replicate `r`'s workload. */
 export function runReplicate(env: BenchEnv, cfg: BenchConfig, r: number): ReplicateResult {
@@ -108,8 +141,9 @@ export function runReplicate(env: BenchEnv, cfg: BenchConfig, r: number): Replic
   const executor = env.executor(seed);
   const extras: AdvisorExtras = { llm: cfg.llm, workload: workload.rounds.flat() };
   const ids = [...new Set<AdvisorId>([...cfg.advisors, "hindsight"])];
-  const runs: ReplicateResult["runs"] = {};
-  for (const id of ids) {
+  const order = advisorOrder(ids, seed);
+  const ran = new Map<AdvisorId, AdvisorRun>();
+  for (const id of order) {
     const advisor = createAdvisor(id, { ...DEFAULT_MAB, alpha: cfg.mabAlpha }, extras);
     const result = runAdvisor({
       advisor,
@@ -121,13 +155,19 @@ export function runReplicate(env: BenchEnv, cfg: BenchConfig, r: number): Replic
       seed,
       now: env.now,
     });
-    runs[id] = {
+    ran.set(id, {
       totals: result.totals,
       perRound: result.rounds.map((x) => x.recommendationMs + x.creationMs + x.executionMs),
       finalConfig: result.finalConfig.map(indexId),
-    };
+      ...(advisor instanceof HindsightAdvisor
+        ? { reference: { optimal: advisor.optimal === true, nodes: advisor.nodes } }
+        : {}),
+    });
   }
-  return { replicate: r, seed, runs };
+  // Stored in the configured order, whatever order they ran in.
+  const runs: ReplicateResult["runs"] = {};
+  for (const id of ids) runs[id] = ran.get(id);
+  return { replicate: r, seed, order, runs };
 }
 
 export const metricOf = (t: RunTotals, metric: Metric) =>
@@ -171,13 +211,29 @@ export interface RegretSummary {
   relative: BootstrapInterval;
   /** Mean cumulative regret per round, with pointwise 95% bands. */
   curve: { estimate: number[]; lower: number[]; upper: number[] };
+  /**
+   * In how many replicate runs branch and bound proved the reference optimal.
+   * When `proven < of`, regret is against the best configuration found.
+   */
+  reference: { proven: number; of: number };
 }
+
+/**
+ * "replicates": percentile bootstrap over the replicates of one session.
+ * "sessions x workloads": pigeonhole bootstrap over independent sessions and
+ * workload seeds (see the module comment).
+ */
+export type IntervalMethod = "replicates" | "sessions x workloads";
 
 export interface BenchSummary {
   metric: Metric;
+  /** Workload seeds (replicates per session). */
   replicates: number;
+  /** Independent sessions (1 in the browser). */
+  sessions: number;
   seeds: number[];
   bootstrap: { B: number; seed: number };
+  intervals: IntervalMethod;
   advisors: AdvisorSummary[];
   paired: PairedSummary[];
   regret: RegretSummary | null;
@@ -211,9 +267,52 @@ export function summarise(
   const ids = [...new Set(results.flatMap((r) => Object.keys(r.runs) as AdvisorId[]))];
   // Only replicates where every advisor finished, so every comparison is paired.
   const complete = results.filter((r) => ids.every((id) => r.runs[id]));
-  const values = (id: AdvisorId) => complete.map((r) => metricOf(r.runs[id]!.totals, metric));
+  const sessionIds = [...new Set(complete.map((r) => r.session ?? 0))].sort((a, b) => a - b);
+
+  // The units, and how to resample them. One session: its replicates. Several:
+  // a sessions x seeds grid (seeds every session completed), row by row.
+  let units: ReplicateResult[] = complete;
+  let seeds = complete.map((r) => r.seed);
+  let grid: { rows: number; cols: number } | null = null;
+  if (sessionIds.length > 1) {
+    const of = (s: number) => complete.filter((r) => (r.session ?? 0) === s);
+    const shared = sessionIds
+      .map((s) => new Set(of(s).map((r) => r.seed)))
+      .reduce((a, b) => new Set([...a].filter((x) => b.has(x))));
+    seeds = [...shared].sort((a, b) => a - b);
+    units = sessionIds.flatMap((s) => seeds.map((x) => of(s).find((r) => r.seed === x)!));
+    grid = { rows: sessionIds.length, cols: seeds.length };
+  }
+  const n = units.length;
+  const resample = (stat: (idx: Int32Array) => number): BootstrapInterval =>
+    grid ? pigeonholeBootstrapCI(grid.rows, grid.cols, stat, boot) : bootstrapCI(n, stat, boot);
+  const meanStat = (xs: readonly number[]) => (idx: Int32Array) => {
+    let t = 0;
+    for (let i = 0; i < idx.length; i++) t += xs[idx[i]];
+    return t / idx.length;
+  };
+  const diffStat = (a: readonly number[], b: readonly number[]) => (idx: Int32Array) => {
+    let t = 0;
+    for (let i = 0; i < idx.length; i++) t += a[idx[i]] - b[idx[i]];
+    return t / idx.length;
+  };
+  const ratioStat = (a: readonly number[], b: readonly number[]) => (idx: Int32Array) => {
+    let ta = 0;
+    let tb = 0;
+    for (let i = 0; i < idx.length; i++) {
+      ta += a[idx[i]];
+      tb += b[idx[i]];
+    }
+    return ta / tb;
+  };
+  // Tests and win shares need independent pairs: with several sessions, each
+  // workload seed's values are averaged over the sessions first.
+  const perSeed = (xs: number[]) =>
+    grid ? seeds.map((_, j) => mean(sessionIds.map((_, i) => xs[i * grid!.cols + j]))) : xs;
+
+  const values = (id: AdvisorId) => units.map((r) => metricOf(r.runs[id]!.totals, metric));
   const component = (id: AdvisorId, f: (t: RunTotals) => number) =>
-    mean(complete.map((r) => f(r.runs[id]!.totals)));
+    mean(units.map((r) => f(r.runs[id]!.totals)));
   const none = ids.includes("none") ? values("none") : null;
 
   const advisors: AdvisorSummary[] = ids.map((id) => {
@@ -222,12 +321,12 @@ export function summarise(
       id,
       n: v.length,
       values: v,
-      mean: meanBootstrap(v, boot),
+      mean: resample(meanStat(v)),
       sd: sd(v),
       recommendationMs: component(id, (t) => t.recommendationMs),
       creationMs: component(id, (t) => t.creationMs),
       executionMs: component(id, (t) => t.executionMs),
-      speedup: none && id !== "none" ? pairedRatioBootstrap(none, v, boot) : null,
+      speedup: none && id !== "none" ? resample(ratioStat(none, v)) : null,
     };
   });
 
@@ -237,14 +336,14 @@ export function summarise(
         .map((id) => {
           const a = values(id);
           const b = values(baseline);
-          const sign = pairedSignTest(a, b);
+          const sign = pairedSignTest(perSeed(a), perSeed(b));
           return {
             id,
             against: baseline,
             n: a.length,
-            difference: pairedMeanDiffBootstrap(a, b, boot),
-            ratio: pairedRatioBootstrap(a, b, boot),
-            dz: cohensDz(a, b),
+            difference: resample(diffStat(a, b)),
+            ratio: resample(ratioStat(a, b)),
+            dz: cohensDz(perSeed(a), perSeed(b)),
             sign,
             winShare: wilson(sign.wins, sign.wins + sign.losses),
           };
@@ -252,28 +351,42 @@ export function summarise(
     : [];
 
   let regret: RegretSummary | null = null;
-  if (ids.includes(learner) && ids.includes("hindsight") && complete.length > 0) {
-    const curves = complete.map((r) => {
+  if (ids.includes(learner) && ids.includes("hindsight") && n > 0) {
+    const curves = units.map((r) => {
       const l = r.runs[learner]!;
       const h = r.runs.hindsight!;
       return cumulative(l.perRound.map((x, i) => x - h.perRound[i]));
     });
     const finals = curves.map((c) => c.at(-1) ?? 0);
-    const refTotals = complete.map((r) => r.runs.hindsight!.totals.totalMs);
-    const curve = meanCurveBootstrap(curves, boot);
+    const refTotals = units.map((r) => r.runs.hindsight!.totals.totalMs);
+    const width = Math.min(...curves.map((c) => c.length));
+    const curve = { estimate: [] as number[], lower: [] as number[], upper: [] as number[] };
+    for (let j = 0; j < width; j++) {
+      const ci = resample(meanStat(curves.map((c) => c[j])));
+      curve.estimate.push(ci.estimate);
+      curve.lower.push(ci.lower);
+      curve.upper.push(ci.upper);
+    }
     regret = {
       id: learner,
-      final: meanBootstrap(finals, boot),
-      relative: pairedRatioBootstrap(finals, refTotals, boot),
-      curve: { estimate: curve.estimate, lower: curve.lower, upper: curve.upper },
+      final: resample(meanStat(finals)),
+      relative: resample(ratioStat(finals, refTotals)),
+      curve,
+      reference: {
+        // Runs from before the flag existed count as unproven.
+        proven: units.filter((r) => r.runs.hindsight!.reference?.optimal === true).length,
+        of: n,
+      },
     };
   }
 
   return {
     metric,
-    replicates: complete.length,
-    seeds: complete.map((r) => r.seed),
+    replicates: grid ? grid.cols : n,
+    sessions: grid ? grid.rows : sessionIds.length,
+    seeds,
     bootstrap: boot,
+    intervals: grid ? "sessions x workloads" : "replicates",
     advisors,
     paired,
     regret,
@@ -283,9 +396,11 @@ export function summarise(
 /* ---------- export ---------- */
 
 export const CSV_COLUMNS = [
+  "session",
   "replicate",
   "seed",
   "advisor",
+  "run_position",
   "recommendation_ms",
   "creation_ms",
   "execution_ms",
@@ -293,6 +408,7 @@ export const CSV_COLUMNS = [
   "what_if_calls",
   "final_bytes",
   "final_indexes",
+  "reference_proven_optimal",
 ] as const;
 
 /** One row per replicate and advisor. */
@@ -303,9 +419,11 @@ export function replicatesToCsv(results: ReplicateResult[], context: Record<stri
     results.flatMap((r) =>
       (Object.entries(r.runs) as [AdvisorId, AdvisorRun][]).map(([id, run]) => [
         ...extra.map((k) => context[k]),
+        r.session ?? 0,
         r.replicate,
         r.seed,
         id,
+        r.order.indexOf(id) + 1,
         run.totals.recommendationMs,
         run.totals.creationMs,
         run.totals.executionMs,
@@ -313,6 +431,7 @@ export function replicatesToCsv(results: ReplicateResult[], context: Record<stri
         run.totals.whatIfCalls,
         run.totals.finalBytes,
         run.finalConfig.join(" | "),
+        run.reference ? run.reference.optimal : null,
       ]),
     ),
   );

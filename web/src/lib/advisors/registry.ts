@@ -111,7 +111,7 @@ export const HINDSIGHT_ADVISOR: AdvisorInfo = {
   paper: "cophy",
   mode: "offline",
   blurb:
-    "CoPhy's exact what-if optimum for the whole workload, built before round 1 and never changed. It knows the future, so it is the yardstick for regret, not a contender.",
+    "CoPhy's what-if optimum for the whole workload, built before round 1 and never changed. It knows the future, so it is the yardstick for regret, not a contender. The benchmark says whether branch and bound proved it optimal.",
 };
 
 export const ADVISOR_BY_ID = new Map(

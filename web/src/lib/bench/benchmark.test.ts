@@ -6,9 +6,11 @@ import { ModelExecutor } from "@/lib/engine/model-executor";
 import { louvreDb, smallDb, type LouvreFixture } from "@/lib/test/fixtures";
 import { TPCH_SUITE } from "@/lib/workload/templates";
 import {
+  advisorOrder,
   replicatesToCsv,
   runReplicate,
   summarise,
+  warmUp,
   type BenchConfig,
   type BenchEnv,
   type ReplicateResult,
@@ -50,6 +52,39 @@ describe("benchmark replicates", () => {
 
   it("is reproducible: the same seed gives the same replicate", () => {
     expect(runReplicate(tpch, config, 2)).toEqual(results[2]);
+  });
+
+  it("runs the advisors in a seeded random order per replicate", () => {
+    const ids = ["none", "autoadmin", "mab", "hindsight"];
+    for (const r of results) {
+      expect([...r.order].sort()).toEqual([...ids].sort());
+      expect(r.order).toEqual(advisorOrder(["none", "autoadmin", "mab", "hindsight"], r.seed));
+      // stored in the configured order whatever order they ran in
+      expect(Object.keys(r.runs)).toEqual(ids);
+    }
+    expect(new Set(results.map((r) => r.order.join())).size).toBeGreaterThan(1);
+    expect(() => warmUp(tpch, config)).not.toThrow();
+  });
+
+  it("records whether the hindsight reference was proven optimal", () => {
+    for (const r of results) {
+      expect(r.runs.hindsight!.reference?.optimal).toBe(true);
+      expect(r.runs.hindsight!.reference!.nodes).toBeGreaterThan(0);
+      expect(r.runs.mab!.reference).toBeUndefined();
+    }
+    expect(summarise(results).regret!.reference).toEqual({ proven: 6, of: 6 });
+    const truncated = results.map((r, i) =>
+      i === 0
+        ? {
+            ...r,
+            runs: {
+              ...r.runs,
+              hindsight: { ...r.runs.hindsight!, reference: { optimal: false, nodes: 9 } },
+            },
+          }
+        : r,
+    );
+    expect(summarise(truncated).regret!.reference).toEqual({ proven: 5, of: 6 });
   });
 
   it("charges the reference nothing for recommending, and it builds before round 1", () => {
@@ -97,6 +132,53 @@ describe("benchmark replicates", () => {
     );
   });
 
+  it("uses a pigeonhole bootstrap over sessions x seeds when there are several sessions", () => {
+    const single = summarise(results);
+    expect(single.sessions).toBe(1);
+    expect(single.intervals).toBe("replicates");
+    // Three "sessions" over the same seeds; the second and third run slower.
+    const sessions = [0, 1, 2].flatMap((k) =>
+      results.map((r) => ({
+        ...r,
+        session: k,
+        runs: Object.fromEntries(
+          Object.entries(r.runs).map(([id, run]) => [
+            id,
+            {
+              ...run!,
+              totals: {
+                ...run!.totals,
+                executionMs: run!.totals.executionMs * (1 + 0.1 * k),
+                totalMs: run!.totals.totalMs + run!.totals.executionMs * 0.1 * k,
+              },
+            },
+          ]),
+        ),
+      })),
+    );
+    const multi = summarise(sessions);
+    expect(multi.sessions).toBe(3);
+    expect(multi.replicates).toBe(6);
+    expect(multi.intervals).toBe("sessions x workloads");
+    expect(multi.seeds).toEqual([100, 101, 102, 103, 104, 105]);
+    const none = (s: typeof multi) => s.advisors.find((a) => a.id === "none")!;
+    expect(none(multi).n).toBe(18);
+    expect(none(multi).mean.estimate).toBeCloseTo(
+      sessions.reduce((t, r) => t + r.runs.none!.totals.totalMs, 0) / 18,
+      9,
+    );
+    const width = (c: { lower: number; upper: number }) => c.upper - c.lower;
+    expect(width(none(multi).mean)).toBeGreaterThan(width(none(single).mean));
+    // tests run on the six workloads, each averaged over sessions
+    const mab = multi.paired.find((p) => p.id === "mab")!;
+    expect(mab.sign.wins + mab.sign.losses + mab.sign.ties).toBe(6);
+    expect(multi.regret!.reference).toEqual({ proven: 18, of: 18 });
+    // a seed missing from one session is dropped from all of them
+    const gap = summarise(sessions.filter((r) => !(r.session === 2 && r.seed === 103)));
+    expect(gap.seeds).toEqual([100, 101, 102, 104, 105]);
+    expect(gap.advisors[0].n).toBe(15);
+  });
+
   it("excludes recommendation time in the build + run metric", () => {
     const total = summarise(results, { metric: "total" });
     const buildRun = summarise(results, { metric: "buildRun" });
@@ -108,9 +190,14 @@ describe("benchmark replicates", () => {
     const csv = replicatesToCsv(results, { dataset: "tpch", scenario: "static" });
     const lines = csv.trim().split("\n");
     expect(lines[0]).toBe(
-      "dataset,scenario,replicate,seed,advisor,recommendation_ms,creation_ms,execution_ms,total_ms,what_if_calls,final_bytes,final_indexes",
+      "dataset,scenario,session,replicate,seed,advisor,run_position,recommendation_ms,creation_ms,execution_ms,total_ms,what_if_calls,final_bytes,final_indexes,reference_proven_optimal",
     );
     expect(lines).toHaveLength(1 + 6 * 4);
+    const hindsight = lines.find((l) => l.includes(",hindsight,"))!;
+    expect(hindsight.endsWith(",true")).toBe(true);
+    const first = results[0];
+    const mabRow = lines.find((l) => l.startsWith(`tpch,static,0,0,${first.seed},mab,`))!;
+    expect(mabRow.split(",")[6]).toBe(String(first.order.indexOf("mab") + 1));
   });
 });
 

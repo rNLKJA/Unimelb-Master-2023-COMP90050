@@ -69,6 +69,8 @@ interface Interval {
   estimate: number;
   lower: number;
   upper: number;
+  /** Lowest and highest single-session point estimate. */
+  sessionRange?: [number, number];
 }
 
 export interface BenchmarkNumbers {
@@ -82,7 +84,11 @@ export interface BenchmarkNumbers {
         total: {
           meanMs: Record<string, Interval>;
           vsGreedy: Record<string, { ratio: Interval; wins: number; losses: number }>;
-          regret: { finalMs: Interval; relative: Interval } | null;
+          regret: {
+            finalMs: Interval;
+            relative: Interval;
+            referenceProvenOptimal?: { proven: number; of: number };
+          } | null;
         };
         buildRun: { vsGreedy: Record<string, { ratio: Interval }> };
       }
