@@ -43,6 +43,12 @@ const FIDELITY: { name: string; what: string; differs: string }[] = [
       "Contexts are built over this schema's columns; hyper-parameters follow the authors' TPC-H settings.",
   },
   {
+    name: "LLM index advisor (2026)",
+    what: "Not in the survey. Your own Claude or OpenAI key proposes indexes from the schema, round 1 of the workload and SQLite's plans, in a fixed JSON structure.",
+    differs:
+      "The lab validates every index against the schema and the budget, writes the CREATE INDEX itself and builds only what a person accepts, at the start of round 2.",
+  },
+  {
     name: "QB5000 (Ma et al. 2018)",
     what: "Templatisation, on-line clustering by arrival-rate history, linear and kernel regression, and the HYBRID spike rule.",
     differs:
@@ -62,6 +68,8 @@ const STACKS = {
     "SQLite 3.49 compiled to WebAssembly (sql.js) inside a Web Worker",
     "Hand-rolled SVG charts · next-themes for light and dark",
     "Vitest unit and parity tests · GitHub Actions CI · Vercel",
+    "2026 upgrade: a repeated-run benchmark with bootstrap intervals, the INFO20003 Louvre dataset and an optional bring-your-own-key LLM advisor with a browser-local audit log",
+    "Statistics helpers checked against numpy, scipy, statsmodels and base R",
   ],
 };
 

@@ -1,0 +1,4536 @@
+{
+  "generated": "2026-10-09T06:14:16.133Z",
+  "node": "v26.11.0",
+  "platform": "darwin arm64 (Apple M4)",
+  "settings": {
+    "replicates": 10,
+    "firstSeed": 2023,
+    "rounds": 25,
+    "budget": "200% of data",
+    "advisors": ["none", "autoadmin", "mab", "hindsight"],
+    "bootstrap": "percentile, B = 2000, seed 90050",
+    "tpchScale": "S (7,500 orders, data seed 2023)"
+  },
+  "results": {
+    "tpch/simulated/static": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 976,
+            "lower": 938.3,
+            "upper": 1010.1
+          },
+          "autoadmin": {
+            "estimate": 342,
+            "lower": 337.7,
+            "upper": 345.8
+          },
+          "mab": {
+            "estimate": 283.2,
+            "lower": 279.8,
+            "upper": 286.9
+          },
+          "hindsight": {
+            "estimate": 240.4,
+            "lower": 237.2,
+            "upper": 243.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.854,
+            "lower": 2.76,
+            "upper": 2.934
+          },
+          "mab": {
+            "estimate": 3.446,
+            "lower": 3.325,
+            "upper": 3.556
+          },
+          "hindsight": {
+            "estimate": 4.061,
+            "lower": 3.916,
+            "upper": 4.178
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 976
+          },
+          "autoadmin": {
+            "recommendation": 61.1,
+            "creation": 150.1,
+            "execution": 130.9
+          },
+          "mab": {
+            "recommendation": 6.3,
+            "creation": 209.9,
+            "execution": 67.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163,
+            "execution": 77.3
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.854,
+              "lower": 2.76,
+              "upper": 2.934
+            },
+            "dz": 11.08,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.828,
+              "lower": 0.818,
+              "upper": 0.839
+            },
+            "dz": -8.8,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 42.9,
+            "lower": 38.6,
+            "upper": 48.1
+          },
+          "relative": {
+            "estimate": 0.178,
+            "lower": 0.158,
+            "upper": 0.202
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 976,
+            "lower": 938.3,
+            "upper": 1010.1
+          },
+          "autoadmin": {
+            "estimate": 281,
+            "lower": 276.7,
+            "upper": 284.8
+          },
+          "mab": {
+            "estimate": 276.9,
+            "lower": 274.4,
+            "upper": 279.2
+          },
+          "hindsight": {
+            "estimate": 240.4,
+            "lower": 237.2,
+            "upper": 243.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.474,
+            "lower": 3.364,
+            "upper": 3.57
+          },
+          "mab": {
+            "estimate": 3.524,
+            "lower": 3.413,
+            "upper": 3.625
+          },
+          "hindsight": {
+            "estimate": 4.061,
+            "lower": 3.916,
+            "upper": 4.178
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 976
+          },
+          "autoadmin": {
+            "recommendation": 61.1,
+            "creation": 150.1,
+            "execution": 130.9
+          },
+          "mab": {
+            "recommendation": 6.3,
+            "creation": 209.9,
+            "execution": 67.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163,
+            "execution": 77.3
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.474,
+              "lower": 3.364,
+              "upper": 3.57
+            },
+            "dz": 12.14,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.986,
+              "lower": 0.975,
+              "upper": 0.997
+            },
+            "dz": -0.73,
+            "wins": 8,
+            "losses": 2,
+            "ties": 0,
+            "signTestP": 0.109
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 42.9,
+            "lower": 38.6,
+            "upper": 48.1
+          },
+          "relative": {
+            "estimate": 0.178,
+            "lower": 0.158,
+            "upper": 0.202
+          }
+        }
+      }
+    },
+    "tpch/simulated/shifting": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1073.3,
+            "lower": 1031.7,
+            "upper": 1111
+          },
+          "autoadmin": {
+            "estimate": 394.8,
+            "lower": 386.7,
+            "upper": 401.9
+          },
+          "mab": {
+            "estimate": 418.3,
+            "lower": 412.6,
+            "upper": 423.4
+          },
+          "hindsight": {
+            "estimate": 251.3,
+            "lower": 247.3,
+            "upper": 255.3
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.719,
+            "lower": 2.657,
+            "upper": 2.774
+          },
+          "mab": {
+            "estimate": 2.566,
+            "lower": 2.498,
+            "upper": 2.627
+          },
+          "hindsight": {
+            "estimate": 4.272,
+            "lower": 4.116,
+            "upper": 4.406
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1073.3
+          },
+          "autoadmin": {
+            "recommendation": 8.3,
+            "creation": 151.8,
+            "execution": 234.6
+          },
+          "mab": {
+            "recommendation": 3,
+            "creation": 264.5,
+            "execution": 150.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163.5,
+            "execution": 87.7
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.719,
+              "lower": 2.657,
+              "upper": 2.774
+            },
+            "dz": 12.02,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.059,
+              "lower": 1.049,
+              "upper": 1.07
+            },
+            "dz": 3.67,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 167,
+            "lower": 162.1,
+            "upper": 171.7
+          },
+          "relative": {
+            "estimate": 0.665,
+            "lower": 0.64,
+            "upper": 0.689
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1073.3,
+            "lower": 1031.7,
+            "upper": 1111
+          },
+          "autoadmin": {
+            "estimate": 386.4,
+            "lower": 378.4,
+            "upper": 393.6
+          },
+          "mab": {
+            "estimate": 415.3,
+            "lower": 409.3,
+            "upper": 420.6
+          },
+          "hindsight": {
+            "estimate": 251.3,
+            "lower": 247.3,
+            "upper": 255.3
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.777,
+            "lower": 2.715,
+            "upper": 2.833
+          },
+          "mab": {
+            "estimate": 2.584,
+            "lower": 2.519,
+            "upper": 2.644
+          },
+          "hindsight": {
+            "estimate": 4.272,
+            "lower": 4.116,
+            "upper": 4.406
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1073.3
+          },
+          "autoadmin": {
+            "recommendation": 8.3,
+            "creation": 151.8,
+            "execution": 234.6
+          },
+          "mab": {
+            "recommendation": 3,
+            "creation": 264.5,
+            "execution": 150.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163.5,
+            "execution": 87.7
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.777,
+              "lower": 2.715,
+              "upper": 2.833
+            },
+            "dz": 12.16,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.075,
+              "lower": 1.064,
+              "upper": 1.086
+            },
+            "dz": 4.35,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 167,
+            "lower": 162.1,
+            "upper": 171.7
+          },
+          "relative": {
+            "estimate": 0.665,
+            "lower": 0.64,
+            "upper": 0.689
+          }
+        }
+      }
+    },
+    "tpch/simulated/htap": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 2488.4,
+            "lower": 2309.7,
+            "upper": 2642.6
+          },
+          "autoadmin": {
+            "estimate": 426.8,
+            "lower": 416.1,
+            "upper": 435.1
+          },
+          "mab": {
+            "estimate": 411.6,
+            "lower": 395.9,
+            "upper": 424.8
+          },
+          "hindsight": {
+            "estimate": 260.8,
+            "lower": 256.6,
+            "upper": 265
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 5.831,
+            "lower": 5.551,
+            "upper": 6.078
+          },
+          "mab": {
+            "estimate": 6.046,
+            "lower": 5.83,
+            "upper": 6.235
+          },
+          "hindsight": {
+            "estimate": 9.54,
+            "lower": 8.96,
+            "upper": 10.064
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 2488.4
+          },
+          "autoadmin": {
+            "recommendation": 65.6,
+            "creation": 150.3,
+            "execution": 210.8
+          },
+          "mab": {
+            "recommendation": 12.2,
+            "creation": 217.2,
+            "execution": 182.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163.2,
+            "execution": 97.7
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 5.831,
+              "lower": 5.551,
+              "upper": 6.078
+            },
+            "dz": 7.66,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.964,
+              "lower": 0.95,
+              "upper": 0.977
+            },
+            "dz": -1.62,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 150.8,
+            "lower": 137.8,
+            "upper": 162.4
+          },
+          "relative": {
+            "estimate": 0.578,
+            "lower": 0.533,
+            "upper": 0.622
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 2488.4,
+            "lower": 2309.7,
+            "upper": 2642.6
+          },
+          "autoadmin": {
+            "estimate": 361.1,
+            "lower": 350.5,
+            "upper": 369.4
+          },
+          "mab": {
+            "estimate": 399.4,
+            "lower": 383.6,
+            "upper": 412.5
+          },
+          "hindsight": {
+            "estimate": 260.8,
+            "lower": 256.6,
+            "upper": 265
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 6.891,
+            "lower": 6.585,
+            "upper": 7.16
+          },
+          "mab": {
+            "estimate": 6.23,
+            "lower": 6.013,
+            "upper": 6.42
+          },
+          "hindsight": {
+            "estimate": 9.54,
+            "lower": 8.96,
+            "upper": 10.064
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 2488.4
+          },
+          "autoadmin": {
+            "recommendation": 65.6,
+            "creation": 150.3,
+            "execution": 210.8
+          },
+          "mab": {
+            "recommendation": 12.2,
+            "creation": 217.2,
+            "execution": 182.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163.2,
+            "execution": 97.7
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 6.891,
+              "lower": 6.585,
+              "upper": 7.16
+            },
+            "dz": 7.9,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.106,
+              "lower": 1.093,
+              "upper": 1.119
+            },
+            "dz": 4.15,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 150.8,
+            "lower": 137.8,
+            "upper": 162.4
+          },
+          "relative": {
+            "estimate": 0.578,
+            "lower": 0.533,
+            "upper": 0.622
+          }
+        }
+      }
+    },
+    "tpch/simulated/drift-sweep": {
+      "0": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 976,
+            "lower": 938.3,
+            "upper": 1010.1
+          },
+          "autoadmin": {
+            "estimate": 341.6,
+            "lower": 337.4,
+            "upper": 345.4
+          },
+          "mab": {
+            "estimate": 283.4,
+            "lower": 280,
+            "upper": 286.9
+          },
+          "hindsight": {
+            "estimate": 240.4,
+            "lower": 237.2,
+            "upper": 243.9
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.857,
+            "lower": 2.765,
+            "upper": 2.936
+          },
+          "mab": {
+            "estimate": 3.444,
+            "lower": 3.329,
+            "upper": 3.547
+          },
+          "hindsight": {
+            "estimate": 4.06,
+            "lower": 3.913,
+            "upper": 4.178
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 976
+          },
+          "autoadmin": {
+            "recommendation": 60.7,
+            "creation": 150.1,
+            "execution": 130.9
+          },
+          "mab": {
+            "recommendation": 6.3,
+            "creation": 209.9,
+            "execution": 67.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163,
+            "execution": 77.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.857,
+              "lower": 2.765,
+              "upper": 2.936
+            },
+            "dz": 11.08,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.829,
+              "lower": 0.821,
+              "upper": 0.839
+            },
+            "dz": -10.24,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 43,
+            "lower": 38.6,
+            "upper": 47.4
+          },
+          "relative": {
+            "estimate": 0.179,
+            "lower": 0.16,
+            "upper": 0.199
+          }
+        }
+      },
+      "1": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1073.3,
+            "lower": 1031.7,
+            "upper": 1111
+          },
+          "autoadmin": {
+            "estimate": 394.7,
+            "lower": 386.6,
+            "upper": 401.9
+          },
+          "mab": {
+            "estimate": 417.5,
+            "lower": 411.6,
+            "upper": 422.8
+          },
+          "hindsight": {
+            "estimate": 251.3,
+            "lower": 247.3,
+            "upper": 255.3
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.719,
+            "lower": 2.658,
+            "upper": 2.774
+          },
+          "mab": {
+            "estimate": 2.571,
+            "lower": 2.505,
+            "upper": 2.631
+          },
+          "hindsight": {
+            "estimate": 4.271,
+            "lower": 4.115,
+            "upper": 4.406
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1073.3
+          },
+          "autoadmin": {
+            "recommendation": 8.3,
+            "creation": 151.8,
+            "execution": 234.6
+          },
+          "mab": {
+            "recommendation": 2.2,
+            "creation": 264.5,
+            "execution": 150.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163.5,
+            "execution": 87.8
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.719,
+              "lower": 2.658,
+              "upper": 2.774
+            },
+            "dz": 12.02,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.058,
+              "lower": 1.047,
+              "upper": 1.068
+            },
+            "dz": 3.44,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 166.2,
+            "lower": 160.7,
+            "upper": 171.3
+          },
+          "relative": {
+            "estimate": 0.661,
+            "lower": 0.635,
+            "upper": 0.688
+          }
+        }
+      },
+      "0.25": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1024.2,
+            "lower": 979.9,
+            "upper": 1063.4
+          },
+          "autoadmin": {
+            "estimate": 343.4,
+            "lower": 338.8,
+            "upper": 347.7
+          },
+          "mab": {
+            "estimate": 278.6,
+            "lower": 276,
+            "upper": 281
+          },
+          "hindsight": {
+            "estimate": 246.7,
+            "lower": 242.9,
+            "upper": 250.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.983,
+            "lower": 2.879,
+            "upper": 3.072
+          },
+          "mab": {
+            "estimate": 3.677,
+            "lower": 3.544,
+            "upper": 3.794
+          },
+          "hindsight": {
+            "estimate": 4.152,
+            "lower": 3.992,
+            "upper": 4.282
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1024.2
+          },
+          "autoadmin": {
+            "recommendation": 60.6,
+            "creation": 150.1,
+            "execution": 132.8
+          },
+          "mab": {
+            "recommendation": 4.5,
+            "creation": 209.9,
+            "execution": 64.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 163.5,
+            "execution": 83.2
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.983,
+              "lower": 2.879,
+              "upper": 3.072
+            },
+            "dz": 10.24,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.811,
+              "lower": 0.804,
+              "upper": 0.819
+            },
+            "dz": -12.14,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 31.9,
+            "lower": 28.4,
+            "upper": 35.3
+          },
+          "relative": {
+            "estimate": 0.129,
+            "lower": 0.114,
+            "upper": 0.145
+          }
+        }
+      },
+      "0.5": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1075.9,
+            "lower": 1033.2,
+            "upper": 1114.6
+          },
+          "autoadmin": {
+            "estimate": 348.1,
+            "lower": 343.4,
+            "upper": 352.7
+          },
+          "mab": {
+            "estimate": 280.8,
+            "lower": 277.5,
+            "upper": 284.1
+          },
+          "hindsight": {
+            "estimate": 255.2,
+            "lower": 251.2,
+            "upper": 259.3
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.091,
+            "lower": 2.998,
+            "upper": 3.176
+          },
+          "mab": {
+            "estimate": 3.832,
+            "lower": 3.714,
+            "upper": 3.936
+          },
+          "hindsight": {
+            "estimate": 4.215,
+            "lower": 4.072,
+            "upper": 4.337
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1075.9
+          },
+          "autoadmin": {
+            "recommendation": 60.5,
+            "creation": 150.2,
+            "execution": 137.4
+          },
+          "mab": {
+            "recommendation": 4.5,
+            "creation": 210.2,
+            "execution": 66.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 164.4,
+            "execution": 90.8
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.091,
+              "lower": 2.998,
+              "upper": 3.176
+            },
+            "dz": 11.26,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.807,
+              "lower": 0.798,
+              "upper": 0.815
+            },
+            "dz": -10.91,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 25.5,
+            "lower": 21.4,
+            "upper": 29.5
+          },
+          "relative": {
+            "estimate": 0.1,
+            "lower": 0.083,
+            "upper": 0.117
+          }
+        }
+      },
+      "0.75": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1071.1,
+            "lower": 1027.5,
+            "upper": 1109.2
+          },
+          "autoadmin": {
+            "estimate": 338.8,
+            "lower": 334.5,
+            "upper": 343.1
+          },
+          "mab": {
+            "estimate": 278.9,
+            "lower": 275.6,
+            "upper": 282.2
+          },
+          "hindsight": {
+            "estimate": 253.7,
+            "lower": 249.7,
+            "upper": 257.6
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.161,
+            "lower": 3.055,
+            "upper": 3.259
+          },
+          "mab": {
+            "estimate": 3.84,
+            "lower": 3.716,
+            "upper": 3.958
+          },
+          "hindsight": {
+            "estimate": 4.222,
+            "lower": 4.07,
+            "upper": 4.353
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1071.1
+          },
+          "autoadmin": {
+            "recommendation": 50.7,
+            "creation": 150.6,
+            "execution": 137.6
+          },
+          "mab": {
+            "recommendation": 4.2,
+            "creation": 212,
+            "execution": 62.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 164.2,
+            "execution": 89.5
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.161,
+              "lower": 3.055,
+              "upper": 3.259
+            },
+            "dz": 11.03,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.823,
+              "lower": 0.815,
+              "upper": 0.832
+            },
+            "dz": -10.55,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 25.3,
+            "lower": 22.1,
+            "upper": 28.3
+          },
+          "relative": {
+            "estimate": 0.1,
+            "lower": 0.086,
+            "upper": 0.113
+          }
+        }
+      }
+    },
+    "tpch/sqlite/static": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 539.2,
+            "lower": 528,
+            "upper": 557.2
+          },
+          "autoadmin": {
+            "estimate": 180.8,
+            "lower": 174.8,
+            "upper": 188.8
+          },
+          "mab": {
+            "estimate": 137.5,
+            "lower": 134.6,
+            "upper": 140.8
+          },
+          "hindsight": {
+            "estimate": 82.1,
+            "lower": 81.2,
+            "upper": 83
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.983,
+            "lower": 2.94,
+            "upper": 3.024
+          },
+          "mab": {
+            "estimate": 3.921,
+            "lower": 3.823,
+            "upper": 4.013
+          },
+          "hindsight": {
+            "estimate": 6.568,
+            "lower": 6.407,
+            "upper": 6.78
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 539.2
+          },
+          "autoadmin": {
+            "recommendation": 60.8,
+            "creation": 55.7,
+            "execution": 64.3
+          },
+          "mab": {
+            "recommendation": 5.6,
+            "creation": 98.3,
+            "execution": 33.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 66.1,
+            "execution": 16
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.983,
+              "lower": 2.94,
+              "upper": 3.024
+            },
+            "dz": 23.54,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.761,
+              "lower": 0.738,
+              "upper": 0.786
+            },
+            "dz": -4.24,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 55.4,
+            "lower": 52.8,
+            "upper": 58.2
+          },
+          "relative": {
+            "estimate": 0.675,
+            "lower": 0.642,
+            "upper": 0.705
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 539.2,
+            "lower": 528,
+            "upper": 557.2
+          },
+          "autoadmin": {
+            "estimate": 120,
+            "lower": 114.1,
+            "upper": 127.8
+          },
+          "mab": {
+            "estimate": 131.9,
+            "lower": 129.4,
+            "upper": 134.9
+          },
+          "hindsight": {
+            "estimate": 82.1,
+            "lower": 81.2,
+            "upper": 83
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 4.494,
+            "lower": 4.353,
+            "upper": 4.631
+          },
+          "mab": {
+            "estimate": 4.087,
+            "lower": 3.997,
+            "upper": 4.174
+          },
+          "hindsight": {
+            "estimate": 6.568,
+            "lower": 6.407,
+            "upper": 6.78
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 539.2
+          },
+          "autoadmin": {
+            "recommendation": 60.8,
+            "creation": 55.7,
+            "execution": 64.3
+          },
+          "mab": {
+            "recommendation": 5.6,
+            "creation": 98.3,
+            "execution": 33.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 66.1,
+            "execution": 16
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 4.494,
+              "lower": 4.353,
+              "upper": 4.631
+            },
+            "dz": 26.94,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.1,
+              "lower": 1.048,
+              "upper": 1.15
+            },
+            "dz": 1.23,
+            "wins": 2,
+            "losses": 8,
+            "ties": 0,
+            "signTestP": 0.109
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 55.4,
+            "lower": 52.8,
+            "upper": 58.2
+          },
+          "relative": {
+            "estimate": 0.675,
+            "lower": 0.642,
+            "upper": 0.705
+          }
+        }
+      }
+    },
+    "tpch/sqlite/shifting": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 610.7,
+            "lower": 603,
+            "upper": 621.5
+          },
+          "autoadmin": {
+            "estimate": 169.6,
+            "lower": 166.2,
+            "upper": 174.8
+          },
+          "mab": {
+            "estimate": 216.8,
+            "lower": 213,
+            "upper": 222.3
+          },
+          "hindsight": {
+            "estimate": 82,
+            "lower": 80.7,
+            "upper": 83.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.6,
+            "lower": 3.483,
+            "upper": 3.691
+          },
+          "mab": {
+            "estimate": 2.817,
+            "lower": 2.73,
+            "upper": 2.9
+          },
+          "hindsight": {
+            "estimate": 7.45,
+            "lower": 7.25,
+            "upper": 7.662
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 610.7
+          },
+          "autoadmin": {
+            "recommendation": 8.5,
+            "creation": 55.4,
+            "execution": 105.7
+          },
+          "mab": {
+            "recommendation": 4.1,
+            "creation": 130.6,
+            "execution": 82.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65.6,
+            "execution": 16.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.6,
+              "lower": 3.483,
+              "upper": 3.691
+            },
+            "dz": 25.47,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.278,
+              "lower": 1.258,
+              "upper": 1.296
+            },
+            "dz": 9.81,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 134.8,
+            "lower": 131.7,
+            "upper": 139.4
+          },
+          "relative": {
+            "estimate": 1.644,
+            "lower": 1.603,
+            "upper": 1.682
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 610.7,
+            "lower": 603,
+            "upper": 621.5
+          },
+          "autoadmin": {
+            "estimate": 161.1,
+            "lower": 157.7,
+            "upper": 166.3
+          },
+          "mab": {
+            "estimate": 212.7,
+            "lower": 209.3,
+            "upper": 218.1
+          },
+          "hindsight": {
+            "estimate": 82,
+            "lower": 80.7,
+            "upper": 83.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.79,
+            "lower": 3.663,
+            "upper": 3.888
+          },
+          "mab": {
+            "estimate": 2.871,
+            "lower": 2.779,
+            "upper": 2.95
+          },
+          "hindsight": {
+            "estimate": 7.45,
+            "lower": 7.25,
+            "upper": 7.661
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 610.7
+          },
+          "autoadmin": {
+            "recommendation": 8.5,
+            "creation": 55.4,
+            "execution": 105.7
+          },
+          "mab": {
+            "recommendation": 4.1,
+            "creation": 130.6,
+            "execution": 82.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65.6,
+            "execution": 16.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.79,
+              "lower": 3.663,
+              "upper": 3.888
+            },
+            "dz": 25.98,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.32,
+              "lower": 1.302,
+              "upper": 1.337
+            },
+            "dz": 12.39,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 134.8,
+            "lower": 131.7,
+            "upper": 139.4
+          },
+          "relative": {
+            "estimate": 1.644,
+            "lower": 1.603,
+            "upper": 1.682
+          }
+        }
+      }
+    },
+    "tpch/sqlite/htap": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1085.7,
+            "lower": 1067.3,
+            "upper": 1108.4
+          },
+          "autoadmin": {
+            "estimate": 219.4,
+            "lower": 216.6,
+            "upper": 222.5
+          },
+          "mab": {
+            "estimate": 191.1,
+            "lower": 186,
+            "upper": 198.4
+          },
+          "hindsight": {
+            "estimate": 98.4,
+            "lower": 96.3,
+            "upper": 101.1
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 4.949,
+            "lower": 4.847,
+            "upper": 5.061
+          },
+          "mab": {
+            "estimate": 5.681,
+            "lower": 5.421,
+            "upper": 5.924
+          },
+          "hindsight": {
+            "estimate": 11.032,
+            "lower": 10.631,
+            "upper": 11.443
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1085.7
+          },
+          "autoadmin": {
+            "recommendation": 66,
+            "creation": 53.6,
+            "execution": 99.8
+          },
+          "mab": {
+            "recommendation": 6.3,
+            "creation": 101.2,
+            "execution": 83.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65,
+            "execution": 33.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 4.949,
+              "lower": 4.847,
+              "upper": 5.061
+            },
+            "dz": 25.26,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.871,
+              "lower": 0.85,
+              "upper": 0.902
+            },
+            "dz": -2.78,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 92.7,
+            "lower": 87.9,
+            "upper": 99.7
+          },
+          "relative": {
+            "estimate": 0.942,
+            "lower": 0.882,
+            "upper": 1.015
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 1085.7,
+            "lower": 1067.2,
+            "upper": 1108.3
+          },
+          "autoadmin": {
+            "estimate": 153.4,
+            "lower": 150.8,
+            "upper": 156.1
+          },
+          "mab": {
+            "estimate": 184.8,
+            "lower": 179.5,
+            "upper": 192
+          },
+          "hindsight": {
+            "estimate": 98.4,
+            "lower": 96.3,
+            "upper": 101.1
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 7.079,
+            "lower": 6.917,
+            "upper": 7.25
+          },
+          "mab": {
+            "estimate": 5.875,
+            "lower": 5.604,
+            "upper": 6.129
+          },
+          "hindsight": {
+            "estimate": 11.031,
+            "lower": 10.631,
+            "upper": 11.443
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 1085.7
+          },
+          "autoadmin": {
+            "recommendation": 66,
+            "creation": 53.6,
+            "execution": 99.8
+          },
+          "mab": {
+            "recommendation": 6.3,
+            "creation": 101.2,
+            "execution": 83.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65,
+            "execution": 33.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 7.079,
+              "lower": 6.917,
+              "upper": 7.25
+            },
+            "dz": 27.27,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.205,
+              "lower": 1.175,
+              "upper": 1.247
+            },
+            "dz": 3.21,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 92.7,
+            "lower": 87.9,
+            "upper": 99.7
+          },
+          "relative": {
+            "estimate": 0.942,
+            "lower": 0.882,
+            "upper": 1.015
+          }
+        }
+      }
+    },
+    "tpch/sqlite/drift-sweep": {
+      "0": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 535.6,
+            "lower": 527.5,
+            "upper": 547.2
+          },
+          "autoadmin": {
+            "estimate": 180,
+            "lower": 174.1,
+            "upper": 188.6
+          },
+          "mab": {
+            "estimate": 137.1,
+            "lower": 135.2,
+            "upper": 139
+          },
+          "hindsight": {
+            "estimate": 83.6,
+            "lower": 79.4,
+            "upper": 89.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.975,
+            "lower": 2.857,
+            "upper": 3.054
+          },
+          "mab": {
+            "estimate": 3.907,
+            "lower": 3.84,
+            "upper": 3.976
+          },
+          "hindsight": {
+            "estimate": 6.408,
+            "lower": 5.919,
+            "upper": 6.78
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 535.6
+          },
+          "autoadmin": {
+            "recommendation": 61.5,
+            "creation": 56.7,
+            "execution": 61.9
+          },
+          "mab": {
+            "recommendation": 5.4,
+            "creation": 97.6,
+            "execution": 34.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 67.5,
+            "execution": 16.1
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.975,
+              "lower": 2.857,
+              "upper": 3.054
+            },
+            "dz": 22.73,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.761,
+              "lower": 0.732,
+              "upper": 0.786
+            },
+            "dz": -3.81,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 53.5,
+            "lower": 48.3,
+            "upper": 57
+          },
+          "relative": {
+            "estimate": 0.64,
+            "lower": 0.539,
+            "upper": 0.714
+          }
+        }
+      },
+      "1": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 606.1,
+            "lower": 600,
+            "upper": 614.6
+          },
+          "autoadmin": {
+            "estimate": 165.6,
+            "lower": 164.3,
+            "upper": 167.2
+          },
+          "mab": {
+            "estimate": 212.9,
+            "lower": 210.6,
+            "upper": 215.8
+          },
+          "hindsight": {
+            "estimate": 81.4,
+            "lower": 80.3,
+            "upper": 82.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.66,
+            "lower": 3.629,
+            "upper": 3.693
+          },
+          "mab": {
+            "estimate": 2.846,
+            "lower": 2.8,
+            "upper": 2.898
+          },
+          "hindsight": {
+            "estimate": 7.443,
+            "lower": 7.275,
+            "upper": 7.615
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 606.1
+          },
+          "autoadmin": {
+            "recommendation": 8.5,
+            "creation": 53.8,
+            "execution": 103.3
+          },
+          "mab": {
+            "recommendation": 3.5,
+            "creation": 128.7,
+            "execution": 80.7
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65.2,
+            "execution": 16.2
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.66,
+              "lower": 3.629,
+              "upper": 3.693
+            },
+            "dz": 40.57,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.286,
+              "lower": 1.272,
+              "upper": 1.3
+            },
+            "dz": 12.36,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 131.5,
+            "lower": 129.2,
+            "upper": 133.9
+          },
+          "relative": {
+            "estimate": 1.615,
+            "lower": 1.576,
+            "upper": 1.654
+          }
+        }
+      },
+      "0.25": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 576.3,
+            "lower": 566.1,
+            "upper": 589.4
+          },
+          "autoadmin": {
+            "estimate": 174.1,
+            "lower": 171.2,
+            "upper": 177.2
+          },
+          "mab": {
+            "estimate": 135.2,
+            "lower": 133.1,
+            "upper": 137.5
+          },
+          "hindsight": {
+            "estimate": 80.5,
+            "lower": 80.1,
+            "upper": 80.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.311,
+            "lower": 3.247,
+            "upper": 3.377
+          },
+          "mab": {
+            "estimate": 4.263,
+            "lower": 4.164,
+            "upper": 4.376
+          },
+          "hindsight": {
+            "estimate": 7.162,
+            "lower": 7.051,
+            "upper": 7.311
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 576.3
+          },
+          "autoadmin": {
+            "recommendation": 61.1,
+            "creation": 54.7,
+            "execution": 58.2
+          },
+          "mab": {
+            "recommendation": 5.5,
+            "creation": 97.5,
+            "execution": 32.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 64.8,
+            "execution": 15.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.311,
+              "lower": 3.247,
+              "upper": 3.377
+            },
+            "dz": 22.01,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.777,
+              "lower": 0.768,
+              "upper": 0.785
+            },
+            "dz": -12.14,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 54.7,
+            "lower": 52.8,
+            "upper": 56.9
+          },
+          "relative": {
+            "estimate": 0.68,
+            "lower": 0.657,
+            "upper": 0.706
+          }
+        }
+      },
+      "0.5": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 594.2,
+            "lower": 584.5,
+            "upper": 605.3
+          },
+          "autoadmin": {
+            "estimate": 170.5,
+            "lower": 167.7,
+            "upper": 174.7
+          },
+          "mab": {
+            "estimate": 134.4,
+            "lower": 131.9,
+            "upper": 137.7
+          },
+          "hindsight": {
+            "estimate": 81.6,
+            "lower": 80.7,
+            "upper": 82.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.485,
+            "lower": 3.439,
+            "upper": 3.532
+          },
+          "mab": {
+            "estimate": 4.422,
+            "lower": 4.345,
+            "upper": 4.499
+          },
+          "hindsight": {
+            "estimate": 7.278,
+            "lower": 7.167,
+            "upper": 7.388
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 594.2
+          },
+          "autoadmin": {
+            "recommendation": 61.1,
+            "creation": 54.8,
+            "execution": 54.5
+          },
+          "mab": {
+            "recommendation": 5.3,
+            "creation": 98,
+            "execution": 31.1
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65.1,
+            "execution": 16.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.485,
+              "lower": 3.439,
+              "upper": 3.532
+            },
+            "dz": 30.4,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.788,
+              "lower": 0.78,
+              "upper": 0.796
+            },
+            "dz": -12.94,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 52.7,
+            "lower": 51,
+            "upper": 55
+          },
+          "relative": {
+            "estimate": 0.646,
+            "lower": 0.63,
+            "upper": 0.666
+          }
+        }
+      },
+      "0.75": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 608.8,
+            "lower": 599.1,
+            "upper": 620.3
+          },
+          "autoadmin": {
+            "estimate": 158.5,
+            "lower": 155.3,
+            "upper": 164.1
+          },
+          "mab": {
+            "estimate": 138.8,
+            "lower": 135.9,
+            "upper": 142.1
+          },
+          "hindsight": {
+            "estimate": 82.8,
+            "lower": 80.8,
+            "upper": 85.1
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.841,
+            "lower": 3.704,
+            "upper": 3.96
+          },
+          "mab": {
+            "estimate": 4.386,
+            "lower": 4.267,
+            "upper": 4.504
+          },
+          "hindsight": {
+            "estimate": 7.352,
+            "lower": 7.108,
+            "upper": 7.597
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 608.8
+          },
+          "autoadmin": {
+            "recommendation": 51.1,
+            "creation": 51.6,
+            "execution": 55.7
+          },
+          "mab": {
+            "recommendation": 5.5,
+            "creation": 101.1,
+            "execution": 32.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 65.6,
+            "execution": 17.2
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.841,
+              "lower": 3.704,
+              "upper": 3.96
+            },
+            "dz": 24.28,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.876,
+              "lower": 0.85,
+              "upper": 0.898
+            },
+            "dz": -2.71,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 56,
+            "lower": 53.4,
+            "upper": 58.6
+          },
+          "relative": {
+            "estimate": 0.676,
+            "lower": 0.636,
+            "upper": 0.714
+          }
+        }
+      }
+    },
+    "louvre/simulated/static": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 254.8,
+            "lower": 243.5,
+            "upper": 268.1
+          },
+          "autoadmin": {
+            "estimate": 219.4,
+            "lower": 218.1,
+            "upper": 220.7
+          },
+          "mab": {
+            "estimate": 140.2,
+            "lower": 134.1,
+            "upper": 145.2
+          },
+          "hindsight": {
+            "estimate": 88.4,
+            "lower": 87,
+            "upper": 89.6
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.162,
+            "lower": 1.113,
+            "upper": 1.215
+          },
+          "mab": {
+            "estimate": 1.818,
+            "lower": 1.736,
+            "upper": 1.914
+          },
+          "hindsight": {
+            "estimate": 2.884,
+            "lower": 2.755,
+            "upper": 3.026
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 254.8
+          },
+          "autoadmin": {
+            "recommendation": 109.9,
+            "creation": 72.3,
+            "execution": 37.1
+          },
+          "mab": {
+            "recommendation": 29.5,
+            "creation": 88.1,
+            "execution": 22.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.9,
+            "execution": 14.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.162,
+              "lower": 1.113,
+              "upper": 1.215
+            },
+            "dz": 1.83,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.639,
+              "lower": 0.611,
+              "upper": 0.662
+            },
+            "dz": -8.16,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 51.8,
+            "lower": 45.9,
+            "upper": 56.9
+          },
+          "relative": {
+            "estimate": 0.586,
+            "lower": 0.519,
+            "upper": 0.646
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 254.8,
+            "lower": 243.5,
+            "upper": 268.1
+          },
+          "autoadmin": {
+            "estimate": 109.4,
+            "lower": 108.2,
+            "upper": 110.7
+          },
+          "mab": {
+            "estimate": 110.7,
+            "lower": 109.3,
+            "upper": 112
+          },
+          "hindsight": {
+            "estimate": 88.4,
+            "lower": 87,
+            "upper": 89.6
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.329,
+            "lower": 2.239,
+            "upper": 2.427
+          },
+          "mab": {
+            "estimate": 2.302,
+            "lower": 2.216,
+            "upper": 2.399
+          },
+          "hindsight": {
+            "estimate": 2.884,
+            "lower": 2.755,
+            "upper": 3.026
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 254.8
+          },
+          "autoadmin": {
+            "recommendation": 109.9,
+            "creation": 72.3,
+            "execution": 37.1
+          },
+          "mab": {
+            "recommendation": 29.5,
+            "creation": 88.1,
+            "execution": 22.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.9,
+            "execution": 14.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.329,
+              "lower": 2.239,
+              "upper": 2.427
+            },
+            "dz": 7.48,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.012,
+              "lower": 1.001,
+              "upper": 1.021
+            },
+            "dz": 0.66,
+            "wins": 3,
+            "losses": 7,
+            "ties": 0,
+            "signTestP": 0.344
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 51.8,
+            "lower": 45.9,
+            "upper": 56.9
+          },
+          "relative": {
+            "estimate": 0.586,
+            "lower": 0.519,
+            "upper": 0.646
+          }
+        }
+      }
+    },
+    "louvre/simulated/shifting": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 268.8,
+            "lower": 256.3,
+            "upper": 283.2
+          },
+          "autoadmin": {
+            "estimate": 141.8,
+            "lower": 139.5,
+            "upper": 144.4
+          },
+          "mab": {
+            "estimate": 175.3,
+            "lower": 172.4,
+            "upper": 178.1
+          },
+          "hindsight": {
+            "estimate": 88.5,
+            "lower": 87.4,
+            "upper": 89.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.895,
+            "lower": 1.831,
+            "upper": 1.963
+          },
+          "mab": {
+            "estimate": 1.534,
+            "lower": 1.471,
+            "upper": 1.604
+          },
+          "hindsight": {
+            "estimate": 3.038,
+            "lower": 2.876,
+            "upper": 3.211
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 268.8
+          },
+          "autoadmin": {
+            "recommendation": 15.9,
+            "creation": 74.1,
+            "execution": 51.8
+          },
+          "mab": {
+            "recommendation": 15.1,
+            "creation": 117.3,
+            "execution": 42.9
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.9,
+            "execution": 14.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.895,
+              "lower": 1.831,
+              "upper": 1.963
+            },
+            "dz": 6.65,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.236,
+              "lower": 1.216,
+              "upper": 1.258
+            },
+            "dz": 6.96,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 86.8,
+            "lower": 83.1,
+            "upper": 90.4
+          },
+          "relative": {
+            "estimate": 0.981,
+            "lower": 0.928,
+            "upper": 1.031
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 268.8,
+            "lower": 256.3,
+            "upper": 283.2
+          },
+          "autoadmin": {
+            "estimate": 125.9,
+            "lower": 123.6,
+            "upper": 128.5
+          },
+          "mab": {
+            "estimate": 160.2,
+            "lower": 157.1,
+            "upper": 163.2
+          },
+          "hindsight": {
+            "estimate": 88.5,
+            "lower": 87.4,
+            "upper": 89.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.135,
+            "lower": 2.067,
+            "upper": 2.206
+          },
+          "mab": {
+            "estimate": 1.678,
+            "lower": 1.608,
+            "upper": 1.758
+          },
+          "hindsight": {
+            "estimate": 3.038,
+            "lower": 2.876,
+            "upper": 3.211
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 268.8
+          },
+          "autoadmin": {
+            "recommendation": 15.9,
+            "creation": 74.1,
+            "execution": 51.8
+          },
+          "mab": {
+            "recommendation": 15.1,
+            "creation": 117.3,
+            "execution": 42.9
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.9,
+            "execution": 14.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.135,
+              "lower": 2.067,
+              "upper": 2.206
+            },
+            "dz": 7.48,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.272,
+              "lower": 1.248,
+              "upper": 1.299
+            },
+            "dz": 6.68,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 86.8,
+            "lower": 83.1,
+            "upper": 90.4
+          },
+          "relative": {
+            "estimate": 0.981,
+            "lower": 0.928,
+            "upper": 1.031
+          }
+        }
+      }
+    },
+    "louvre/simulated/htap": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 329.7,
+            "lower": 315.8,
+            "upper": 347.2
+          },
+          "autoadmin": {
+            "estimate": 250.8,
+            "lower": 248.2,
+            "upper": 253.7
+          },
+          "mab": {
+            "estimate": 161.3,
+            "lower": 153.8,
+            "upper": 169.2
+          },
+          "hindsight": {
+            "estimate": 109.6,
+            "lower": 107.5,
+            "upper": 111.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.315,
+            "lower": 1.27,
+            "upper": 1.372
+          },
+          "mab": {
+            "estimate": 2.044,
+            "lower": 1.941,
+            "upper": 2.137
+          },
+          "hindsight": {
+            "estimate": 3.009,
+            "lower": 2.893,
+            "upper": 3.14
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 329.7
+          },
+          "autoadmin": {
+            "recommendation": 125.1,
+            "creation": 71.7,
+            "execution": 54
+          },
+          "mab": {
+            "recommendation": 17.2,
+            "creation": 89.1,
+            "execution": 55
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 74,
+            "execution": 35.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.315,
+              "lower": 1.27,
+              "upper": 1.372
+            },
+            "dz": 3.51,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.643,
+              "lower": 0.617,
+              "upper": 0.674
+            },
+            "dz": -7.37,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 51.8,
+            "lower": 44.9,
+            "upper": 59.2
+          },
+          "relative": {
+            "estimate": 0.472,
+            "lower": 0.413,
+            "upper": 0.539
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 329.7,
+            "lower": 315.8,
+            "upper": 347.2
+          },
+          "autoadmin": {
+            "estimate": 125.6,
+            "lower": 123,
+            "upper": 128.6
+          },
+          "mab": {
+            "estimate": 144.1,
+            "lower": 141.3,
+            "upper": 147.5
+          },
+          "hindsight": {
+            "estimate": 109.6,
+            "lower": 107.5,
+            "upper": 111.8
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 2.624,
+            "lower": 2.549,
+            "upper": 2.714
+          },
+          "mab": {
+            "estimate": 2.287,
+            "lower": 2.222,
+            "upper": 2.359
+          },
+          "hindsight": {
+            "estimate": 3.009,
+            "lower": 2.893,
+            "upper": 3.14
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 329.7
+          },
+          "autoadmin": {
+            "recommendation": 125.1,
+            "creation": 71.7,
+            "execution": 54
+          },
+          "mab": {
+            "recommendation": 17.2,
+            "creation": 89.1,
+            "execution": 55
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 74,
+            "execution": 35.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 2.624,
+              "lower": 2.549,
+              "upper": 2.714
+            },
+            "dz": 9.08,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.147,
+              "lower": 1.13,
+              "upper": 1.163
+            },
+            "dz": 5.41,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 51.8,
+            "lower": 44.9,
+            "upper": 59.2
+          },
+          "relative": {
+            "estimate": 0.472,
+            "lower": 0.413,
+            "upper": 0.539
+          }
+        }
+      }
+    },
+    "louvre/simulated/drift-sweep": {
+      "0": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 254.8,
+            "lower": 243.5,
+            "upper": 268.1
+          },
+          "autoadmin": {
+            "estimate": 219.1,
+            "lower": 217.9,
+            "upper": 220.4
+          },
+          "mab": {
+            "estimate": 121.3,
+            "lower": 119.9,
+            "upper": 122.6
+          },
+          "hindsight": {
+            "estimate": 88.4,
+            "lower": 87,
+            "upper": 89.6
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.163,
+            "lower": 1.115,
+            "upper": 1.217
+          },
+          "mab": {
+            "estimate": 2.101,
+            "lower": 2.022,
+            "upper": 2.191
+          },
+          "hindsight": {
+            "estimate": 2.884,
+            "lower": 2.755,
+            "upper": 3.026
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 254.8
+          },
+          "autoadmin": {
+            "recommendation": 109.7,
+            "creation": 72.3,
+            "execution": 37.1
+          },
+          "mab": {
+            "recommendation": 10.6,
+            "creation": 88.1,
+            "execution": 22.6
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.9,
+            "execution": 14.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.163,
+              "lower": 1.115,
+              "upper": 1.217
+            },
+            "dz": 1.84,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.553,
+              "lower": 0.548,
+              "upper": 0.558
+            },
+            "dz": -56.32,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 32.9,
+            "lower": 30.8,
+            "upper": 34.7
+          },
+          "relative": {
+            "estimate": 0.373,
+            "lower": 0.345,
+            "upper": 0.397
+          }
+        }
+      },
+      "1": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 268.8,
+            "lower": 256.3,
+            "upper": 283.2
+          },
+          "autoadmin": {
+            "estimate": 141.9,
+            "lower": 139.6,
+            "upper": 144.4
+          },
+          "mab": {
+            "estimate": 165.5,
+            "lower": 162.3,
+            "upper": 168.5
+          },
+          "hindsight": {
+            "estimate": 88.5,
+            "lower": 87.4,
+            "upper": 89.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.895,
+            "lower": 1.831,
+            "upper": 1.962
+          },
+          "mab": {
+            "estimate": 1.625,
+            "lower": 1.557,
+            "upper": 1.701
+          },
+          "hindsight": {
+            "estimate": 3.038,
+            "lower": 2.876,
+            "upper": 3.211
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 268.8
+          },
+          "autoadmin": {
+            "recommendation": 16,
+            "creation": 74.1,
+            "execution": 51.8
+          },
+          "mab": {
+            "recommendation": 5.3,
+            "creation": 117.3,
+            "execution": 42.9
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.9,
+            "execution": 14.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.895,
+              "lower": 1.831,
+              "upper": 1.962
+            },
+            "dz": 6.65,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.166,
+              "lower": 1.146,
+              "upper": 1.188
+            },
+            "dz": 4.66,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 77,
+            "lower": 73.1,
+            "upper": 80.6
+          },
+          "relative": {
+            "estimate": 0.87,
+            "lower": 0.817,
+            "upper": 0.92
+          }
+        }
+      },
+      "0.25": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 258.4,
+            "lower": 247.3,
+            "upper": 271.2
+          },
+          "autoadmin": {
+            "estimate": 218.8,
+            "lower": 217.6,
+            "upper": 220.2
+          },
+          "mab": {
+            "estimate": 139.2,
+            "lower": 133.9,
+            "upper": 143
+          },
+          "hindsight": {
+            "estimate": 88.3,
+            "lower": 87,
+            "upper": 89.6
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.181,
+            "lower": 1.134,
+            "upper": 1.233
+          },
+          "mab": {
+            "estimate": 1.857,
+            "lower": 1.769,
+            "upper": 1.966
+          },
+          "hindsight": {
+            "estimate": 2.927,
+            "lower": 2.786,
+            "upper": 3.077
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 258.4
+          },
+          "autoadmin": {
+            "recommendation": 109.6,
+            "creation": 72.3,
+            "execution": 36.9
+          },
+          "mab": {
+            "recommendation": 32.3,
+            "creation": 84.1,
+            "execution": 22.7
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.8,
+            "execution": 14.5
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.181,
+              "lower": 1.134,
+              "upper": 1.233
+            },
+            "dz": 2.1,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.636,
+              "lower": 0.613,
+              "upper": 0.653
+            },
+            "dz": -9.97,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 50.9,
+            "lower": 45.5,
+            "upper": 55.1
+          },
+          "relative": {
+            "estimate": 0.576,
+            "lower": 0.513,
+            "upper": 0.628
+          }
+        }
+      },
+      "0.5": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 277.1,
+            "lower": 265,
+            "upper": 290.6
+          },
+          "autoadmin": {
+            "estimate": 221.7,
+            "lower": 220.1,
+            "upper": 223.6
+          },
+          "mab": {
+            "estimate": 130.2,
+            "lower": 124.4,
+            "upper": 135.6
+          },
+          "hindsight": {
+            "estimate": 88.9,
+            "lower": 88,
+            "upper": 89.9
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.25,
+            "lower": 1.201,
+            "upper": 1.303
+          },
+          "mab": {
+            "estimate": 2.128,
+            "lower": 1.982,
+            "upper": 2.271
+          },
+          "hindsight": {
+            "estimate": 3.118,
+            "lower": 2.98,
+            "upper": 3.269
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 277.1
+          },
+          "autoadmin": {
+            "recommendation": 109.6,
+            "creation": 72.3,
+            "execution": 39.8
+          },
+          "mab": {
+            "recommendation": 26,
+            "creation": 81.3,
+            "execution": 22.9
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.8,
+            "execution": 15.1
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.25,
+              "lower": 1.201,
+              "upper": 1.303
+            },
+            "dz": 2.8,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.587,
+              "lower": 0.561,
+              "upper": 0.613
+            },
+            "dz": -8.26,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 41.4,
+            "lower": 34.9,
+            "upper": 47.4
+          },
+          "relative": {
+            "estimate": 0.465,
+            "lower": 0.39,
+            "upper": 0.538
+          }
+        }
+      },
+      "0.75": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 283.3,
+            "lower": 269.7,
+            "upper": 298.6
+          },
+          "autoadmin": {
+            "estimate": 182.2,
+            "lower": 180.7,
+            "upper": 183.7
+          },
+          "mab": {
+            "estimate": 138.2,
+            "lower": 135.4,
+            "upper": 141.2
+          },
+          "hindsight": {
+            "estimate": 88.7,
+            "lower": 87.8,
+            "upper": 89.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.555,
+            "lower": 1.481,
+            "upper": 1.634
+          },
+          "mab": {
+            "estimate": 2.05,
+            "lower": 1.932,
+            "upper": 2.171
+          },
+          "hindsight": {
+            "estimate": 3.192,
+            "lower": 3.023,
+            "upper": 3.371
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 283.3
+          },
+          "autoadmin": {
+            "recommendation": 68.2,
+            "creation": 69.3,
+            "execution": 44.7
+          },
+          "mab": {
+            "recommendation": 10.5,
+            "creation": 101.3,
+            "execution": 26.4
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 73.8,
+            "execution": 15
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.555,
+              "lower": 1.481,
+              "upper": 1.634
+            },
+            "dz": 4.2,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.758,
+              "lower": 0.742,
+              "upper": 0.776
+            },
+            "dz": -8.17,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 49.4,
+            "lower": 46.7,
+            "upper": 52.3
+          },
+          "relative": {
+            "estimate": 0.557,
+            "lower": 0.524,
+            "upper": 0.591
+          }
+        }
+      }
+    },
+    "louvre/sqlite/static": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 207.9,
+            "lower": 205.7,
+            "upper": 210.4
+          },
+          "autoadmin": {
+            "estimate": 150.2,
+            "lower": 149.8,
+            "upper": 150.7
+          },
+          "mab": {
+            "estimate": 75.3,
+            "lower": 70,
+            "upper": 81.7
+          },
+          "hindsight": {
+            "estimate": 32.9,
+            "lower": 32.1,
+            "upper": 33.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.384,
+            "lower": 1.369,
+            "upper": 1.401
+          },
+          "mab": {
+            "estimate": 2.761,
+            "lower": 2.531,
+            "upper": 2.984
+          },
+          "hindsight": {
+            "estimate": 6.319,
+            "lower": 6.124,
+            "upper": 6.513
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 207.9
+          },
+          "autoadmin": {
+            "recommendation": 110,
+            "creation": 19.7,
+            "execution": 20.5
+          },
+          "mab": {
+            "recommendation": 15.8,
+            "creation": 41.3,
+            "execution": 18.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 25,
+            "execution": 7.9
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.384,
+              "lower": 1.369,
+              "upper": 1.401
+            },
+            "dz": 14.55,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.501,
+              "lower": 0.465,
+              "upper": 0.544
+            },
+            "dz": -7.18,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 42.4,
+            "lower": 37.2,
+            "upper": 48.2
+          },
+          "relative": {
+            "estimate": 1.289,
+            "lower": 1.133,
+            "upper": 1.454
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 207.9,
+            "lower": 205.7,
+            "upper": 210.4
+          },
+          "autoadmin": {
+            "estimate": 40.2,
+            "lower": 39.8,
+            "upper": 40.8
+          },
+          "mab": {
+            "estimate": 59.5,
+            "lower": 57.6,
+            "upper": 61.3
+          },
+          "hindsight": {
+            "estimate": 32.9,
+            "lower": 32.1,
+            "upper": 33.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 5.167,
+            "lower": 5.085,
+            "upper": 5.256
+          },
+          "mab": {
+            "estimate": 3.494,
+            "lower": 3.382,
+            "upper": 3.619
+          },
+          "hindsight": {
+            "estimate": 6.319,
+            "lower": 6.124,
+            "upper": 6.513
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 207.9
+          },
+          "autoadmin": {
+            "recommendation": 110,
+            "creation": 19.7,
+            "execution": 20.5
+          },
+          "mab": {
+            "recommendation": 15.8,
+            "creation": 41.3,
+            "execution": 18.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 25,
+            "execution": 7.9
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 5.167,
+              "lower": 5.085,
+              "upper": 5.256
+            },
+            "dz": 42.19,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.479,
+              "lower": 1.418,
+              "upper": 1.539
+            },
+            "dz": 4.93,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 42.4,
+            "lower": 37.2,
+            "upper": 48.2
+          },
+          "relative": {
+            "estimate": 1.289,
+            "lower": 1.133,
+            "upper": 1.454
+          }
+        }
+      }
+    },
+    "louvre/sqlite/shifting": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 213.7,
+            "lower": 213,
+            "upper": 214.4
+          },
+          "autoadmin": {
+            "estimate": 68,
+            "lower": 67.7,
+            "upper": 68.3
+          },
+          "mab": {
+            "estimate": 82.8,
+            "lower": 81.9,
+            "upper": 83.9
+          },
+          "hindsight": {
+            "estimate": 32.3,
+            "lower": 31.6,
+            "upper": 33.2
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.145,
+            "lower": 3.134,
+            "upper": 3.156
+          },
+          "mab": {
+            "estimate": 2.581,
+            "lower": 2.545,
+            "upper": 2.612
+          },
+          "hindsight": {
+            "estimate": 6.618,
+            "lower": 6.445,
+            "upper": 6.762
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 213.7
+          },
+          "autoadmin": {
+            "recommendation": 16,
+            "creation": 20.4,
+            "execution": 31.5
+          },
+          "mab": {
+            "recommendation": 5.6,
+            "creation": 44.9,
+            "execution": 32.4
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 23.9,
+            "execution": 8.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.145,
+              "lower": 3.134,
+              "upper": 3.156
+            },
+            "dz": 136.32,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.219,
+              "lower": 1.205,
+              "upper": 1.235
+            },
+            "dz": 8.69,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 50.5,
+            "lower": 49.6,
+            "upper": 51.5
+          },
+          "relative": {
+            "estimate": 1.565,
+            "lower": 1.507,
+            "upper": 1.622
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 213.7,
+            "lower": 213,
+            "upper": 214.4
+          },
+          "autoadmin": {
+            "estimate": 51.9,
+            "lower": 51.7,
+            "upper": 52.2
+          },
+          "mab": {
+            "estimate": 77.3,
+            "lower": 76.4,
+            "upper": 78.3
+          },
+          "hindsight": {
+            "estimate": 32.3,
+            "lower": 31.6,
+            "upper": 33.2
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 4.116,
+            "lower": 4.099,
+            "upper": 4.135
+          },
+          "mab": {
+            "estimate": 2.767,
+            "lower": 2.726,
+            "upper": 2.802
+          },
+          "hindsight": {
+            "estimate": 6.618,
+            "lower": 6.445,
+            "upper": 6.762
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 213.7
+          },
+          "autoadmin": {
+            "recommendation": 16,
+            "creation": 20.4,
+            "execution": 31.5
+          },
+          "mab": {
+            "recommendation": 5.6,
+            "creation": 44.9,
+            "execution": 32.4
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 23.9,
+            "execution": 8.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 4.116,
+              "lower": 4.099,
+              "upper": 4.135
+            },
+            "dz": 152.72,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.488,
+              "lower": 1.469,
+              "upper": 1.509
+            },
+            "dz": 14.87,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 50.5,
+            "lower": 49.6,
+            "upper": 51.5
+          },
+          "relative": {
+            "estimate": 1.565,
+            "lower": 1.507,
+            "upper": 1.622
+          }
+        }
+      }
+    },
+    "louvre/sqlite/htap": {
+      "total": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 251.8,
+            "lower": 245.2,
+            "upper": 263
+          },
+          "autoadmin": {
+            "estimate": 173.4,
+            "lower": 172.2,
+            "upper": 174.9
+          },
+          "mab": {
+            "estimate": 86.8,
+            "lower": 83.1,
+            "upper": 91.1
+          },
+          "hindsight": {
+            "estimate": 41.1,
+            "lower": 38.4,
+            "upper": 46.1
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.452,
+            "lower": 1.421,
+            "upper": 1.503
+          },
+          "mab": {
+            "estimate": 2.902,
+            "lower": 2.763,
+            "upper": 3.04
+          },
+          "hindsight": {
+            "estimate": 6.13,
+            "lower": 5.442,
+            "upper": 6.723
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 251.8
+          },
+          "autoadmin": {
+            "recommendation": 125.4,
+            "creation": 19.9,
+            "execution": 28.2
+          },
+          "mab": {
+            "recommendation": 13.8,
+            "creation": 45.2,
+            "execution": 27.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 24.6,
+            "execution": 16.5
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.452,
+              "lower": 1.421,
+              "upper": 1.503
+            },
+            "dz": 5.66,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.5,
+              "lower": 0.48,
+              "upper": 0.524
+            },
+            "dz": -13.83,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 45.7,
+            "lower": 42.8,
+            "upper": 49
+          },
+          "relative": {
+            "estimate": 1.112,
+            "lower": 0.94,
+            "upper": 1.257
+          }
+        }
+      },
+      "buildRun": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 251.8,
+            "lower": 245.2,
+            "upper": 263
+          },
+          "autoadmin": {
+            "estimate": 48.1,
+            "lower": 46.9,
+            "upper": 49.5
+          },
+          "mab": {
+            "estimate": 73,
+            "lower": 70.9,
+            "upper": 75.2
+          },
+          "hindsight": {
+            "estimate": 41.1,
+            "lower": 38.4,
+            "upper": 46.1
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 5.24,
+            "lower": 5.162,
+            "upper": 5.34
+          },
+          "mab": {
+            "estimate": 3.449,
+            "lower": 3.351,
+            "upper": 3.559
+          },
+          "hindsight": {
+            "estimate": 6.13,
+            "lower": 5.442,
+            "upper": 6.723
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 251.8
+          },
+          "autoadmin": {
+            "recommendation": 125.4,
+            "creation": 19.9,
+            "execution": 28.2
+          },
+          "mab": {
+            "recommendation": 13.8,
+            "creation": 45.2,
+            "execution": 27.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 24.6,
+            "execution": 16.5
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 5.24,
+              "lower": 5.162,
+              "upper": 5.34
+            },
+            "dz": 14.72,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.519,
+              "lower": 1.488,
+              "upper": 1.552
+            },
+            "dz": 9.47,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 45.7,
+            "lower": 42.8,
+            "upper": 49
+          },
+          "relative": {
+            "estimate": 1.112,
+            "lower": 0.94,
+            "upper": 1.257
+          }
+        }
+      }
+    },
+    "louvre/sqlite/drift-sweep": {
+      "0": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 208.4,
+            "lower": 205.1,
+            "upper": 212.5
+          },
+          "autoadmin": {
+            "estimate": 150.5,
+            "lower": 149.7,
+            "upper": 151.5
+          },
+          "mab": {
+            "estimate": 75.8,
+            "lower": 72.2,
+            "upper": 80.1
+          },
+          "hindsight": {
+            "estimate": 33.7,
+            "lower": 32.3,
+            "upper": 35.5
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.385,
+            "lower": 1.367,
+            "upper": 1.408
+          },
+          "mab": {
+            "estimate": 2.751,
+            "lower": 2.617,
+            "upper": 2.868
+          },
+          "hindsight": {
+            "estimate": 6.181,
+            "lower": 5.886,
+            "upper": 6.452
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 208.4
+          },
+          "autoadmin": {
+            "recommendation": 109.9,
+            "creation": 19.8,
+            "execution": 20.8
+          },
+          "mab": {
+            "recommendation": 13,
+            "creation": 43.7,
+            "execution": 19
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 25.2,
+            "execution": 8.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.385,
+              "lower": 1.367,
+              "upper": 1.408
+            },
+            "dz": 11.04,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.503,
+              "lower": 0.482,
+              "upper": 0.53
+            },
+            "dz": -13.61,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 42,
+            "lower": 39,
+            "upper": 45.1
+          },
+          "relative": {
+            "estimate": 1.247,
+            "lower": 1.153,
+            "upper": 1.335
+          }
+        }
+      },
+      "1": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 222.5,
+            "lower": 219.2,
+            "upper": 225.5
+          },
+          "autoadmin": {
+            "estimate": 70.8,
+            "lower": 69.2,
+            "upper": 72.5
+          },
+          "mab": {
+            "estimate": 87.1,
+            "lower": 84.8,
+            "upper": 89.4
+          },
+          "hindsight": {
+            "estimate": 33.2,
+            "lower": 32.4,
+            "upper": 34.2
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 3.142,
+            "lower": 3.075,
+            "upper": 3.211
+          },
+          "mab": {
+            "estimate": 2.554,
+            "lower": 2.485,
+            "upper": 2.621
+          },
+          "hindsight": {
+            "estimate": 6.703,
+            "lower": 6.454,
+            "upper": 6.929
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 222.5
+          },
+          "autoadmin": {
+            "recommendation": 16.1,
+            "creation": 21.2,
+            "execution": 33.6
+          },
+          "mab": {
+            "recommendation": 6,
+            "creation": 46.9,
+            "execution": 34.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 24.6,
+            "execution": 8.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 3.142,
+              "lower": 3.075,
+              "upper": 3.211
+            },
+            "dz": 30.43,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 1.23,
+              "lower": 1.214,
+              "upper": 1.249
+            },
+            "dz": 7.34,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 53.9,
+            "lower": 51.3,
+            "upper": 56.2
+          },
+          "relative": {
+            "estimate": 1.624,
+            "lower": 1.513,
+            "upper": 1.716
+          }
+        }
+      },
+      "0.25": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 218.5,
+            "lower": 214,
+            "upper": 225.6
+          },
+          "autoadmin": {
+            "estimate": 151.5,
+            "lower": 150.7,
+            "upper": 152.4
+          },
+          "mab": {
+            "estimate": 76.2,
+            "lower": 73.2,
+            "upper": 80.2
+          },
+          "hindsight": {
+            "estimate": 33.6,
+            "lower": 32.7,
+            "upper": 34.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.442,
+            "lower": 1.416,
+            "upper": 1.482
+          },
+          "mab": {
+            "estimate": 2.869,
+            "lower": 2.805,
+            "upper": 2.939
+          },
+          "hindsight": {
+            "estimate": 6.511,
+            "lower": 6.421,
+            "upper": 6.598
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 218.5
+          },
+          "autoadmin": {
+            "recommendation": 109.9,
+            "creation": 20.2,
+            "execution": 21.3
+          },
+          "mab": {
+            "recommendation": 11.9,
+            "creation": 44.4,
+            "execution": 19.8
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 25,
+            "execution": 8.6
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.442,
+              "lower": 1.416,
+              "upper": 1.482
+            },
+            "dz": 7.47,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.503,
+              "lower": 0.484,
+              "upper": 0.527
+            },
+            "dz": -14.49,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 42.6,
+            "lower": 40.1,
+            "upper": 45.7
+          },
+          "relative": {
+            "estimate": 1.269,
+            "lower": 1.206,
+            "upper": 1.336
+          }
+        }
+      },
+      "0.5": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 234.9,
+            "lower": 230.5,
+            "upper": 239.7
+          },
+          "autoadmin": {
+            "estimate": 152.3,
+            "lower": 151,
+            "upper": 154
+          },
+          "mab": {
+            "estimate": 78.7,
+            "lower": 76.9,
+            "upper": 80.7
+          },
+          "hindsight": {
+            "estimate": 33.3,
+            "lower": 32.4,
+            "upper": 34.7
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.542,
+            "lower": 1.518,
+            "upper": 1.569
+          },
+          "mab": {
+            "estimate": 2.984,
+            "lower": 2.892,
+            "upper": 3.08
+          },
+          "hindsight": {
+            "estimate": 7.052,
+            "lower": 6.751,
+            "upper": 7.303
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 234.8
+          },
+          "autoadmin": {
+            "recommendation": 110,
+            "creation": 20.2,
+            "execution": 22.1
+          },
+          "mab": {
+            "recommendation": 12.4,
+            "creation": 43.1,
+            "execution": 23.2
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 24.9,
+            "execution": 8.4
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.542,
+              "lower": 1.518,
+              "upper": 1.569
+            },
+            "dz": 12.02,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.517,
+              "lower": 0.507,
+              "upper": 0.527
+            },
+            "dz": -26.45,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 45.4,
+            "lower": 43.9,
+            "upper": 46.8
+          },
+          "relative": {
+            "estimate": 1.364,
+            "lower": 1.295,
+            "upper": 1.433
+          }
+        }
+      },
+      "0.75": {
+        "replicates": 10,
+        "meanMs": {
+          "none": {
+            "estimate": 228.2,
+            "lower": 226.7,
+            "upper": 230
+          },
+          "autoadmin": {
+            "estimate": 114.5,
+            "lower": 113.6,
+            "upper": 115.8
+          },
+          "mab": {
+            "estimate": 90.1,
+            "lower": 86.6,
+            "upper": 96.5
+          },
+          "hindsight": {
+            "estimate": 33.1,
+            "lower": 32.2,
+            "upper": 34.3
+          }
+        },
+        "speedupVsNone": {
+          "autoadmin": {
+            "estimate": 1.993,
+            "lower": 1.972,
+            "upper": 2.012
+          },
+          "mab": {
+            "estimate": 2.532,
+            "lower": 2.379,
+            "upper": 2.627
+          },
+          "hindsight": {
+            "estimate": 6.89,
+            "lower": 6.693,
+            "upper": 7.055
+          }
+        },
+        "componentsMs": {
+          "none": {
+            "recommendation": 0,
+            "creation": 0,
+            "execution": 228.2
+          },
+          "autoadmin": {
+            "recommendation": 68.3,
+            "creation": 18.8,
+            "execution": 27.4
+          },
+          "mab": {
+            "recommendation": 12.7,
+            "creation": 55.1,
+            "execution": 22.4
+          },
+          "hindsight": {
+            "recommendation": 0,
+            "creation": 24.8,
+            "execution": 8.3
+          }
+        },
+        "vsGreedy": {
+          "none": {
+            "ratio": {
+              "estimate": 1.993,
+              "lower": 1.972,
+              "upper": 2.012
+            },
+            "dz": 39.48,
+            "wins": 0,
+            "losses": 10,
+            "ties": 0,
+            "signTestP": 0.00195
+          },
+          "mab": {
+            "ratio": {
+              "estimate": 0.787,
+              "lower": 0.757,
+              "upper": 0.837
+            },
+            "dz": -2.86,
+            "wins": 10,
+            "losses": 0,
+            "ties": 0,
+            "signTestP": 0.00195
+          }
+        },
+        "regret": {
+          "finalMs": {
+            "estimate": 57,
+            "lower": 54,
+            "upper": 62.3
+          },
+          "relative": {
+            "estimate": 1.721,
+            "lower": 1.636,
+            "upper": 1.838
+          }
+        }
+      }
+    }
+  }
+}
