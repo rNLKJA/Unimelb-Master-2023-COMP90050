@@ -100,23 +100,43 @@ function Change({ r }: { r: Interval }) {
     </>
   );
 }
-const ms = (x: Interval) =>
-  `${x.estimate.toFixed(0)} [${x.lower.toFixed(0)}, ${x.upper.toFixed(0)}]`;
+/** A mean in milliseconds, with its interval on a second line so the table fits the column. */
+function Ms({ x }: { x: Interval }) {
+  return (
+    <>
+      {x.estimate.toFixed(0)}
+      <span className="text-muted-foreground block text-[11px]">
+        [{x.lower.toFixed(0)}, {x.upper.toFixed(0)}]
+      </span>
+    </>
+  );
+}
+
+type HeadlineResult = {
+  total: {
+    meanMs: Record<string, Interval>;
+    vsGreedy: Record<string, { ratio: Interval }>;
+    regret: { finalMs: Interval; relative: Interval } | null;
+  };
+  buildRun: { vsGreedy: Record<string, { ratio: Interval }> };
+};
+
+/** The six measured SQLite settings the methods page reports. */
+function headlineRows(numbers: BenchmarkNumbers) {
+  return (["tpch", "louvre"] as const).flatMap((ds) =>
+    (["static", "shifting", "htap"] as const).map((sc) => ({
+      ds,
+      sc,
+      r: numbers.results[`${ds}/sqlite/${sc}`] as HeadlineResult,
+    })),
+  );
+}
+
+const sessionSpread = (r: Interval) =>
+  r.sessionRange ? r.sessionRange[1] - r.sessionRange[0] : -1;
 
 function ResultsTable({ numbers }: { numbers: BenchmarkNumbers }) {
-  const rows = (["tpch", "louvre"] as const).flatMap((ds) =>
-    (["static", "shifting", "htap"] as const).map((sc) => {
-      const r = numbers.results[`${ds}/sqlite/${sc}`] as {
-        total: {
-          meanMs: Record<string, Interval>;
-          vsGreedy: Record<string, { ratio: Interval }>;
-          regret: { finalMs: Interval; relative: Interval } | null;
-        };
-        buildRun: { vsGreedy: Record<string, { ratio: Interval }> };
-      };
-      return { ds, sc, r };
-    }),
-  );
+  const rows = headlineRows(numbers);
   return (
     <div
       role="region"
@@ -124,7 +144,7 @@ function ResultsTable({ numbers }: { numbers: BenchmarkNumbers }) {
       tabIndex={0}
       className="border-border overflow-x-auto rounded-lg border focus-visible:-outline-offset-2"
     >
-      <table className="w-full min-w-[48rem] text-sm">
+      <table className="w-full min-w-[40rem] text-sm">
         <thead>
           <tr className="bg-surface-2/70 text-foreground text-left text-xs">
             <th scope="col" className="px-3 py-2 font-medium">
@@ -154,13 +174,13 @@ function ResultsTable({ numbers }: { numbers: BenchmarkNumbers }) {
                 {ds === "tpch" ? "TPC-H-like (S)" : "Louvre"} · {sc === "htap" ? "HTAP" : sc}
               </th>
               <td className="tabular px-3 py-2 text-right font-mono text-xs whitespace-nowrap">
-                {ms(r.total.meanMs.none)}
+                <Ms x={r.total.meanMs.none} />
               </td>
               <td className="tabular px-3 py-2 text-right font-mono text-xs whitespace-nowrap">
-                {ms(r.total.meanMs.autoadmin)}
+                <Ms x={r.total.meanMs.autoadmin} />
               </td>
               <td className="tabular px-3 py-2 text-right font-mono text-xs whitespace-nowrap">
-                {ms(r.total.meanMs.mab)}
+                <Ms x={r.total.meanMs.mab} />
               </td>
               <td className="tabular px-3 py-2 text-right font-mono text-xs whitespace-nowrap">
                 <Change r={r.total.vsGreedy.mab.ratio} />
@@ -189,12 +209,22 @@ export default async function MethodsPage() {
     year: "numeric",
   });
   const sessions = Number(numbers.settings.sessions ?? 1);
-  const staticTpch = (
-    numbers.results["tpch/sqlite/static"] as { total: { vsGreedy: { mab: { ratio: Interval } } } }
-  ).total.vsGreedy.mab.ratio;
-  const staticRange = staticTpch.sessionRange
-    ? `${change(staticTpch.sessionRange[0])} to ${change(staticTpch.sessionRange[1])}`
-    : "";
+  // Run-to-run variation, illustrated by the setting whose single-session estimates
+  // of the bandit-to-greedy change spread the most, next to static TPC-H-like.
+  const span = (r: Interval) =>
+    r.sessionRange ? `${change(r.sessionRange[0])} to ${change(r.sessionRange[1])}` : "";
+  const headline = headlineRows(numbers);
+  const staticTpch = headline[0].r.total.vsGreedy.mab.ratio;
+  const widest = headline.reduce((best, row) =>
+    sessionSpread(row.r.total.vsGreedy.mab.ratio) > sessionSpread(best.r.total.vsGreedy.mab.ratio)
+      ? row
+      : best,
+  );
+  const widestRatio = widest.r.total.vsGreedy.mab.ratio;
+  const runToRun =
+    sessionSpread(widestRatio) > 0
+      ? `Across ${sessions} sessions on the author's machine, single-session estimates of the bandit's total-time change against greedy spread by up to ${Math.round(sessionSpread(widestRatio) * 100)} percentage points: ${span(widestRatio)} on ${widest.ds === "tpch" ? "TPC-H-like" : "Louvre"} ${widest.sc === "htap" ? "HTAP" : widest.sc}, against ${span(staticTpch)} on static TPC-H-like. `
+      : "";
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -442,7 +472,7 @@ export default async function MethodsPage() {
             <Bullets
               items={[
                 "Workloads take hundreds of milliseconds, so recommendation time weighs far more than in the papers the survey quoted. Rankings on total time can flip on build + run time.",
-                `In the browser, intervals come from one session's replicates and leave out run-to-run variation, which is larger: across ${sessions} sessions on the author's machine the bandit's static TPC-H change against greedy ranged ${staticRange}. More replicates narrow those intervals without fixing that, so re-run the benchmark before trusting a small difference. Percentile intervals from ten workloads are also somewhat too narrow.`,
+                `In the browser, intervals come from one session's replicates and leave out run-to-run variation. ${runToRun}More replicates narrow one session's intervals without capturing that, so re-run the benchmark before trusting a small difference. Percentile intervals from ten workloads are also somewhat too narrow.`,
                 "The simulated engine's constants were fitted on TPC-H-like data and overestimate the Louvre's no-index time by about 21%.",
                 "The forecasting lab uses synthetic traces and no LSTM.",
                 "LLM results exist only in the browsers of visitors who bring a key. None are published here.",
