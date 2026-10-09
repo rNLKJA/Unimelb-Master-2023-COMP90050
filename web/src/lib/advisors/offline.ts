@@ -5,7 +5,9 @@
  * shifted (the template mix of the last round overlaps the one it was tuned
  * for by less than half).
  */
+import type { IndexDef, QueryInstance } from "@/lib/engine/types";
 import { jaccard, templateSet } from "@/lib/workload/scenarios";
+import { solveCophy } from "./cophy";
 import type { Advisor, AdvisorContext, AdvisorId, OfflineAlgorithm } from "./types";
 
 export class OfflineAdvisor implements Advisor {
@@ -38,5 +40,60 @@ export class NoIndexAdvisor implements Advisor {
   readonly id = "none" as const;
   recommend() {
     return null;
+  }
+}
+
+/**
+ * A configuration decided outside the lab (the LLM advisor's validated
+ * proposal), applied the way the offline tools' first invocation is: at the
+ * start of round 2, after round 1 has run without indexes. It is not
+ * re-consulted after a workload shift. `latencyMs` (the provider's response
+ * time) is charged as recommendation time in that round.
+ */
+export class FixedConfigAdvisor implements Advisor {
+  private applied = false;
+
+  constructor(
+    readonly id: AdvisorId,
+    private readonly config: IndexDef[],
+    private readonly latencyMs = 0,
+    private readonly startRound = 1,
+  ) {}
+
+  recommend(ctx: AdvisorContext) {
+    if (this.applied || ctx.round < this.startRound) return null;
+    this.applied = true;
+    return this.config;
+  }
+
+  overheadMs(round: number) {
+    return round === this.startRound ? this.latencyMs : 0;
+  }
+}
+
+/**
+ * The benchmark's regret reference: the best fixed configuration in hindsight.
+ * Before round 1 it builds the configuration that CoPhy's exact integer
+ * program finds optimal, under the what-if model, for the whole workload
+ * (every round, weighted by template frequency) within the storage budget.
+ * No real advisor knows the future workload, so its recommendation time is not
+ * charged; index creation and execution are. "Optimal" is with respect to the
+ * cost model, so a learner measured on real runtimes can beat it, which shows
+ * up as negative regret.
+ */
+export class HindsightAdvisor implements Advisor {
+  readonly id = "hindsight" as const;
+  readonly reference = true;
+  private done = false;
+  optimal: boolean | null = null;
+
+  constructor(private readonly workload: QueryInstance[]) {}
+
+  recommend(ctx: AdvisorContext) {
+    if (this.done) return null;
+    this.done = true;
+    const result = solveCophy(this.workload, ctx.whatIf, { budgetBytes: ctx.budgetBytes });
+    this.optimal = result.optimal;
+    return result.config;
   }
 }

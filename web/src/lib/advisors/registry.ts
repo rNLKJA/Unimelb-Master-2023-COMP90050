@@ -3,10 +3,12 @@ import { cophy } from "./cophy";
 import { db2Advisor } from "./db2-advisor";
 import { drop } from "./drop";
 import { MabAdvisor, DEFAULT_MAB, type MabOptions } from "./mab/mab-advisor";
-import { NoIndexAdvisor, OfflineAdvisor } from "./offline";
+import { FixedConfigAdvisor, HindsightAdvisor, NoIndexAdvisor, OfflineAdvisor } from "./offline";
+import type { IndexDef, QueryInstance } from "@/lib/engine/types";
 import type { Advisor, AdvisorId } from "./types";
 
-export type AdvisorFamily = "baseline" | "heuristic" | "linear-programming" | "bandit";
+export type AdvisorFamily =
+  "baseline" | "heuristic" | "linear-programming" | "bandit" | "llm" | "reference";
 
 export interface AdvisorInfo {
   id: AdvisorId;
@@ -19,6 +21,8 @@ export interface AdvisorInfo {
   mode: "offline" | "online" | "none";
   blurb: string;
 }
+
+/** The six algorithms of the 2023 survey (plus the no-index baseline), as the arena lists them. */
 
 export const ADVISORS: AdvisorInfo[] = [
   {
@@ -85,9 +89,47 @@ export const ADVISORS: AdvisorInfo[] = [
   },
 ];
 
-export const ADVISOR_BY_ID = new Map(ADVISORS.map((a) => [a.id, a]));
+/** The 2026 additions: the bring-your-own-key LLM advisor and the benchmark's reference. */
+export const LLM_ADVISOR: AdvisorInfo = {
+  id: "llm",
+  name: "LLM advisor (your key)",
+  short: "LLM",
+  year: 2026,
+  family: "llm",
+  paper: null,
+  mode: "offline",
+  blurb:
+    "Your own Claude or OpenAI key proposes indexes from the schema, a workload summary and the current plans; the lab validates them and builds them at round 2.",
+};
 
-export function createAdvisor(id: AdvisorId, mab: MabOptions = DEFAULT_MAB): Advisor {
+export const HINDSIGHT_ADVISOR: AdvisorInfo = {
+  id: "hindsight",
+  name: "Hindsight optimum (reference)",
+  short: "Hindsight",
+  year: 0,
+  family: "reference",
+  paper: "cophy",
+  mode: "offline",
+  blurb:
+    "CoPhy's exact what-if optimum for the whole workload, built before round 1 and never changed. It knows the future, so it is the yardstick for regret, not a contender.",
+};
+
+export const ADVISOR_BY_ID = new Map(
+  [...ADVISORS, LLM_ADVISOR, HINDSIGHT_ADVISOR].map((a) => [a.id, a]),
+);
+
+export interface AdvisorExtras {
+  /** The LLM advisor's validated configuration and the provider latency to charge. */
+  llm?: { config: IndexDef[]; latencyMs: number };
+  /** Every query of the run, for the hindsight reference. */
+  workload?: QueryInstance[];
+}
+
+export function createAdvisor(
+  id: AdvisorId,
+  mab: MabOptions = DEFAULT_MAB,
+  extras: AdvisorExtras = {},
+): Advisor {
   switch (id) {
     case "none":
       return new NoIndexAdvisor();
@@ -101,5 +143,11 @@ export function createAdvisor(id: AdvisorId, mab: MabOptions = DEFAULT_MAB): Adv
       return new OfflineAdvisor("cophy", cophy);
     case "mab":
       return new MabAdvisor(mab);
+    case "llm":
+      if (!extras.llm) throw new Error("The LLM advisor needs an accepted proposal first");
+      return new FixedConfigAdvisor("llm", extras.llm.config, extras.llm.latencyMs);
+    case "hindsight":
+      if (!extras.workload) throw new Error("The hindsight reference needs the whole workload");
+      return new HindsightAdvisor(extras.workload);
   }
 }
