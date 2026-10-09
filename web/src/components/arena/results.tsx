@@ -4,12 +4,12 @@ import { useMemo, useState } from "react";
 import { ADVISOR_BY_ID } from "@/lib/advisors/registry";
 import type { AdvisorId } from "@/lib/advisors/types";
 import { formatBytes, formatInt, formatMs } from "@/lib/format";
-import { TEMPLATE_BY_ID } from "@/lib/workload/templates";
 import { cn } from "@/lib/utils";
 import { BreakdownBars, TIME_SEGMENTS } from "@/components/charts/breakdown-bars";
 import { Legend, LineChart, type Series } from "@/components/charts/line-chart";
 import { Panel, PanelHeader } from "@/components/shared/section";
 import { PlanTree } from "@/components/shared/plan-tree";
+import { AiGeneratedLabel } from "@/components/ai/ai-label";
 import type { ArenaState } from "./state";
 import { advisorColor } from "./state";
 
@@ -65,6 +65,7 @@ export function Leaderboard({ state }: { state: ArenaState }) {
                   style={{ background: advisorColor(r.id) }}
                 />
                 {name(r.id)}
+                {r.id === "llm" && <AiGeneratedLabel />}
                 {!r.done && (
                   <span className="text-muted-foreground font-mono text-[10px]">running</span>
                 )}
@@ -121,6 +122,7 @@ export function Leaderboard({ state }: { state: ArenaState }) {
                           style={{ background: advisorColor(r.id) }}
                         />
                         {ADVISOR_BY_ID.get(r.id)?.name}
+                        {r.id === "llm" && <AiGeneratedLabel model={state.config?.llm?.model} />}
                       </span>
                     </th>
                     <td className="tabular py-2 pr-3 text-right font-mono">{formatMs(r.total)}</td>
@@ -259,6 +261,18 @@ export function AdvisorPicker({
   );
 }
 
+/** Shown wherever the LLM advisor's configuration appears. */
+function LlmConfigNote({ model }: { model?: string }) {
+  return (
+    <p className="text-muted-foreground mb-3 flex flex-wrap items-center gap-2 text-xs">
+      <AiGeneratedLabel model={model} />
+      <span>
+        Configuration proposed by the model, validated by the lab and approved by a person.
+      </span>
+    </p>
+  );
+}
+
 /** Which indexes each advisor kept, round by round, and how often they were used. */
 export function ConfigMap({ state }: { state: ArenaState }) {
   const ids: AdvisorId[] = finished(state)
@@ -296,8 +310,9 @@ export function ConfigMap({ state }: { state: ArenaState }) {
         role="region"
         aria-label="Index timeline"
         tabIndex={0}
-        className="overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
+        className="relative overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
       >
+        {id === "llm" && <LlmConfigNote model={state.config?.llm?.model} />}
         {indexes.length === 0 ? (
           <p className="text-muted-foreground text-sm">{name(id)} did not build any index.</p>
         ) : (
@@ -313,7 +328,11 @@ export function ConfigMap({ state }: { state: ArenaState }) {
                     scope="col"
                     className="text-muted-foreground w-4 text-center font-normal"
                   >
-                    {(r.round + 1) % 5 === 0 ? r.round + 1 : ""}
+                    {(r.round + 1) % 5 === 0 ? (
+                      r.round + 1
+                    ) : (
+                      <span className="sr-only">Round {r.round + 1}</span>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -414,7 +433,7 @@ export function TemplateTable({ state }: { state: ArenaState }) {
                 <tr key={t.id} className="border-border/50 border-b last:border-0">
                   <th scope="row" className="py-1.5 pr-3 text-left font-normal">
                     <span className="text-muted-foreground mr-2 font-mono text-xs">{t.id}</span>
-                    {TEMPLATE_BY_ID.get(t.id)?.title}
+                    {t.title}
                   </th>
                   {values.map((v, i) => (
                     <td
@@ -552,6 +571,7 @@ export function FinalPlans({ state }: { state: ArenaState }) {
   const id = picked && ids.includes(picked) ? picked : ids[ids.length - 1];
   const plans = id ? state.runs[id]?.plans : undefined;
   const sample = state.setup?.workload.sample ?? [];
+  const titles = new Map((state.setup?.workload.templates ?? []).map((t) => [t.id, t.title]));
   if (!id || !plans) return null;
   return (
     <Panel>
@@ -567,6 +587,11 @@ export function FinalPlans({ state }: { state: ArenaState }) {
           />
         }
       />
+      {id === "llm" && (
+        <div className="px-4 pt-4 sm:px-5">
+          <LlmConfigNote model={state.config?.llm?.model} />
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-3 p-4 sm:p-5 md:grid-cols-2">
         {sample.map((q) => (
           <div
@@ -575,7 +600,7 @@ export function FinalPlans({ state }: { state: ArenaState }) {
           >
             <p className="mb-1 flex items-baseline gap-2 text-sm">
               <span className="text-muted-foreground font-mono text-xs">{q.template}</span>
-              {TEMPLATE_BY_ID.get(q.template)?.title}
+              {titles.get(q.template)}
             </p>
             <PlanTree nodes={plans[q.template] ?? []} />
           </div>

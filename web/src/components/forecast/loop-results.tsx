@@ -143,7 +143,7 @@ export function LoopResults({ view }: { view: ForecastView }) {
           role="region"
           aria-label="Index timeline, window by window"
           tabIndex={0}
-          className="overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
+          className="relative overflow-x-auto p-4 focus-visible:-outline-offset-2 sm:p-5"
         >
           {timeline.length === 0 ? (
             <p className="text-muted-foreground text-sm">No index fitted the budget.</p>
@@ -166,7 +166,11 @@ export function LoopResults({ view }: { view: ForecastView }) {
                         windowHours === 1 ? "w-1.5" : "w-3",
                       )}
                     >
-                      {i % perDay === 0 ? dayName(w) : ""}
+                      {i % perDay === 0 ? (
+                        dayName(w)
+                      ) : (
+                        <span className="sr-only">Window {i + 1}</span>
+                      )}
                     </th>
                   ))}
                 </tr>

@@ -1,13 +1,23 @@
 /**
- * A compact TPC-H-like schema. It keeps the shape of the TPC-H benchmark the
+ * Schemas for the lab's datasets. The engine, the cost model and the advisors
+ * work on any `SchemaDef`; this file defines the generic shape and the
+ * compact TPC-H-like schema. It keeps the shape of the TPC-H benchmark the
  * surveyed papers evaluate on (Kossmann et al. 2020; Perera et al. 2023) but at
- * a size that loads into SQLite-in-the-browser in well under a second.
+ * a size that loads into SQLite-in-the-browser in well under a second. The
+ * second dataset, the Louvre ticketing database from INFO20003, lives in
+ * lib/datasets/louvre/.
  *
  * lineitem deliberately has no primary key (it is a plain rowid table), so every
  * secondary index on it — including one on l_orderkey — is an advisor's choice.
  */
 
-export type ColumnType = "int" | "real" | "text" | "date";
+/**
+ * Column types as the cost model sees them. `date` is an ISO day
+ * (YYYY-MM-DD) and `datetime` an ISO timestamp (YYYY-MM-DD HH:MM:SS); both are
+ * stored as TEXT in SQLite and become day numbers (fractional for datetimes)
+ * for range estimates.
+ */
+export type ColumnType = "int" | "real" | "text" | "date" | "datetime";
 
 export const TABLE_NAMES = [
   "region",
@@ -19,13 +29,19 @@ export const TABLE_NAMES = [
   "lineitem",
 ] as const;
 
-export type TableName = (typeof TABLE_NAMES)[number];
+/** A table of the TPC-H-like schema. */
+export type TpchTable = (typeof TABLE_NAMES)[number];
+
+/** Any table of any dataset. Engine and advisor code is written against plain names. */
+export type TableName = string;
 
 export interface ColumnDef {
   name: string;
   type: ColumnType;
   /** Average stored width in bytes, used for index-size estimates. */
   width: number;
+  /** NULL allowed (every column is NOT NULL unless marked). */
+  nullable?: boolean;
 }
 
 export interface TableDef {
@@ -36,9 +52,17 @@ export interface TableDef {
   blurb: string;
 }
 
-const c = (name: string, type: ColumnType, width: number): ColumnDef => ({ name, type, width });
+/** A dataset's tables, in load order. */
+export interface SchemaDef {
+  tables: TableDef[];
+}
 
-export const SCHEMA: Record<TableName, TableDef> = {
+/** Column helper shared by every dataset's schema. */
+export const col = (name: string, type: ColumnType, width: number, nullable = false): ColumnDef =>
+  nullable ? { name, type, width, nullable } : { name, type, width };
+const c = col;
+
+export const SCHEMA: Record<TpchTable, TableDef> = {
   region: {
     name: "region",
     primaryKey: "r_regionkey",
@@ -124,16 +148,19 @@ export const SCHEMA: Record<TableName, TableDef> = {
   },
 };
 
-/** Every column of every table, in schema order — the bandit's context dimensions. */
+export const TPCH_SCHEMA: SchemaDef = { tables: TABLE_NAMES.map((t) => SCHEMA[t]) };
+
+/** Every column of every TPC-H table, in schema order. */
 export const ALL_COLUMNS: string[] = TABLE_NAMES.flatMap((t) =>
   SCHEMA[t].columns.map((col) => col.name),
 );
 
-const COLUMN_TABLE = new Map<string, TableName>(
+const COLUMN_TABLE = new Map<string, TpchTable>(
   TABLE_NAMES.flatMap((t) => SCHEMA[t].columns.map((col) => [col.name, t] as const)),
 );
 
-export function tableOf(column: string): TableName {
+/** The TPC-H table a (prefixed, so unique) TPC-H column belongs to. */
+export function tableOf(column: string): TpchTable {
   const t = COLUMN_TABLE.get(column);
   if (!t) throw new Error(`Unknown column ${column}`);
   return t;
@@ -182,6 +209,29 @@ export function dayNumber(iso: string): number {
 
 export function isoFromDay(day: number): string {
   return new Date(EPOCH + day * DAY_MS).toISOString().slice(0, 10);
+}
+
+/** Fractional days since 1992-01-01 for an ISO timestamp "YYYY-MM-DD HH:MM:SS". */
+export function dayTime(iso: string): number {
+  const [date, time = "00:00:00"] = iso.split(/[ T]/);
+  const [h, m, s] = time.split(":").map(Number);
+  return dayNumber(date) + ((h || 0) * 3600 + (m || 0) * 60 + (s || 0)) / 86_400;
+}
+
+/** The ISO timestamp "YYYY-MM-DD HH:MM:SS" of a fractional day number (whole seconds). */
+export function isoFromDayTime(x: number): string {
+  const ms = Math.round(x * 86_400) * 1000;
+  return new Date(EPOCH + ms).toISOString().slice(0, 19).replace("T", " ");
+}
+
+/** A column value on the cost model's numeric scale (dates as day numbers), or null for text. */
+export function numericValue(type: ColumnType, v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  if (type === "text") return null;
+  if (type === "date") return dayNumber(String(v));
+  if (type === "datetime") return dayTime(String(v));
+  const x = Number(v);
+  return Number.isFinite(x) ? x : null;
 }
 
 /** TPC-H order dates run from STARTDATE to ENDDATE - 151 days. */

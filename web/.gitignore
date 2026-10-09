@@ -43,3 +43,6 @@ next-env.d.ts
 
 # vitest cache
 /.vitest/
+
+# showcase tour output (pnpm showcase:e2e); optimised media is committed under public/showcase and ../docs/showcase
+/.showcase/

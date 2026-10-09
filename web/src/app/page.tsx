@@ -1,9 +1,18 @@
-import { ArrowRight, BookOpen, FlaskConical, Radar, Terminal } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  CirclePlay,
+  FlaskConical,
+  Radar,
+  Sigma,
+  Terminal,
+} from "lucide-react";
 import Link from "next/link";
 import { HeroConsole } from "@/components/home/hero-console";
 import { Scrolly, type Step } from "@/components/home/scrolly";
 import { Table2Chart } from "@/components/home/table2";
 import { Timeline } from "@/components/home/timeline";
+import { DatabaseJourney } from "@/components/journey/database-journey";
 import { Callout, SectionHeading } from "@/components/shared/section";
 import { pipelineCounts } from "@/lib/arena/pipeline-stats";
 import { COURSEWORK_DATES, TEAM, comparisons } from "@/lib/survey/report";
@@ -143,12 +152,18 @@ export default function HomePage() {
               >
                 Browse the survey map
               </Link>
+              <Link
+                href="/tour"
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 rounded-lg px-2 py-2.5 text-sm font-medium transition-colors"
+              >
+                <CirclePlay className="text-mint size-4" aria-hidden /> Watch the tour
+              </Link>
             </div>
             <dl className="grid max-w-xl grid-cols-2 gap-x-6 gap-y-4 pt-4 sm:grid-cols-4">
               {[
                 ["5", "index advisors, 1985–2023"],
                 ["21", "references in our report"],
-                ["13", "query templates"],
+                ["2", "datasets, incl. the INFO20003 Louvre"],
                 ["0", "servers needed"],
               ].map(([n, l]) => (
                 <div key={l}>
@@ -297,14 +312,20 @@ export default function HomePage() {
 
       {/* Explore */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6" aria-labelledby="explore">
-        <SectionHeading kicker="Explore" title="Four ways in" id="explore" />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <SectionHeading kicker="Explore" title="Five ways in" id="explore" />
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[
             {
               href: "/arena",
               icon: FlaskConical,
               title: "Advisor arena",
               body: "Race DROP, AutoAdmin, DB2 Advisor, CoPhy and a C²UCB bandit on a live SQLite database.",
+            },
+            {
+              href: "/benchmark",
+              icon: Sigma,
+              title: "Benchmark",
+              body: "Repeated seeded runs with 95% intervals, paired comparisons, the bandit's regret, a drift sweep and a BYOK LLM advisor.",
             },
             {
               href: "/forecast",
@@ -345,6 +366,11 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
+      </section>
+
+      {/* Database journey */}
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6" aria-label="Database journey">
+        <DatabaseJourney />
       </section>
 
       {/* About teaser */}

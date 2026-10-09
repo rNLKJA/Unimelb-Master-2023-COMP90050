@@ -12,7 +12,7 @@ export function AutonomyLadder({ from, to }: { from: number; to: number }) {
             key={l.level}
             className={cn(
               "grid grid-cols-[2.5rem_1fr] items-center gap-3 rounded-lg border px-3 py-2.5 transition-all duration-500",
-              on ? "border-mint/60 bg-mint-soft/60" : "border-border bg-surface opacity-55",
+              on ? "border-mint/60 bg-mint-soft/60" : "border-border bg-surface",
             )}
             style={{ marginLeft: `${(5 - l.level) * 4}%` }}
           >
@@ -25,7 +25,10 @@ export function AutonomyLadder({ from, to }: { from: number; to: number }) {
               {l.level}
             </span>
             <span className="min-w-0">
-              <span className="block font-medium">{l.name}</span>
+              {/* Inactive levels are dimmed by colour, not opacity, so the text keeps AA contrast. */}
+              <span className={cn("block font-medium", !on && "text-muted-foreground")}>
+                {l.name}
+              </span>
               <span className="text-muted-foreground block text-xs">{l.description}</span>
             </span>
           </li>

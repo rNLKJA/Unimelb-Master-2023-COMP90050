@@ -4,8 +4,8 @@
  * times are wall-clock measurements; index sizes come from the page-count delta.
  */
 import type { Database, SqlJsStatic } from "sql.js";
-import { SCHEMA, TABLE_NAMES, type TableName } from "@/lib/db/schema";
-import type { GeneratedDatabase } from "@/lib/db/generate";
+import { TPCH_SCHEMA, type SchemaDef, type TableDef, type TableName } from "@/lib/db/schema";
+import type { TableDataSet } from "@/lib/db/stats";
 import type { ExecResult, Executor } from "./executor";
 import {
   buildPlanTree,
@@ -16,25 +16,34 @@ import {
 } from "./explain";
 import { createIndexSql, indexId, indexName, type IndexDef, type QueryInstance } from "./types";
 
-export function ddl(table: TableName): string {
-  const def = SCHEMA[table];
+/**
+ * The lab's DDL for one table: its INTEGER PRIMARY KEY (if any) and plain
+ * typed columns. No UNIQUE constraints, foreign keys, CHECKs or secondary
+ * indexes, so every index beyond the rowid is an advisor's choice.
+ */
+export function ddl(def: TableDef): string {
   const cols = def.columns.map((c) => {
     const type = c.type === "int" ? "INTEGER" : c.type === "real" ? "REAL" : "TEXT";
     return c.name === def.primaryKey
       ? `${c.name} INTEGER PRIMARY KEY`
-      : `${c.name} ${type} NOT NULL`;
+      : `${c.name} ${type}${c.nullable ? "" : " NOT NULL"}`;
   });
-  return `CREATE TABLE ${table} (${cols.join(", ")})`;
+  return `CREATE TABLE ${def.name} (${cols.join(", ")})`;
 }
 
-/** Create the schema, bulk-load the generated rows and gather statistics. */
-export function loadDatabase(SQL: SqlJsStatic, data: GeneratedDatabase): Database {
+/** Create the schema, bulk-load the rows and gather statistics. */
+export function loadDatabase(
+  SQL: SqlJsStatic,
+  data: TableDataSet,
+  schema: SchemaDef = TPCH_SCHEMA,
+): Database {
   const db = new SQL.Database();
   db.run("PRAGMA page_size = 4096");
   tune(db);
   db.run("BEGIN");
-  for (const t of TABLE_NAMES) {
-    db.run(ddl(t));
+  for (const def of schema.tables) {
+    const t = def.name;
+    db.run(ddl(def));
     const cols = data[t].columns;
     const stmt = db.prepare(
       `INSERT INTO ${t} (${cols.join(", ")}) VALUES (${cols.map(() => "?").join(", ")})`,

@@ -96,16 +96,24 @@ export function reducer(state: ArenaState, action: Action): ArenaState {
 }
 
 export const DEFAULT_CONFIG: ArenaConfig = {
+  dataset: "tpch",
   engine: "sqlite",
   scale: "s",
   seed: 2023,
   scenario: "shifting",
+  drift: 0.5,
   rounds: 25,
   budget: 2,
   advisors: ["none", "drop", "autoadmin", "db2advis", "cophy", "mab"],
   whatIfLatencyMs: 0.02,
   skipScan: false,
   mabAlpha: 1,
+  llm: null,
 };
+
+/** The arena's defaults for a dataset (the deep link /arena?dataset=louvre lands here). */
+export function defaultConfig(dataset: ArenaConfig["dataset"] = "tpch"): ArenaConfig {
+  return { ...DEFAULT_CONFIG, dataset };
+}
 
 export const advisorColor = (id: AdvisorId) => `var(--adv-${id})`;

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NAV, SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { AiSettingsDialog } from "@/components/ai/ai-settings-dialog";
 import { GithubMark } from "./github-mark";
 import { LogoMark } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
@@ -39,7 +40,7 @@ export function SiteHeader() {
             </span>
           </span>
         </Link>
-        <nav aria-label="Main" className="ml-auto hidden items-center gap-0.5 lg:flex">
+        <nav aria-label="Main" className="ml-auto hidden items-center gap-0.5 xl:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -54,7 +55,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-1 lg:ml-2">
+        <div className="ml-auto flex items-center gap-1 xl:ml-2">
           <a
             href={SITE.repo}
             className="text-muted-foreground hover:bg-surface-2 hover:text-foreground inline-flex size-9 items-center justify-center rounded-md transition-colors"
@@ -62,10 +63,11 @@ export function SiteHeader() {
           >
             <GithubMark className="size-4" />
           </a>
+          <AiSettingsDialog />
           <ThemeToggle />
           <button
             type="button"
-            className="text-muted-foreground hover:bg-surface-2 hover:text-foreground inline-flex size-9 items-center justify-center rounded-md lg:hidden"
+            className="text-muted-foreground hover:bg-surface-2 hover:text-foreground inline-flex size-9 items-center justify-center rounded-md xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -79,7 +81,7 @@ export function SiteHeader() {
         <nav
           id="mobile-nav"
           aria-label="Main"
-          className="border-border border-t px-4 pb-3 lg:hidden"
+          className="border-border border-t px-4 pb-3 xl:hidden"
         >
           <ul className="grid gap-1 pt-2">
             {NAV.map((item) => (

@@ -27,6 +27,7 @@
   --color-coral: var(--coral);
   --color-sky: var(--sky);
   --color-violet: var(--violet);
+  --color-adv-llm: var(--adv-llm);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -109,6 +110,9 @@
   --adv-db2advis: var(--violet);
   --adv-cophy: var(--coral);
   --adv-mab: var(--mint);
+  /* 2026 additions: the bring-your-own-key LLM advisor and the benchmark's hindsight reference */
+  --adv-llm: oklch(0.54 0.18 340);
+  --adv-hindsight: oklch(0.42 0.03 262);
 
   /* time-breakdown segments */
   --seg-exec: oklch(0.5 0.05 258);
@@ -149,6 +153,8 @@
   --violet: oklch(0.74 0.12 295);
 
   --adv-none: oklch(0.62 0.025 258);
+  --adv-llm: oklch(0.76 0.15 340);
+  --adv-hindsight: oklch(0.86 0.02 255);
   --seg-exec: oklch(0.68 0.045 255);
 }
 

@@ -40,6 +40,11 @@ export function SiteFooter() {
             <li>Next.js 16 · React 19 · TypeScript</li>
             <li>Web Workers for every experiment</li>
             <li>
+              <Link href="/ai-log" className="hover:text-foreground">
+                AI audit log (this browser)
+              </Link>
+            </li>
+            <li>
               <a href={SITE.repo} className="hover:text-foreground">
                 Source on GitHub →
               </a>

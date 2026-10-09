@@ -15,7 +15,12 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "bench:report": "node scripts/bench-report.mjs",
+    "docs:sync": "node scripts/sync-docs.mjs",
+    "showcase": "playwright test && node scripts/showcase-media.mjs",
+    "showcase:e2e": "playwright test",
+    "showcase:media": "node scripts/showcase-media.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -26,13 +31,17 @@
     "next-themes": "^0.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "shadcn": "^4.21.2",
     "sql.js": "^1.14.2",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/ibm-plex-sans-condensed": "^5.3.0",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -40,6 +49,7 @@
     "@types/sql.js": "^1.4.11",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "fake-indexeddb": "^6.2.5",
     "prettier": "^3.9.9",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",

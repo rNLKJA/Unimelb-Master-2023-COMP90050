@@ -13,17 +13,13 @@ import {
   TABLE_NAMES,
   cardinalities,
   isoFromDay,
-  type TableName,
+  type TpchTable,
 } from "./schema";
+import type { TableData, TableDataSet } from "./stats";
 
-export type Value = number | string;
+export type { TableData, Value } from "./stats";
 
-export interface TableData {
-  columns: string[];
-  rows: Value[][];
-}
-
-export type GeneratedDatabase = Record<TableName, TableData>;
+export type GeneratedDatabase = Record<TpchTable, TableData>;
 
 export interface GenerateOptions {
   orders: number;
@@ -276,9 +272,6 @@ export function generateDatabase({ orders, seed, skew = 0 }: GenerateOptions): G
   return db;
 }
 
-export function rowCounts(db: GeneratedDatabase): Record<TableName, number> {
-  return Object.fromEntries(TABLE_NAMES.map((t) => [t, db[t].rows.length])) as Record<
-    TableName,
-    number
-  >;
+export function rowCounts(db: TableDataSet): Record<string, number> {
+  return Object.fromEntries(Object.entries(db).map(([t, d]) => [t, d.rows.length]));
 }

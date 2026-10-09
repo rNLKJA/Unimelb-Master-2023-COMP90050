@@ -1,17 +1,22 @@
 "use client";
 
 import { Play, RotateCcw, Square } from "lucide-react";
-import { ADVISORS } from "@/lib/advisors/registry";
+import { ADVISORS, LLM_ADVISOR } from "@/lib/advisors/registry";
 import type { AdvisorId } from "@/lib/advisors/types";
+import { DATASETS, DATASET_IDS } from "@/lib/datasets/registry";
 import { SCALES } from "@/lib/db/schema";
-import { SCENARIOS, type ScenarioId } from "@/lib/workload/scenarios";
+import { INFO20003 } from "@/lib/site";
+import { SCENARIOS, SCENARIO_IDS, scenarioBlurb, type ScenarioId } from "@/lib/workload/scenarios";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { RangeField } from "@/components/shared/range-field";
 import { Segmented } from "@/components/shared/segmented";
 import { cn } from "@/lib/utils";
 import type { ArenaConfig } from "@/workers/protocol";
-import { DEFAULT_CONFIG, advisorColor } from "./state";
+import { advisorColor, defaultConfig } from "./state";
+
+/** Every advisor the arena offers: the survey's six and the bring-your-own-key LLM. */
+export const ARENA_ADVISORS = [...ADVISORS, LLM_ADVISOR];
 
 interface Props {
   config: ArenaConfig;
@@ -29,9 +34,11 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
     const next = has ? config.advisors.filter((a) => a !== id) : [...config.advisors, id];
     set(
       "advisors",
-      ADVISORS.map((a) => a.id).filter((a) => next.includes(a)),
+      ARENA_ADVISORS.map((a) => a.id).filter((a) => next.includes(a)),
     );
   };
+  const dataset = DATASETS[config.dataset];
+  const needsPlan = config.advisors.includes("llm") && !config.llm;
 
   return (
     <form
@@ -41,6 +48,31 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
         if (!running) onRun();
       }}
     >
+      <div>
+        <Segmented
+          label="Dataset"
+          value={config.dataset}
+          disabled={running}
+          onChange={(v) => set("dataset", v)}
+          options={DATASET_IDS.map((d) => ({
+            value: d,
+            label: DATASETS[d].short,
+            hint: DATASETS[d].label,
+          }))}
+        />
+        <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
+          {dataset.blurb}{" "}
+          {config.dataset === "louvre" && (
+            <a
+              href={INFO20003.erd}
+              className="text-foreground decoration-mint underline underline-offset-2"
+            >
+              See its 2020 design
+            </a>
+          )}
+        </p>
+      </div>
+
       <Segmented
         label="Engine"
         value={config.engine}
@@ -66,27 +98,51 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
           value={config.scenario}
           disabled={running}
           onChange={(v) => set("scenario", v as ScenarioId)}
-          options={(Object.keys(SCENARIOS) as ScenarioId[]).map((s) => ({
+          options={SCENARIO_IDS.map((s) => ({
             value: s,
             label: SCENARIOS[s].label,
           }))}
         />
         <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
-          {SCENARIOS[config.scenario].blurb}
+          {scenarioBlurb(config.scenario, dataset.suite)}
         </p>
       </div>
 
-      <Segmented
-        label="Data size"
-        value={config.scale}
-        disabled={running}
-        onChange={(v) => set("scale", v)}
-        options={Object.values(SCALES).map((s) => ({
-          value: s.id,
-          label: s.label.split(" · ")[0],
-          hint: s.label,
-        }))}
-      />
+      {config.scenario === "drifting" && (
+        <RangeField
+          label="Drift"
+          value={config.drift}
+          min={0}
+          max={1}
+          step={0.25}
+          disabled={running}
+          onChange={(v) => set("drift", v)}
+          format={(v) => `${Math.round(v * 100)}% focused`}
+          hint="Share of each round drawn from the current phase's group: 0 is static, 1 is shifting."
+        />
+      )}
+
+      {dataset.scalable ? (
+        <Segmented
+          label="Data size"
+          value={config.scale}
+          disabled={running}
+          onChange={(v) => set("scale", v)}
+          options={Object.values(SCALES).map((s) => ({
+            value: s.id,
+            label: s.label.split(" · ")[0],
+            hint: s.label,
+          }))}
+        />
+      ) : (
+        <div>
+          <p className="kicker mb-1.5">Data size</p>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            Fixed: the INFO20003 file, 19 tables and about 66,000 rows of synthetic activity
+            (largest table: 19,545 wing scans).
+          </p>
+        </div>
+      )}
 
       <RangeField
         label="Rounds"
@@ -112,7 +168,7 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
       <fieldset disabled={running}>
         <legend className="kicker mb-1.5">Advisors</legend>
         <ul className="grid gap-1">
-          {ADVISORS.map((a) => {
+          {ARENA_ADVISORS.map((a) => {
             const on = config.advisors.includes(a.id);
             return (
               <li key={a.id}>
@@ -148,6 +204,11 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
           })}
         </ul>
       </fieldset>
+      {needsPlan && (
+        <p className="text-muted-foreground -mt-3 text-xs" role="status">
+          The LLM advisor needs an approved proposal first, from the LLM index advisor panel.
+        </p>
+      )}
 
       <details className="group border-border bg-surface-2/50 rounded-lg border px-3 py-2">
         <summary className="text-muted-foreground hover:text-foreground cursor-pointer text-sm select-none">
@@ -228,7 +289,7 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
             key="run"
             type="submit"
             className="flex-1"
-            disabled={config.advisors.length === 0}
+            disabled={config.advisors.length === 0 || needsPlan}
           >
             <Play className="size-3.5" aria-hidden /> Run experiment
           </Button>
@@ -237,7 +298,7 @@ export function ArenaControls({ config, onChange, running, onRun, onStop }: Prop
           type="button"
           variant="ghost"
           disabled={running}
-          onClick={() => onChange(DEFAULT_CONFIG)}
+          onClick={() => onChange(defaultConfig(config.dataset))}
           aria-label="Reset settings to defaults"
           title="Reset settings"
         >

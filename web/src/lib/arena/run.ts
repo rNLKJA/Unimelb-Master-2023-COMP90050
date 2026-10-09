@@ -100,8 +100,9 @@ export function runAdvisor({
       whatIf,
       rng,
     });
-    const algoMs = now() - t0;
-    const whatIfCalls = whatIf.calls - callsBefore;
+    const algoMs = advisor.reference ? 0 : now() - t0;
+    const whatIfCalls = advisor.reference ? 0 : whatIf.calls - callsBefore;
+    const overheadMs = proposal ? (advisor.overheadMs?.(round) ?? 0) : 0;
 
     let creationMs = 0;
     const created: { index: IndexDef; ms: number; bytes: number }[] = [];
@@ -140,7 +141,7 @@ export function runAdvisor({
 
     const record: RoundRecord = {
       round,
-      recommendationMs: algoMs + whatIfCalls * whatIfLatencyMs,
+      recommendationMs: algoMs + whatIfCalls * whatIfLatencyMs + overheadMs,
       creationMs,
       executionMs,
       whatIfCalls,

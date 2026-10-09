@@ -8,8 +8,8 @@ import { smallDb } from "@/lib/test/fixtures";
 import { runAdvisor } from "@/lib/arena/run";
 import { generateWorkload } from "@/lib/workload/scenarios";
 import {
-  CONTEXT_DIMENSION,
   D_COVERING,
+  contextLayout,
   contextVector,
   generateArms,
   workloadPredicateColumns,
@@ -20,6 +20,7 @@ import { selectSuperArm } from "./oracle";
 
 const { stats } = smallDb();
 const model = new CostModel(stats);
+const layout = contextLayout(stats);
 
 /**
  * Perera et al. (2023), Example 1: for "SELECT A.C1 FROM A WHERE A.C2 = 5 AND
@@ -55,13 +56,14 @@ describe("MAB arms and contexts (paper parity)", () => {
 
   it("encodes column position as 10^-j and leaves payload-only columns at 0", () => {
     const arm = arms.get("customer(c_nationkey, c_mktsegment, c_name)")!;
-    const x = contextVector(arm, workloadPredicateColumns([example1]), {
+    const x = contextVector(arm, workloadPredicateColumns([example1]), layout, {
       materialised: false,
       databaseBytes: 1e6,
       usage: 0,
     });
     const nonZero = [...x.entries()].filter(([, v]) => v !== 0).map(([, v]) => v);
-    expect(x).toHaveLength(CONTEXT_DIMENSION);
+    // one component per column of the seven TPC-H tables, plus the three derived statistics
+    expect(x).toHaveLength(3 + 41);
     expect(x[D_COVERING]).toBe(1);
     // nation key first (1), segment second (0.1), name is payload (0), plus covering flag and size
     expect(nonZero.filter((v) => v === 1 || v === 0.1)).toHaveLength(3);
@@ -70,12 +72,12 @@ describe("MAB arms and contexts (paper parity)", () => {
 
   it("drops the size feature once an arm is materialised", () => {
     const arm = arms.get("customer(c_nationkey)")!;
-    const fresh = contextVector(arm, new Set(), {
+    const fresh = contextVector(arm, new Set(), layout, {
       materialised: false,
       databaseBytes: 1e6,
       usage: 0,
     });
-    const built = contextVector(arm, new Set(), {
+    const built = contextVector(arm, new Set(), layout, {
       materialised: true,
       databaseBytes: 1e6,
       usage: 0,

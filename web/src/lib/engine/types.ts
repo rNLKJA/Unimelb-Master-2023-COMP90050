@@ -1,4 +1,4 @@
-import { SCHEMA, type TableName } from "@/lib/db/schema";
+import type { TableName } from "@/lib/db/schema";
 
 /** A secondary B-tree index: key columns in order (SQLite has no INCLUDE columns). */
 export interface IndexDef {
@@ -19,7 +19,7 @@ export function createIndexSql(ix: IndexDef): string {
   return `CREATE INDEX ${indexName(ix)} ON ${ix.table} (${ix.columns.join(", ")})`;
 }
 
-/** Inclusive numeric range on a column (dates as day numbers since 1992-01-01). */
+/** Inclusive numeric range on a column (dates as day numbers since 1992-01-01, fractional for timestamps). */
 export interface RangePredicate {
   column: string;
   lo: number;
@@ -59,8 +59,17 @@ export function referencedColumns(access: TableAccess, joinColumn?: string): str
   return [...cols];
 }
 
-/** True when `ix` alone answers every column the access needs (the rowid/PK is always present). */
-export function isCovering(ix: IndexDef, access: TableAccess, joinColumn?: string): boolean {
-  const pk = SCHEMA[access.table].primaryKey;
-  return referencedColumns(access, joinColumn).every((c) => c === pk || ix.columns.includes(c));
+/**
+ * True when `ix` alone answers every column the access needs. The rowid, and
+ * so an INTEGER PRIMARY KEY `primaryKey`, is always in a SQLite index entry.
+ */
+export function isCovering(
+  ix: IndexDef,
+  access: TableAccess,
+  joinColumn: string | undefined,
+  primaryKey: string | null,
+): boolean {
+  return referencedColumns(access, joinColumn).every(
+    (c) => c === primaryKey || ix.columns.includes(c),
+  );
 }

@@ -17,14 +17,15 @@ import { databaseBytes } from "@/lib/db/stats";
 import { indexId, type IndexDef, type QueryInstance } from "@/lib/engine/types";
 import type { Advisor, AdvisorContext, RoundFeedback } from "../types";
 import {
-  CONTEXT_DIMENSION,
   D_SIZE,
   DEFAULT_ARM_OPTIONS,
+  contextLayout,
   contextVector,
   generateArms,
   workloadPredicateColumns,
   type Arm,
   type ArmOptions,
+  type ContextLayout,
 } from "./arms";
 import { C2UCB, DEFAULT_C2UCB } from "./c2ucb";
 import { selectSuperArm } from "./oracle";
@@ -74,7 +75,9 @@ export interface MabRoundTrace {
 
 export class MabAdvisor implements Advisor {
   readonly id = "mab" as const;
-  readonly bandit: C2UCB;
+  /** Created on the first recommendation, once the dataset's columns are known. */
+  private learner: C2UCB | null = null;
+  private layout: ContextLayout | null = null;
   private seen = new Set<string>();
   private store = new Map<string, { query: QueryInstance; lastSeen: number }>();
   private usage = new Map<string, number>();
@@ -83,18 +86,24 @@ export class MabAdvisor implements Advisor {
   private played: Played[] = [];
   readonly trace: MabRoundTrace[] = [];
 
-  constructor(readonly opts: MabOptions = DEFAULT_MAB) {
-    this.bandit = new C2UCB({
-      dimension: CONTEXT_DIMENSION,
-      alpha: opts.alpha,
-      lambda: opts.lambda,
-      alphaDecay: opts.alphaDecay,
-    });
+  constructor(readonly opts: MabOptions = DEFAULT_MAB) {}
+
+  /** The C²UCB learner (throws before the first recommendation). */
+  get bandit(): C2UCB {
+    if (!this.learner) throw new Error("The bandit starts at its first recommendation");
+    return this.learner;
   }
 
   recommend(ctx: AdvisorContext): IndexDef[] | null {
     const last = ctx.history.at(-1);
     if (!last || last.length === 0) return null;
+    const layout = (this.layout ??= contextLayout(ctx.whatIf.stats));
+    this.learner ??= new C2UCB({
+      dimension: layout.dimension,
+      alpha: this.opts.alpha,
+      lambda: this.opts.lambda,
+      alphaDecay: this.opts.alphaDecay,
+    });
 
     // Query store: latest instance and last-seen round per template.
     for (const q of last) this.store.set(q.template, { query: q, lastSeen: ctx.round - 1 });
@@ -114,7 +123,7 @@ export class MabAdvisor implements Advisor {
     const dbBytes = databaseBytes(ctx.whatIf.stats);
     const current = new Set(ctx.current.map(indexId));
     const contexts = arms.map((arm) =>
-      contextVector(arm, predicates, {
+      contextVector(arm, predicates, layout, {
         materialised: current.has(arm.id),
         databaseBytes: dbBytes,
         usage: this.usage.get(arm.id) ?? 0,
