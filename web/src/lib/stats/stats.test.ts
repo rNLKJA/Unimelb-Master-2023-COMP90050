@@ -17,6 +17,7 @@ import {
   pairedMeanDiffBootstrap,
   pairedRatioBootstrap,
   pairedSignTest,
+  pigeonholeBootstrapCI,
   quantileSorted,
   sd,
   signTest,
@@ -178,6 +179,91 @@ describe("percentile bootstrap", () => {
     });
     expect(bootstrapCI(0, () => 1).estimate).toBeNaN();
     expect(() => pairedMeanDiffBootstrap([1], [1, 2])).toThrow();
+  });
+});
+
+describe("pigeonhole bootstrap (sessions x workloads)", () => {
+  const popvar = (xs: number[]) => {
+    const m = mean(xs);
+    return xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length;
+  };
+  /** Exact bootstrap variance of the grid mean (Owen 2007), K rows by R columns. */
+  const exactVariance = (y: number[], K: number, R: number) => {
+    const rowSums = Array.from({ length: K }, (_, s) =>
+      y.slice(s * R, s * R + R).reduce((t, x) => t + x, 0),
+    );
+    const colSums = Array.from({ length: R }, (_, r) =>
+      Array.from({ length: K }, (_, s) => y[s * R + r]).reduce((t, x) => t + x, 0),
+    );
+    const grand = mean(y);
+    let z2 = 0;
+    for (let s = 0; s < K; s++)
+      for (let r = 0; r < R; r++)
+        z2 += (y[s * R + r] - rowSums[s] / R - colSums[r] / K + grand) ** 2;
+    return (z2 + K * popvar(rowSums) + R * popvar(colSums)) / (K * R) ** 2;
+  };
+  const meanOf = (y: number[], into?: number[]) => (cells: Int32Array) => {
+    let t = 0;
+    for (let i = 0; i < cells.length; i++) t += y[cells[i]];
+    into?.push(t / cells.length);
+    return t / cells.length;
+  };
+
+  it("the exact variance formula matches full enumeration on a small grid", () => {
+    // 2 rows x 3 columns: 2^2 row draws x 3^3 column draws, all equally likely.
+    const y = [1, 4, 2, 7, 3, 9];
+    const K = 2;
+    const R = 3;
+    const means: number[] = [];
+    for (let a = 0; a < K ** K; a++)
+      for (let b = 0; b < R ** R; b++) {
+        const rows = [a % K, Math.floor(a / K) % K];
+        const cols = [b % R, Math.floor(b / R) % R, Math.floor(b / R / R) % R];
+        let t = 0;
+        for (const s of rows) for (const r of cols) t += y[s * R + r];
+        means.push(t / (K * R));
+      }
+    expect(mean(means)).toBeCloseTo(mean(y), 12);
+    expect(popvar(means)).toBeCloseTo(exactVariance(y, K, R), 12);
+  });
+
+  it("its Monte Carlo variance matches the exact formula for a crossed design", () => {
+    const K = 5;
+    const R = 10;
+    const rng = createStatsRng(3);
+    const session = Array.from({ length: K }, () => 4 * rng.next());
+    const workload = Array.from({ length: R }, () => 10 * rng.next());
+    const y = Array.from(
+      { length: K * R },
+      (_, i) => 100 + session[Math.floor(i / R)] + workload[i % R] + rng.next(),
+    );
+    const draws: number[] = [];
+    const ci = pigeonholeBootstrapCI(K, R, meanOf(y, draws), { B: 20_000 });
+    draws.shift(); // the estimate on the full grid
+    const exact = exactVariance(y, K, R);
+    expect(ci.estimate).toBeCloseTo(mean(y), 12);
+    expect(ci.n).toBe(K * R);
+    expect(Math.abs(mean(draws) - mean(y))).toBeLessThan(4 * Math.sqrt(exact / 20_000));
+    expect(rel(popvar(draws), exact)).toBeLessThan(0.05);
+  });
+
+  it("is wider than resampling the cells as if they were independent", () => {
+    // Sessions that differ by a constant: the one-way bootstrap over all 50
+    // cells barely sees it; the pigeonhole bootstrap does.
+    const K = 5;
+    const R = 10;
+    const rng = createStatsRng(11);
+    const y = Array.from(
+      { length: K * R },
+      (_, i) => 50 + 3 * Math.floor(i / R) + 0.2 * rng.next(),
+    );
+    const two = pigeonholeBootstrapCI(K, R, meanOf(y));
+    const one = bootstrapCI(K * R, meanOf(y));
+    expect(two.upper - two.lower).toBeGreaterThan(1.8 * (one.upper - one.lower));
+    expect(pigeonholeBootstrapCI(K, R, meanOf(y), { seed: 5 })).toEqual(
+      pigeonholeBootstrapCI(K, R, meanOf(y), { seed: 5 }),
+    );
+    expect(pigeonholeBootstrapCI(0, R, meanOf(y)).estimate).toBeNaN();
   });
 });
 

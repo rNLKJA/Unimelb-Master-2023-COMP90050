@@ -4,8 +4,10 @@
  * are reproducible; `B` resamples default to 2000.
  *
  * With few units (the benchmark's default is 10 seeded replicates) the
- * percentile interval is somewhat too narrow; the methods page says so and
- * the benchmark lets you raise the replicate count.
+ * percentile interval is somewhat too narrow. Resampling replicates from one
+ * run also leaves out run-to-run variation (machine state, JIT and heap), so
+ * the published benchmark numbers come from several independent sessions
+ * through `pigeonholeBootstrapCI`.
  */
 import { createStatsRng, STATS_SEED } from "./random";
 
@@ -77,6 +79,64 @@ export function bootstrapCI(
   for (let b = 0; b < opts.B; b++) {
     for (let i = 0; i < n; i++) idx[i] = rng.int(n);
     const v = stat(idx);
+    if (Number.isFinite(v)) draws[kept++] = v;
+  }
+  const sorted = draws.slice(0, kept).sort();
+  const alpha = (1 - opts.level) / 2;
+  return {
+    estimate,
+    lower: quantileSorted(sorted, alpha),
+    upper: quantileSorted(sorted, 1 - alpha),
+    B: kept,
+    seed: opts.seed,
+    level: opts.level,
+    n,
+  };
+}
+
+/**
+ * Pigeonhole (two-way) percentile bootstrap for a crossed design (Owen 2007,
+ * "The pigeonhole bootstrap", Annals of Applied Statistics 1(2), 386-411).
+ * The data sit in a `rows` x `cols` grid where both factors are random: in
+ * the benchmark, independent sessions (fresh processes) x workload seeds,
+ * with every session replaying the same seeds. Each resample draws rows and
+ * columns independently with replacement and keeps every cell where a drawn
+ * row meets a drawn column, so session-to-session and workload-to-workload
+ * variation both reach the interval. Resampling replicates within sessions
+ * instead would treat the same ten workloads, re-run K times, as 10K
+ * independent ones and understate the workload term K-fold.
+ *
+ * `stat` receives the flat indices (row * cols + col) of the resampled
+ * grid's rows * cols cells. For a mean, the bootstrap variance is exactly
+ * (||H_r Y H_c||^2 + rows * var(row sums) + cols * var(column sums)) /
+ * (rows * cols)^2, with H the centring matrices and var the population
+ * variance. That counts the interaction term more than once, so the interval
+ * is mildly conservative.
+ */
+export function pigeonholeBootstrapCI(
+  rows: number,
+  cols: number,
+  stat: (cells: Int32Array) => number,
+  options: BootstrapOptions = {},
+): BootstrapInterval {
+  const opts = withDefaults(options);
+  const n = Math.max(0, rows) * Math.max(0, cols);
+  if (n === 0) return empty(opts, n);
+  const all = new Int32Array(n);
+  for (let i = 0; i < n; i++) all[i] = i;
+  const estimate = stat(all);
+  const rng = createStatsRng(opts.seed);
+  const draws = new Float64Array(opts.B);
+  const r = new Int32Array(rows);
+  const cells = new Int32Array(n);
+  let kept = 0;
+  for (let b = 0; b < opts.B; b++) {
+    for (let i = 0; i < rows; i++) r[i] = rng.int(rows);
+    for (let j = 0; j < cols; j++) {
+      const c = rng.int(cols);
+      for (let i = 0; i < rows; i++) cells[i * cols + j] = r[i] * cols + c;
+    }
+    const v = stat(cells);
     if (Number.isFinite(v)) draws[kept++] = v;
   }
   const sorted = draws.slice(0, kept).sort();
