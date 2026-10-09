@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState } from "react";
 import { useElementWidth } from "@/hooks/use-element-width";
-import { niceTicks } from "@/lib/format";
+import { niceTicksRange } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export interface Series {
@@ -13,6 +13,8 @@ export interface Series {
   values: (number | null)[];
   dashed?: boolean;
   width?: number;
+  /** A shaded interval around the line (e.g. pointwise 95% confidence bands). */
+  band?: { lower: (number | null)[]; upper: (number | null)[] };
 }
 
 export interface Marker {
@@ -81,22 +83,21 @@ export function LineChart({
   const [hover, setHover] = useState<number | null>(null);
   const clip = useId();
   const n = length ?? Math.max(0, ...series.map((s) => s.values.length));
-  const max = useMemo(
-    () =>
-      Math.max(
-        1e-9,
-        ...series.flatMap((s) =>
-          s.values.filter((v): v is number => v !== null && Number.isFinite(v)),
-        ),
+  const [min, max] = useMemo(() => {
+    const all = series.flatMap((s) =>
+      [...s.values, ...(s.band?.lower ?? []), ...(s.band?.upper ?? [])].filter(
+        (v): v is number => v !== null && Number.isFinite(v),
       ),
-    [series],
-  );
-  const ticks = niceTicks(max, 4);
+    );
+    return [Math.min(0, ...all), Math.max(1e-9, ...all)];
+  }, [series]);
+  const ticks = niceTicksRange(min, max, 4);
   const top = ticks[ticks.length - 1] || 1;
+  const bottom = Math.min(0, ticks[0] ?? 0);
   const innerW = Math.max(10, width - PAD.left - PAD.right);
   const innerH = height - PAD.top - PAD.bottom;
   const x = (i: number) => PAD.left + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
-  const y = (v: number) => PAD.top + innerH - (v / top) * innerH;
+  const y = (v: number) => PAD.top + innerH - ((v - bottom) / (top - bottom || 1)) * innerH;
   const xs = (() => {
     if (!xTicks) {
       const step = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(innerW / 70))));
@@ -122,6 +123,18 @@ export function LineChart({
       pen = true;
     });
     return d;
+  };
+
+  const area = (band: NonNullable<Series["band"]>) => {
+    const pts: string[] = [];
+    const back: string[] = [];
+    band.lower.forEach((lo, i) => {
+      const hi = band.upper[i];
+      if (lo === null || hi === null || !Number.isFinite(lo) || !Number.isFinite(hi)) return;
+      pts.push(`${x(i).toFixed(1)},${y(hi).toFixed(1)}`);
+      back.unshift(`${x(i).toFixed(1)},${y(lo).toFixed(1)}`);
+    });
+    return pts.length ? `M${[...pts, ...back].join("L")}Z` : "";
   };
 
   const onMove = (e: React.PointerEvent<SVGRectElement>) => {
@@ -230,6 +243,17 @@ export function LineChart({
           </g>
         ))}
         <g clipPath={`url(#${clip})`}>
+          {series.map((s) =>
+            s.band ? (
+              <path
+                key={`${s.id}-band`}
+                d={area(s.band)}
+                fill={s.color}
+                fillOpacity={0.16}
+                stroke="none"
+              />
+            ) : null,
+          )}
           {series.map((s) => (
             <path
               key={s.id}

@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { ADVISOR_BY_ID } from "@/lib/advisors/registry";
 import type { AdvisorId } from "@/lib/advisors/types";
 import { formatBytes, formatInt, formatMs } from "@/lib/format";
-import { TEMPLATE_BY_ID } from "@/lib/workload/templates";
 import { cn } from "@/lib/utils";
 import { BreakdownBars, TIME_SEGMENTS } from "@/components/charts/breakdown-bars";
 import { Legend, LineChart, type Series } from "@/components/charts/line-chart";
@@ -414,7 +413,7 @@ export function TemplateTable({ state }: { state: ArenaState }) {
                 <tr key={t.id} className="border-border/50 border-b last:border-0">
                   <th scope="row" className="py-1.5 pr-3 text-left font-normal">
                     <span className="text-muted-foreground mr-2 font-mono text-xs">{t.id}</span>
-                    {TEMPLATE_BY_ID.get(t.id)?.title}
+                    {t.title}
                   </th>
                   {values.map((v, i) => (
                     <td
@@ -552,6 +551,7 @@ export function FinalPlans({ state }: { state: ArenaState }) {
   const id = picked && ids.includes(picked) ? picked : ids[ids.length - 1];
   const plans = id ? state.runs[id]?.plans : undefined;
   const sample = state.setup?.workload.sample ?? [];
+  const titles = new Map((state.setup?.workload.templates ?? []).map((t) => [t.id, t.title]));
   if (!id || !plans) return null;
   return (
     <Panel>
@@ -575,7 +575,7 @@ export function FinalPlans({ state }: { state: ArenaState }) {
           >
             <p className="mb-1 flex items-baseline gap-2 text-sm">
               <span className="text-muted-foreground font-mono text-xs">{q.template}</span>
-              {TEMPLATE_BY_ID.get(q.template)?.title}
+              {titles.get(q.template)}
             </p>
             <PlanTree nodes={plans[q.template] ?? []} />
           </div>

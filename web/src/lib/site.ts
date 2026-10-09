@@ -20,8 +20,18 @@ export const SITE = {
 export const NAV = [
   { href: "/", label: "Overview" },
   { href: "/survey", label: "Survey map" },
-  { href: "/arena", label: "Advisor arena" },
+  { href: "/arena", label: "Arena" },
+  { href: "/benchmark", label: "Benchmark" },
   { href: "/forecast", label: "Forecasting" },
   { href: "/console", label: "SQL console" },
+  { href: "/methods", label: "Methods" },
   { href: "/about", label: "About" },
 ] as const;
+
+/** Rin's undergraduate database-design project, the first stop of the database journey. */
+export const INFO20003 = {
+  site: "https://info20003-louvre-ops-db.vercel.app",
+  erd: "https://info20003-louvre-ops-db.vercel.app/schema",
+  subject: "INFO20003 Database Systems",
+  term: "2020 Semester 1",
+};

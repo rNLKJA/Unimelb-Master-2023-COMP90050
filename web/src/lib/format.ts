@@ -10,6 +10,13 @@ export function formatMs(ms: number): string {
   return `${(ms * 1000).toFixed(0)} µs`;
 }
 
+/** A signed duration: "+59.7 ms", "−75.7 ms" (formatMs only handles magnitudes). */
+export function formatSignedMs(ms: number): string {
+  if (!Number.isFinite(ms)) return "–";
+  if (ms === 0) return "0 ms";
+  return `${ms < 0 ? "−" : "+"}${formatMs(Math.abs(ms))}`;
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(bytes >= 10_000_000 ? 0 : 1)} MB`;
   if (bytes >= 1000) return `${(bytes / 1000).toFixed(0)} kB`;
@@ -30,5 +37,21 @@ export function niceTicks(max: number, count = 4): number[] {
   for (let v = 0; v <= max + step * 0.001; v += step) ticks.push(Number(v.toPrecision(12)));
   if (ticks[ticks.length - 1] < max)
     ticks.push(Number((ticks[ticks.length - 1] + step).toPrecision(12)));
+  return ticks;
+}
+
+/** "Nice" ticks spanning [min, max], including 0 when the range crosses it. */
+export function niceTicksRange(min: number, max: number, count = 4): number[] {
+  if (!(min < 0)) return niceTicks(max, count);
+  if (!(max > 0))
+    return niceTicks(-min, count)
+      .map((t) => (t === 0 ? 0 : -t))
+      .reverse();
+  const raw = (max - min) / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
+  const ticks: number[] = [];
+  for (let v = Math.floor(min / step) * step; v <= max + step * 0.999; v += step)
+    ticks.push(Number(v.toPrecision(12)) || 0);
   return ticks;
 }

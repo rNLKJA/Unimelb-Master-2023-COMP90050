@@ -1,8 +1,12 @@
 "use client";
 
 import { Database, FlaskConical, LoaderCircle, TriangleAlert } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useReducer, useRef, useState } from "react";
+import { LlmAdvisorPanel } from "@/components/ai/llm-advisor-panel";
 import { ADVISOR_BY_ID } from "@/lib/advisors/registry";
+import { DATASETS, isDatasetId, type DatasetId } from "@/lib/datasets/registry";
 import { formatBytes, formatInt, formatMs } from "@/lib/format";
 import { useLabWorker } from "@/hooks/use-lab-worker";
 import { Button } from "@/components/ui/button";
@@ -17,10 +21,28 @@ import {
   TemplateTable,
   TimeCharts,
 } from "./results";
-import { DEFAULT_CONFIG, INITIAL, reducer } from "./state";
+import { INITIAL, defaultConfig, reducer } from "./state";
 
-export function ArenaApp() {
-  const [config, setConfig] = useState<ArenaConfig>(DEFAULT_CONFIG);
+/** The arena with its dataset taken from the URL (/arena?dataset=louvre). */
+export function ArenaFromUrl() {
+  const dataset = useSearchParams().get("dataset");
+  const initial: DatasetId = isDatasetId(dataset) ? dataset : "tpch";
+  return <ArenaApp key={initial} initialDataset={initial} />;
+}
+
+/**
+ * A plan is proposed for one dataset and storage budget; changing either
+ * drops it, because its indexes may no longer exist or fit.
+ */
+function keepPlan(prev: ArenaConfig, next: ArenaConfig): ArenaConfig {
+  return next.llm && (next.dataset !== prev.dataset || next.budget !== prev.budget)
+    ? { ...next, llm: null }
+    : next;
+}
+
+export function ArenaApp({ initialDataset = "tpch" }: { initialDataset?: DatasetId }) {
+  const [config, setRawConfig] = useState<ArenaConfig>(() => defaultConfig(initialDataset));
+  const setConfig = (next: ArenaConfig) => setRawConfig((prev) => keepPlan(prev, next));
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const onMessage = useCallback((msg: LabResponse) => dispatch({ type: "msg", msg }), []);
   const { post, restart } = useLabWorker(onMessage);
@@ -35,8 +57,9 @@ export function ArenaApp() {
       results.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const runDefault = () => {
-    setConfig(DEFAULT_CONFIG);
-    run(DEFAULT_CONFIG);
+    const c = defaultConfig(config.dataset);
+    setConfig(c);
+    run(c);
   };
   const stop = () => {
     restart();
@@ -53,6 +76,8 @@ export function ArenaApp() {
       (used.advisors.length * used.rounds)
     : 0;
   const hasResults = Object.keys(state.runs).length > 0;
+  const dataset = DATASETS[config.dataset];
+  const usedDataset = DATASETS[used?.dataset ?? config.dataset];
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
@@ -105,8 +130,9 @@ export function ArenaApp() {
             </span>
             {state.setup && (
               <span className="text-muted-foreground font-mono text-xs">
-                {formatInt(state.setup.info.rows.lineitem)} line items ·{" "}
-                {formatBytes(state.setup.info.dataBytes)} data · budget{" "}
+                {usedDataset.short} ·{" "}
+                {formatInt(state.setup.info.rows[usedDataset.headlineTable] ?? 0)}{" "}
+                {usedDataset.headlineNoun} · {formatBytes(state.setup.info.dataBytes)} data · budget{" "}
                 {formatBytes(state.setup.budgetBytes)}
                 {used?.engine === "sqlite" && state.setup.info.sqliteVersion
                   ? ` · SQLite ${state.setup.info.sqliteVersion}`
@@ -141,6 +167,22 @@ export function ArenaApp() {
           </Panel>
         )}
 
+        {config.advisors.includes("llm") && (
+          <LlmAdvisorPanel
+            request={{
+              dataset: config.dataset,
+              scale: config.scale,
+              seed: config.seed,
+              scenario: config.scenario,
+              drift: config.drift,
+              rounds: config.rounds,
+              budget: config.budget,
+            }}
+            plan={config.llm}
+            onPlan={(plan) => setRawConfig((c) => ({ ...c, llm: plan }))}
+          />
+        )}
+
         {!hasResults && state.status !== "error" && (
           <Panel className="bg-console-grid relative overflow-hidden">
             <div className="from-surface/40 to-surface relative bg-gradient-to-b p-6 sm:p-10">
@@ -148,10 +190,11 @@ export function ArenaApp() {
               <h3 className="mt-4 text-2xl font-semibold">Pick a workload, then press run</h3>
               <div className="prose-lab mt-3 max-w-2xl text-sm">
                 <p>
-                  The worker generates a TPC-H-like database (about 30,000 line items at size S),
-                  loads it into SQLite compiled to WebAssembly, and replays the same rounds of
-                  queries once per advisor. Before each round an advisor may build or drop indexes;
-                  every millisecond it spends recommending, building and querying is counted.
+                  {dataset.id === "louvre"
+                    ? "The worker downloads the Louvre database from INFO20003 (1.2 MB compressed), loads its 19 tables into SQLite compiled to WebAssembly without any secondary index, and replays the same rounds of box-office, gallery and exhibition queries once per advisor."
+                    : "The worker generates a TPC-H-like database (about 30,000 line items at size S), loads it into SQLite compiled to WebAssembly, and replays the same rounds of queries once per advisor."}{" "}
+                  Before each round an advisor may build or drop indexes; every millisecond it
+                  spends recommending, building and querying is counted.
                 </p>
                 <p>
                   Offline tools (DROP, AutoAdmin, DB2 Advisor, CoPhy) are invoked at the start of
@@ -169,6 +212,17 @@ export function ArenaApp() {
 
         {hasResults && (
           <>
+            <p className="text-muted-foreground px-1 text-xs">
+              One run on one seeded workload. For repeated runs with 95% confidence intervals,
+              paired comparisons and the bandit&apos;s regret, open the{" "}
+              <Link
+                href={`/benchmark?dataset=${used?.dataset ?? config.dataset}`}
+                className="text-foreground decoration-mint underline underline-offset-2"
+              >
+                benchmark
+              </Link>
+              .
+            </p>
             <Leaderboard state={state} />
             <TimeCharts state={state} />
             <ConfigMap state={state} />
