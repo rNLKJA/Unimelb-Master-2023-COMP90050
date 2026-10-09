@@ -1,4 +1,12 @@
-import { ArrowRight, BookOpen, FlaskConical, Radar, Sigma, Terminal } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  CirclePlay,
+  FlaskConical,
+  Radar,
+  Sigma,
+  Terminal,
+} from "lucide-react";
 import Link from "next/link";
 import { HeroConsole } from "@/components/home/hero-console";
 import { Scrolly, type Step } from "@/components/home/scrolly";
@@ -143,6 +151,12 @@ export default function HomePage() {
                 className="border-border bg-surface hover:bg-surface-2 inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors"
               >
                 Browse the survey map
+              </Link>
+              <Link
+                href="/tour"
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 rounded-lg px-2 py-2.5 text-sm font-medium transition-colors"
+              >
+                <CirclePlay className="text-mint size-4" aria-hidden /> Watch the tour
               </Link>
             </div>
             <dl className="grid max-w-xl grid-cols-2 gap-x-6 gap-y-4 pt-4 sm:grid-cols-4">

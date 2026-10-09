@@ -17,7 +17,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "bench:report": "node scripts/bench-report.mjs",
-    "docs:sync": "node scripts/sync-docs.mjs"
+    "docs:sync": "node scripts/sync-docs.mjs",
+    "showcase": "playwright test && node scripts/showcase-media.mjs",
+    "showcase:e2e": "playwright test",
+    "showcase:media": "node scripts/showcase-media.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -38,6 +41,7 @@
   "devDependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/ibm-plex-sans-condensed": "^5.3.0",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -1,0 +1,33 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:04.992
+Step 1 of 8: The arena: index advisors tune a live SQLite database (WebAssembly) in your browser.
+
+2
+00:00:04.992 --> 00:00:08.882
+Step 2 of 8: Pick the Louvre database designed in INFO20003: 19 tables of synthetic museum activity.
+
+3
+00:00:08.882 --> 00:00:18.203
+Step 3 of 8: A museum workload from seed 2023, in three phases: box office, gallery floor, exhibitions.
+
+4
+00:00:18.203 --> 00:00:24.590
+Step 4 of 8: Three contenders: no index, AutoAdmin's greedy what-if search and the C²UCB bandit.
+
+5
+00:00:24.590 --> 00:00:41.399
+Step 5 of 8: One measured run: recommendation, index builds and queries, and cumulative time per round.
+
+6
+00:00:41.399 --> 00:00:50.771
+Step 6 of 8: One run is an anecdote. The benchmark replays 10 seeded workloads (seeds 2023 to 2032).
+
+7
+00:00:50.771 --> 00:00:57.017
+Step 7 of 8: Mean cumulative time with 95% bootstrap intervals, then paired differences against greedy.
+
+8
+00:00:57.017 --> 00:01:07.162
+Step 8 of 8: Change, effect size d_z, sign test and the share won; then the bandit's regret with its band.

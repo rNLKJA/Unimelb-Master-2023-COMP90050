@@ -41,3 +41,7 @@ __pycache__/
 **/presentation/*turnitin*
 *.vtt
 *RecordingnewChat.txt
+
+# Showcase walkthroughs (pnpm showcase in web/) are small, optimised and served by /tour
+!web/public/showcase/*.mp4
+!web/public/showcase/*.vtt

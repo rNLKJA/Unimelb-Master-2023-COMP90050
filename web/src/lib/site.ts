@@ -19,6 +19,7 @@ export const SITE = {
 
 export const NAV = [
   { href: "/", label: "Overview" },
+  { href: "/tour", label: "Tour" },
   { href: "/survey", label: "Survey map" },
   { href: "/arena", label: "Arena" },
   { href: "/benchmark", label: "Benchmark" },
