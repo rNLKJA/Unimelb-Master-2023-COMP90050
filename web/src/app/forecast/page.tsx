@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ForecastLab, StepHeading } from "@/components/forecast/forecast-lab";
+import { SeedSpreadPanel } from "@/components/forecast/seed-spread";
 import { Callout } from "@/components/shared/section";
 import {
   DEFAULT_SETTINGS,
@@ -9,6 +10,7 @@ import {
   forecastDatabaseStats,
   templatizeExamples,
 } from "@/lib/forecast/view";
+import { SPREAD_SEEDS, seedSpread } from "@/lib/forecast/seeds";
 import { PAPER_BY_ID } from "@/lib/survey/papers";
 import { TEMPLATE_BY_ID } from "@/lib/workload/templates";
 
@@ -24,6 +26,7 @@ export default function ForecastPage() {
   const stats = forecastDatabaseStats();
   const view = buildForecastView(stats, DEFAULT_SETTINGS);
   const examples = templatizeExamples(stats);
+  const spread = seedSpread(stats, DEFAULT_SETTINGS, SPREAD_SEEDS);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -88,6 +91,10 @@ export default function ForecastPage() {
       </section>
 
       <ForecastLab initial={view} />
+
+      <section aria-label="Spread across traces" className="mt-16">
+        <SeedSpreadPanel spread={spread} />
+      </section>
 
       <section aria-labelledby="caveats" className="mt-20 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
         <div className="space-y-3">
