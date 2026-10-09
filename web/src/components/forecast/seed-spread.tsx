@@ -1,5 +1,6 @@
 import { Panel, PanelHeader } from "@/components/shared/section";
 import type { SeedSpread } from "@/lib/forecast/seeds";
+import type { ForecastSettings } from "@/lib/forecast/view";
 import { formatInterval, formatP, pctChange } from "@/lib/stats/format";
 import { cn } from "@/lib/utils";
 
@@ -22,14 +23,22 @@ function Cell({ children, className }: { children: React.ReactNode; className?: 
 }
 
 /** The forecasting pipeline on ten seeded traces: spread, intervals and paired comparisons. */
-export function SeedSpreadPanel({ spread }: { spread: SeedSpread }) {
+export function SeedSpreadPanel({
+  spread,
+  settings,
+}: {
+  spread: SeedSpread;
+  /** The settings the spread was computed with (the lab's defaults, at build time). */
+  settings: ForecastSettings;
+}) {
   const n = spread.seeds.length;
+  const used = `horizon ${settings.horizon} h, cluster threshold ρ = ${settings.rho}, ${settings.windowHours}-hour tuning windows, budget ${Math.round(settings.budget * 100)}% of the data`;
   return (
     <Panel>
       <PanelHeader
         level={2}
         title={`Across ${n} traces, not one`}
-        sub={`The same settings on traces generated from seeds ${spread.seeds[0]} to ${spread.seeds[n - 1]}. Means with 95% percentile-bootstrap intervals over traces (B = ${spread.bootstrap.B}, seed ${spread.bootstrap.seed}). Comparisons are paired by trace.`}
+        sub={`The default settings (${used}), not the ones chosen in the lab above, on traces generated from seeds ${spread.seeds[0]} to ${spread.seeds[n - 1]}. Means with 95% percentile-bootstrap intervals over traces (B = ${spread.bootstrap.B}, seed ${spread.bootstrap.seed}). Comparisons are paired by trace.`}
       />
       <div className="grid gap-6 p-4 sm:p-5 xl:grid-cols-2">
         <div

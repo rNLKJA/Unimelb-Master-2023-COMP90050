@@ -93,7 +93,7 @@ export default function ForecastPage() {
       <ForecastLab initial={view} />
 
       <section aria-label="Spread across traces" className="mt-16">
-        <SeedSpreadPanel spread={spread} />
+        <SeedSpreadPanel spread={spread} settings={DEFAULT_SETTINGS} />
       </section>
 
       <section aria-labelledby="caveats" className="mt-20 grid gap-6 lg:grid-cols-[1.2fr_1fr]">

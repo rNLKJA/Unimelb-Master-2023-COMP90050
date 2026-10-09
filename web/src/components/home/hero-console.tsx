@@ -25,25 +25,25 @@ export function HeroConsole() {
           <span className="text-white/45"> ...&gt; </span>SELECT COUNT(*), SUM(l_quantity){"\n"}
           <span className="text-white/45"> ...&gt; </span>FROM lineitem WHERE l_partkey = 742;{"\n"}
           <span className="text-[oklch(0.83_0.13_80)]">`--SCAN</span> lineitem
-          <span className="text-white/40">{"                    "}1.62 ms</span>
+          <span className="text-white/60">{"                    "}1.62 ms</span>
           {"\n\n"}
-          <span className="text-white/40">
+          <span className="text-white/60">
             -- MAB · C²UCB picks arm lineitem(l_partkey, l_quantity)
           </span>
           {"\n"}
-          <span className="text-white/40">-- θᵀx = 4.81 + α√(xᵀV⁻¹x) = 0.37</span>
+          <span className="text-white/60">-- θᵀx = 4.81 + α√(xᵀV⁻¹x) = 0.37</span>
           {"\n"}
           <span className="text-white/45">sqlite&gt; </span>
           <span className="text-[oklch(0.86_0.14_166)]">CREATE INDEX</span>{" "}
           ix_lineitem__l_partkey__l_quantity{"\n"}
           <span className="text-white/45"> ...&gt; </span>ON lineitem (l_partkey, l_quantity);
-          <span className="text-white/40">{"   "}18.4 ms</span>
+          <span className="text-white/60">{"   "}18.4 ms</span>
           {"\n\n"}
           <span className="text-[oklch(0.86_0.14_166)]">`--SEARCH</span> lineitem USING{" "}
           <span className="text-[oklch(0.86_0.14_166)]">COVERING INDEX</span>
           {"\n"}
           {"     "}ix_lineitem__l_partkey__l_quantity (l_partkey=?)
-          <span className="text-white/40">{"  "}0.03 ms</span>
+          <span className="text-white/60">{"  "}0.03 ms</span>
           <span
             className="ml-1 inline-block h-4 w-2 translate-y-[3px] animate-pulse bg-[oklch(0.86_0.14_166)]"
             aria-hidden

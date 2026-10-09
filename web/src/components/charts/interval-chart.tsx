@@ -144,27 +144,31 @@ export function IntervalChart({
           })}
         </svg>
       </div>
-      <table className="sr-only">
-        <caption>{caption}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Row</th>
-            <th scope="col">Estimate</th>
-            <th scope="col">95% interval</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.id}>
-              <th scope="row">{r.label}</th>
-              <td>{format(r.estimate)}</td>
-              <td>
-                {format(r.lower)} to {format(r.upper)}
-              </td>
+      {/* A table ignores sr-only's 1px width and grows with its contents, so the
+          wrapper is the element that is visually hidden. */}
+      <div className="sr-only">
+        <table>
+          <caption>{caption}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Row</th>
+              <th scope="col">Estimate</th>
+              <th scope="col">95% interval</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.id}>
+                <th scope="row">{r.label}</th>
+                <td>{format(r.estimate)}</td>
+                <td>
+                  {format(r.lower)} to {format(r.upper)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {reference && (
         <figcaption className="text-muted-foreground mt-1 text-[11px]">
           Dashed line: {reference.label}. Whiskers: 95% intervals.
