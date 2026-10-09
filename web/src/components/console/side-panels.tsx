@@ -4,7 +4,7 @@ import { KeyRound, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel, PanelHeader } from "@/components/shared/section";
-import { SCHEMA, TABLE_NAMES, type TableName } from "@/lib/db/schema";
+import { SCHEMA, TABLE_NAMES, type TpchTable } from "@/lib/db/schema";
 import { indexId, type IndexDef } from "@/lib/engine/types";
 import { formatBytes, formatInt } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ export function IndexPanel({
   disabled: boolean;
   onAction: (action: "create" | "drop", index: IndexDef) => void;
 }) {
-  const [table, setTable] = useState<TableName>("lineitem");
+  const [table, setTable] = useState<TpchTable>("lineitem");
   const [columns, setColumns] = useState<string[]>([]);
   const pk = SCHEMA[table].primaryKey;
   const choices = SCHEMA[table].columns.filter((c) => c.name !== pk);
@@ -81,7 +81,7 @@ export function IndexPanel({
             <select
               value={table}
               onChange={(e) => {
-                setTable(e.target.value as TableName);
+                setTable(e.target.value as TpchTable);
                 setColumns([]);
               }}
               className="border-input bg-surface rounded-md border px-2 py-1 font-mono text-xs"
@@ -139,7 +139,7 @@ export function IndexPanel({
   );
 }
 
-export function SchemaPanel({ rows }: { rows: Record<TableName, number> | null }) {
+export function SchemaPanel({ rows }: { rows: Record<string, number> | null }) {
   return (
     <Panel>
       <PanelHeader

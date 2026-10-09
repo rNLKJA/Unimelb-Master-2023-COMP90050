@@ -10,7 +10,7 @@
  * column; without a usable index the table is scanned (automatic indexes are
  * disabled in the lab so joins without an index really do nested-loop scans).
  */
-import { SCHEMA, columnDef, type TableName } from "@/lib/db/schema";
+import type { TableName } from "@/lib/db/schema";
 import type { DatabaseStats } from "@/lib/db/stats";
 import {
   indexId,
@@ -115,10 +115,15 @@ export class CostModel {
     return 1 / this.stats[table].columns[column].ndv;
   }
 
+  primaryKey(table: TableName): string | null {
+    return this.stats[table].primaryKey;
+  }
+
   rangeSelectivity(r: RangePredicate, table: TableName): number {
     const s = this.stats[table].columns[r.column];
     if (s.min === null || s.max === null) return 1 / 3;
-    const discrete = columnDef(r.column).type !== "real";
+    // Integers and days count both ends of the range; prices and timestamps are continuous.
+    const discrete = s.type === "int" || s.type === "date";
     const lo = Math.max(r.lo, s.min);
     const hi = Math.min(r.hi, s.max);
     if (hi < lo) return 0;
@@ -143,7 +148,7 @@ export class CostModel {
     const eq = joinColumn ? [...access.eq, joinColumn] : access.eq;
     let best: AccessPath = { kind: "scan", table, rows: n, cost: this.scanCost(table) };
 
-    const pk = SCHEMA[table].primaryKey;
+    const pk = this.primaryKey(table);
     if (pk && eq.includes(pk)) {
       // SQLite always resolves an equality on the INTEGER PRIMARY KEY with a
       // rowid lookup, even on tables small enough that a scan would be as fast.
@@ -176,7 +181,7 @@ export class CostModel {
       }
       if (matched.length === 0) continue;
       const rows = n * sel;
-      const covering = isCovering(ix, access, joinColumn);
+      const covering = isCovering(ix, access, joinColumn, pk);
       const cost = log2(n) * k.seekLevel + rows * k.indexRow + (covering ? 0 : rows * k.rowidFetch);
       // SQLite prefers the longer match / covering index on ties.
       if (cost < best.cost - 1e-12)
@@ -293,7 +298,8 @@ export class CostModel {
    * on B-tree pages ~92% full (fitted to SQLite page counts).
    */
   indexBytes(ix: IndexDef): number {
-    const key = ix.columns.reduce((s, c) => s + columnDef(c).width, 0);
+    const cols = this.stats[ix.table].columns;
+    const key = ix.columns.reduce((s, c) => s + cols[c].width, 0);
     const entry = key + (ix.columns.length - 1) + 7;
     return Math.ceil((this.rows(ix.table) * entry) / 0.92);
   }
