@@ -433,20 +433,7 @@ Don'ts
 
 ### Staff information
 
-**Lecturer**
-
-- Dr. Farhana Choudhury: farhana.choudhury@unimelb.edu.au
-
-**Head Tutor**
-
-- Dr. Tawfiq Islam: tawfiqqul.islam@unimelb.edu.au
-
-**Tutors**
-
-- Ahmad Asgharian Rezaei: a.asghariyanrezayi@gmail.com
-- Lakmal Muthugama: lakmal.muthugama@unimelb.edu.au
-- Daniel Gong: d.gong@unimelb.edu.au
-- David alexander Tedjopurnomo: davidtedjopurnomo@gmail.com
+I've left the teaching staff's names and contact details out of the public version of these notes.
 
 ## Subject Introduction
 
