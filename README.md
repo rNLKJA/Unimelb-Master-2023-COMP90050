@@ -34,7 +34,7 @@ The survey was written, not implemented. This revival implements the algorithms 
 
 ## The 2026 upgrade: statistical rigour and governed GenAI
 
-- **Benchmark with uncertainty.** Every advisor runs on R seeded replicate workloads (default 10). Means carry 95% percentile-bootstrap intervals, comparisons with AutoAdmin's greedy what-if search are paired (mean difference, ratio of means, Cohen's d_z, exact sign test, Wilson interval on the share of replicates won), and the bandit's regret is measured against the hindsight-optimal fixed configuration. A drift sweep repeats everything from a static to a shifting workload. Seeds are shown with every result.
+- **Benchmark with uncertainty.** Every advisor runs on R seeded replicate workloads (default 10), in a seeded random order after a discarded warm-up replicate. Means carry 95% percentile-bootstrap intervals, comparisons with AutoAdmin's greedy what-if search are paired (mean difference, ratio of means, Cohen's d_z, exact sign test, Wilson interval on the share of replicates won), and the bandit's regret is measured against the hindsight-optimal fixed configuration, with a count of the replicates where branch and bound proved it optimal. A drift sweep repeats everything from a static to a shifting workload. Seeds are shown with every result. In the browser the intervals describe one session; the published numbers pool five independent sessions with a pigeonhole bootstrap over sessions and workload seeds, so they include run-to-run variation.
 - **Statistics you can check.** The helpers in `web/src/lib/stats/` are unit tested against numpy, scipy and statsmodels (`scripts/verify_stats.py`) and base R (`scripts/verify_stats.R`).
 - **Database journey.** The Louvre database Rin designed in INFO20003 (2020) ships byte for byte and runs in the arena and the benchmark with a museum workload: ticket sales by hour, takings, barcode checks, wing footfall, entrance arrivals, audio-guide hires and exhibition bookings. The landing page and `/methods` link it to [its 2020 design](https://info20003-louvre-ops-db.vercel.app).
 - **LLM index advisor, bring your own key.** See below.
@@ -42,7 +42,7 @@ The survey was written, not implemented. This revival implements the algorithms 
 
 ### What the benchmark found
 
-On measured SQLite with 10 replicates, the bandit beat greedy what-if search on total time for static and HTAP workloads (for example 24% less on the TPC-H-like static workload, 95% CI 26% to 21% less) and lost on shifting workloads (28% more, 26% to 30% more). On build + run time, without recommendation, it was slower than greedy on the static workloads too: its advantage on these small workloads is that it never pays for a what-if search. The numbers, and why they differ from the paper the report quoted, are in [DR-003](docs/decisions/DR-003-bandit-formulation.md) and [`docs/benchmark-numbers.json`](docs/benchmark-numbers.json).
+On measured SQLite with five independent sessions of 10 replicates, the bandit beat greedy what-if search on total time for static and HTAP workloads (for example 23% less on the TPC-H-like static workload, 95% CI 24% to 21% less) and lost on shifting workloads (27% more, 22% to 32% more). On build + run time, without recommendation, it was slower than greedy on the static workloads too: its advantage on these small workloads is that it never pays for a what-if search. The numbers, and why they differ from the paper the report quoted, are in [DR-003](docs/decisions/DR-003-bandit-formulation.md) and [`docs/benchmark-numbers.json`](docs/benchmark-numbers.json).
 
 ## Bring your own key (optional AI)
 
@@ -53,7 +53,7 @@ The site is fully functional without any AI. The LLM index advisor on `/arena` a
 3. Ask for a proposal. The model sees the schema and its statistics, round 1 of the workload and SQLite's plans, and replies in a fixed JSON structure. The lab validates every index against the schema and the budget, writes the `CREATE INDEX` statements itself, labels the output "AI-generated" and builds nothing until you accept, edit or reject it.
 4. Run the arena or the benchmark with "LLM advisor" ticked to measure the proposal against greedy and the bandit with the same seeded workloads and paired statistics.
 
-Every call, decision and measurement is appended to an audit log in your browser's IndexedDB. View it at `/ai-log` and export it as JSON or CSV. The AI use statement on `/methods` says what the AI does, what it never does and what is sent to the provider. The approach is informed by the Australian Government's policy for the responsible use of AI in government, the EU AI Act's transparency principles and the NIST AI Risk Management Framework. It is not a claim of compliance with any of them.
+Every call that leaves the browser (failed and cancelled ones included), every decision and every measurement is appended to an audit log in your browser's IndexedDB; a proposal whose record cannot be written cannot be accepted. View the log at `/ai-log` and export it as JSON or CSV (cells that a spreadsheet would read as formulas are neutralised). The invalid-proposal rate is reported per provider, model, prompt version and dataset. The AI use statement on `/methods` says what the AI does, what it never does and what is sent to the provider, including that the provider sees your IP address and browser headers like any web request, and that Claude Sonnet 5.5's refusal fallback (on by default) may answer with another Claude model. The approach is informed by the Australian Government's policy for the responsible use of AI in government, the EU AI Act's transparency principles and the NIST AI Risk Management Framework. It is not a claim of compliance with any of them.
 
 ### Key results from the original report
 
@@ -148,7 +148,7 @@ Documentation and reference numbers:
 
 ```bash
 pnpm docs:sync      # after editing docs/: mirror it into web/content/ (a test fails until you do)
-pnpm bench:report   # about two minutes: regenerate docs/benchmark-numbers.json, then pnpm docs:sync
+pnpm bench:report   # about 12 minutes (five sessions): regenerate docs/benchmark-numbers.json, then pnpm docs:sync
 cd .. && uv run scripts/verify_stats.py && Rscript scripts/verify_stats.R   # refresh the stats fixtures
 ```
 

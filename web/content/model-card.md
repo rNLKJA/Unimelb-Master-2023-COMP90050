@@ -5,11 +5,14 @@ costs for the offline advisors (the what-if cost model), and three small forecas
 linear regression, kernel regression and HYBRID rule). None of them is trained on personal data, and none of them is
 used outside this teaching and portfolio site.
 
-Every interval below is a 95% interval. Proportions use Wilson intervals. Means and ratios use percentile-bootstrap
-intervals over seeded replicates (B = 2000, resampling seed 90050). Replicate r uses workload seed 2023 + r. Measured
-times come from `docs/benchmark-numbers.json`, which `pnpm bench:report` regenerates with the lab's own code (sql.js
-under Node 26 on an Apple M4 laptop, the same WebAssembly build a browser runs). A visitor's browser gives different
-absolute times.
+Every interval below is a 95% interval. Proportions use Wilson intervals. Replicate r uses workload seed 2023 + r.
+Measured times come from `docs/benchmark-numbers.json`, which `pnpm bench:report` regenerates with the lab's own code
+(sql.js under Node 26 on an Apple M4 laptop, the same WebAssembly build a browser runs). It runs five independent
+sessions (a fresh process each) over the same 10 seeds, with the advisors in a seeded random order after a discarded
+warm-up replicate. Benchmark means and ratios use a pigeonhole percentile bootstrap over sessions and seeds (B = 2000,
+resampling seed 90050), which includes run-to-run variation, and the file gives the range of single-session estimates
+next to each. The forecasting intervals are percentile-bootstrap intervals over traces. A visitor's browser gives
+different absolute times, and its intervals describe one session only.
 
 ## 1. What-if cost model
 
@@ -27,12 +30,14 @@ assuming uniform and independent columns.
 
 **Evaluation.**
 
-- Plan agreement with SQLite's planner: the model picks the same index as SQLite in all 10 tested TPC-H-like cases
-  (95% CI 72% to 100%) and all 13 tested Louvre cases (95% CI 77% to 100%). These are the cases in the unit tests, not
-  a random sample of queries.
+- Plan agreement with SQLite's planner: the unit tests check 10 hand-picked (template, index) cases on the TPC-H-like
+  data and 13 on the Louvre data, and the model picks the same index as SQLite in all of them. The tests must pass for
+  CI to be green and cover the templates I expected to agree, so they are a regression check, not an agreement rate.
+  Templates Q6, Q7 and Q9 (TPC-H-like) and L9 (Louvre) are not covered. An agreement rate would need a random sample
+  of (query, candidate index) pairs, with disagreements recorded rather than failing the build.
 - Index sizes: within 10% of SQLite's page counts on the tested TPC-H-like indexes and within 15% on the Louvre ones.
-- Timings: with no indexes, the simulated engine (built on this model) estimates 976 ms (938 to 1010) for 25 static
-  TPC-H-like rounds where measured SQLite takes 539 ms (528 to 557), and 255 ms where SQLite takes 208 ms (206 to 210)
+- Timings: with no indexes, the simulated engine (built on this model) estimates 976 ms (939 to 1010) for 25 static
+  TPC-H-like rounds where measured SQLite takes 534 ms (530 to 541), and 255 ms where SQLite takes 211 ms (204 to 222)
   on the Louvre data. It ranks configurations better than it predicts milliseconds.
 
 **Known failure modes.** Correlated columns and skewed values break the uniform-independence assumption. SQLite's
@@ -53,19 +58,21 @@ integer-programming advisors under one stopwatch.
 hyperparameters (α = 1, λ = 0.5, α shrinking 5% per round) are the authors' published TPC-H settings, not tuned on
 this lab's data.
 
-**Evaluation** (measured SQLite, 10 replicates, 25 rounds, 200% budget, against AutoAdmin's greedy what-if search).
+**Evaluation** (measured SQLite, five sessions of 10 replicates, 25 rounds, 200% budget, against AutoAdmin's greedy
+what-if search). "Single sessions" gives the lowest and highest single-session estimate of the change.
 
-| Dataset        | Workload | Bandit vs greedy, total time | Final regret vs hindsight reference            |
-| -------------- | -------- | ---------------------------- | ---------------------------------------------- |
-| TPC-H-like (S) | Static   | 24% less (26% to 21% less)   | 55 ms (53 to 58), 68% of the reference's total |
-| TPC-H-like (S) | Shifting | 28% more (26% to 30% more)   | 135 ms (132 to 139), 164%                      |
-| TPC-H-like (S) | HTAP     | 13% less (15% to 10% less)   | 93 ms (88 to 100), 94%                         |
-| Louvre         | Static   | 50% less (53% to 46% less)   | 42 ms (37 to 48), 129%                         |
-| Louvre         | Shifting | 22% more (21% to 24% more)   | 51 ms (50 to 52), 157%                         |
-| Louvre         | HTAP     | 50% less (52% to 48% less)   | 46 ms (43 to 49), 111%                         |
+| Dataset        | Workload | Bandit vs greedy, total time | Single sessions | Final regret vs hindsight reference            |
+| -------------- | -------- | ---------------------------- | --------------- | ---------------------------------------------- |
+| TPC-H-like (S) | Static   | 23% less (24% to 21% less)   | 23% to 22% less | 56 ms (54 to 60), 70% of the reference's total |
+| TPC-H-like (S) | Shifting | 27% more (22% to 32% more)   | 25% to 29% more | 134 ms (130 to 143), 163%                      |
+| TPC-H-like (S) | HTAP     | 14% less (18% to 9% less)    | 15% to 12% less | 88 ms (81 to 92), 83%                          |
+| Louvre         | Static   | 47% less (50% to 42% less)   | 51% to 39% less | 47 ms (40 to 55), 136%                         |
+| Louvre         | Shifting | 25% more (12% to 38% more)   | 14% to 38% more | 57 ms (52 to 68), 173%                         |
+| Louvre         | HTAP     | 50% less (53% to 43% less)   | 52% to 42% less | 50 ms (44 to 64), 127%                         |
 
-On build + run time without recommendation, the bandit was slower than greedy on the same static runs (10% on
-TPC-H-like, 5% to 15%, and 48% on Louvre, 42% to 54%). Its total-time advantage comes from never running a what-if
+The hindsight reference was proven optimal in all 50 replicate runs of every row. On build + run time without
+recommendation, the bandit was slower than greedy on the same static runs (12% on TPC-H-like, 10% to 14%, and 49% on
+Louvre, 45% to 54%). Its total-time advantage comes from never running a what-if
 search, and DR-002 explains why that weighs so much on workloads this small.
 
 **Known failure modes.** It relearns from scratch after a large workload shift, so it loses on shifting workloads.
@@ -103,9 +110,12 @@ the lab's own advisors. It never acts on the database directly.
 **Training data.** Not known to this project and not changed by it. The site does not train or fine-tune anything.
 
 **Evaluation.** The benchmark measures any accepted proposal with the same seeded workloads and paired statistics as
-the other advisors, and records the result in the browser's audit log. The invalid-proposal rate (indexes the
-validator rejected, and calls with any rejection or an unusable reply) is reported with Wilson intervals over every
-call logged in that browser. No results are published here because there is no budget for API calls.
+the other advisors, only on the settings the model was shown, and records the result in the browser's audit log. The
+invalid-proposal rate is reported separately for each provider, model (the one that answered), prompt version and
+dataset, never pooled. The share of calls with any rejected index or an unusable reply gets a Wilson interval, since
+calls are independent. The share of proposed indexes the validator rejected gets a percentile-bootstrap interval that
+resamples whole calls, since indexes from one reply share its mistakes. No results are published here because there
+is no budget for API calls.
 
 **Known failure modes.** Columns that do not exist on the named table (likely on the Louvre schema, where names like
 ticket_id repeat across tables), indexes on a table's primary key, configurations over the storage budget, malformed
@@ -117,10 +127,13 @@ client reports the rest, and the audit log keeps the evidence.
 - All data the models see is synthetic: the TPC-H-like rows, the generated workloads and trace, and the Louvre
   database from INFO20003, whose names and card digits are invented (see the data card).
 - The LLM advisor sends the schema, its statistics, one round of SQL with literals from the synthetic data, and query
-  plans to the visitor's chosen provider. It sends nothing about the visitor.
+  plans to the visitor's chosen provider. The prompt contains nothing about the visitor. As with any direct web
+  request, the provider sees the visitor's IP address and browser headers, under its own privacy terms.
+- With Claude Sonnet 5.5 the refusal fallback is on by default, so a request Sonnet declines may be re-run on another
+  Claude model. The audit log records the model that answered, and the invalid-proposal rate scores it separately.
 - API keys stay in the visitor's browser and are never written to the audit log. Calls are billed to the visitor's
   key, and the site says so before the first call.
 - Every model output is labelled "AI-generated", and a person accepts, edits or rejects every proposal before
-  anything is built. The approach is informed by the Australian Government's policy for the responsible use of AI in
-  government, the EU AI Act's transparency principles and the NIST AI Risk Management Framework. It is not a claim of
-  compliance with any of them.
+  anything is built. A proposal whose call could not be written to the audit log cannot be accepted. The approach is
+  informed by the Australian Government's policy for the responsible use of AI in government, the EU AI Act's
+  transparency principles and the NIST AI Risk Management Framework. It is not a claim of compliance with any of them.

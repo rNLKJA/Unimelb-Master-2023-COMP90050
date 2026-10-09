@@ -44,12 +44,13 @@ complaint by putting every algorithm on one engine with one stopwatch.
 ## What happened
 
 - The arena runs DROP, AutoAdmin, DB2 Advisor, CoPhy and the C²UCB bandit, plus a no-index baseline. CoPhy is solved
-  exactly by branch and bound, so the lab has a proven what-if optimum to compare the heuristics against.
+  by branch and bound, with a node limit to keep the browser responsive, so the lab has a what-if optimum to compare
+  the heuristics against whenever the search finishes.
 - The benchmark repeats the arena on seeded workloads. On the TPC-H-like data at size S with measured SQLite timings,
-  10 replicates, 25 rounds and a 200% budget, the bandit took 24% less total time than AutoAdmin's greedy what-if
-  search on the static workload (95% CI 26% to 21% less) and 28% more on the shifting workload (95% CI 26% to 30%
-  more). These and every other benchmark number in the docs come from `docs/benchmark-numbers.json`, which
-  `pnpm bench:report` regenerates (sql.js under Node 26 on an Apple M4 laptop).
+  10 replicates, 25 rounds and a 200% budget, run in five independent sessions, the bandit took 23% less total time
+  than AutoAdmin's greedy what-if search on the static workload (95% CI 24% to 21% less) and 27% more on the shifting
+  workload (95% CI 22% to 32% more). These and every other benchmark number in the docs come from
+  `docs/benchmark-numbers.json`, which `pnpm bench:report` regenerates (sql.js under Node 26 on an Apple M4 laptop).
   The report quoted Perera et al. finding the opposite pattern against a commercial tool: the tool won static TPC-H
   and the bandit won the dynamic workload. The lab does not reproduce that, and DR-003 explains the main reason.
 - The forecasting lab stayed small. It has one synthetic three-week trace, and linear regression stands in for QB5000's

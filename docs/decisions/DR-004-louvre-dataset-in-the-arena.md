@@ -52,11 +52,11 @@ and payment methods are drawn more often, as they would be at a real box office.
   the bandit's context, which led to a schema-generic engine and cost model (the TPC-H results were checked to be
   identical to the last digit before and after the refactor).
 - The database is small. Its largest table has 19,545 wing scans and the whole file is 2.1 MB of data, so a full scan
-  costs about a millisecond. With no indexes, 25 static rounds took 208 ms on SQLite (95% CI 206 to 210 ms over 10
-  replicates). At that size AutoAdmin's own search time (110 ms on average) outweighed what its indexes saved, and it
-  was only 1.38 times faster than no index at all (95% CI 1.37 to 1.40). (Numbers from
+  costs about a millisecond. With no indexes, 25 static rounds took 211 ms on SQLite (95% CI 204 to 222 ms, over five
+  sessions of the same 10 replicates). At that size AutoAdmin's own search time (110 ms on average) outweighed what its
+  indexes saved, and it was only 1.39 times faster than no index at all (95% CI 1.36 to 1.46). (Numbers from
   `docs/benchmark-numbers.json`.)
-- The simulated engine, calibrated on TPC-H, overestimates Louvre's no-index time by about 23% (DR-002).
+- The simulated engine, calibrated on TPC-H, overestimates Louvre's no-index time by about 21% (DR-002).
 - The data has a fixed size, so the arena's size setting does not apply to it.
 
 ## What I'd change

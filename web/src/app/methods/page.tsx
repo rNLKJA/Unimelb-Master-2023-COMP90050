@@ -78,11 +78,28 @@ function Bullets({ items }: { items: ReactNode[] }) {
   );
 }
 
-type Interval = { estimate: number; lower: number; upper: number };
-const pct = (r: Interval) => {
-  const f = (x: number) => `${x < 1 ? "−" : "+"}${Math.abs((x - 1) * 100).toFixed(0)}%`;
-  return `${f(r.estimate)} [${f(r.lower)}, ${f(r.upper)}]`;
+type Interval = {
+  estimate: number;
+  lower: number;
+  upper: number;
+  sessionRange?: [number, number];
 };
+const change = (x: number) => `${x < 1 ? "−" : "+"}${Math.abs((x - 1) * 100).toFixed(0)}%`;
+const pct = (r: Interval) => `${change(r.estimate)} [${change(r.lower)}, ${change(r.upper)}]`;
+/** "sessions −26% to −21%": the range of single-session estimates. */
+const range = (r: Interval) =>
+  r.sessionRange ? `sessions ${change(r.sessionRange[0])} to ${change(r.sessionRange[1])}` : null;
+
+function Change({ r }: { r: Interval }) {
+  return (
+    <>
+      {pct(r)}
+      {range(r) ? (
+        <span className="text-muted-foreground block text-[11px]">{range(r)}</span>
+      ) : null}
+    </>
+  );
+}
 const ms = (x: Interval) =>
   `${x.estimate.toFixed(0)} [${x.lower.toFixed(0)}, ${x.upper.toFixed(0)}]`;
 
@@ -146,10 +163,10 @@ function ResultsTable({ numbers }: { numbers: BenchmarkNumbers }) {
                 {ms(r.total.meanMs.mab)}
               </td>
               <td className="tabular px-3 py-2 text-right font-mono text-xs whitespace-nowrap">
-                {pct(r.total.vsGreedy.mab.ratio)}
+                <Change r={r.total.vsGreedy.mab.ratio} />
               </td>
               <td className="tabular px-3 py-2 text-right font-mono text-xs whitespace-nowrap">
-                {pct(r.buildRun.vsGreedy.mab.ratio)}
+                <Change r={r.buildRun.vsGreedy.mab.ratio} />
               </td>
             </tr>
           ))}
@@ -171,6 +188,13 @@ export default async function MethodsPage() {
     month: "long",
     year: "numeric",
   });
+  const sessions = Number(numbers.settings.sessions ?? 1);
+  const staticTpch = (
+    numbers.results["tpch/sqlite/static"] as { total: { vsGreedy: { mab: { ratio: Interval } } } }
+  ).total.vsGreedy.mab.ratio;
+  const staticRange = staticTpch.sessionRange
+    ? `${change(staticTpch.sessionRange[0])} to ${change(staticTpch.sessionRange[1])}`
+    : "";
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -278,8 +302,10 @@ export default async function MethodsPage() {
                 </>,
                 <>
                   <strong className="text-foreground">The hindsight reference</strong> builds,
-                  before round 1, the configuration CoPhy proves optimal under the what-if model for
-                  the whole workload. It exists to measure regret.
+                  before round 1, the configuration CoPhy&apos;s branch and bound finds best under
+                  the what-if model for the whole workload. Its node budget is large enough to prove
+                  that optimal on every setting the benchmark offers at the default scale, and the
+                  benchmark says so whenever it does not. It exists to measure regret.
                 </>,
                 <>
                   <strong className="text-foreground">Engines.</strong> Measured SQLite times every
@@ -312,15 +338,26 @@ export default async function MethodsPage() {
                 benchmark
               </Link>{" "}
               runs every advisor on R replicate workloads (10 by default), where replicate r uses
-              workload seed s + r. Inside a replicate every advisor replays the same queries, so
-              each replicate is a matched pair and comparisons are paired.
+              workload seed s + r. Inside a replicate every advisor replays the same queries, in a
+              seeded random order after one discarded warm-up replicate, so each replicate is a
+              matched pair and comparisons are paired.
             </p>
             <Bullets
               items={[
                 <>
                   <strong className="text-foreground">Means</strong> of cumulative workload time per
-                  advisor carry 95% percentile-bootstrap intervals over replicates (B = 2,000,
-                  resampling seed {STATS_SEED}).
+                  advisor carry 95% percentile-bootstrap intervals (B = 2,000, resampling seed{" "}
+                  {STATS_SEED}).
+                </>,
+                <>
+                  <strong className="text-foreground">Two kinds of interval.</strong> In the browser
+                  the intervals resample one session&apos;s replicates, so they describe
+                  workload-to-workload variation in that session only. Running the same seeds again
+                  in a fresh session moves measured times by more than that. The published numbers
+                  therefore come from {sessions} independent sessions (a fresh process each) over
+                  the same seeds, with a pigeonhole bootstrap that resamples sessions and workload
+                  seeds independently (Owen 2007), and each one comes with the range of
+                  single-session estimates.
                 </>,
                 <>
                   <strong className="text-foreground">Paired comparisons</strong> against the greedy
@@ -338,7 +375,8 @@ export default async function MethodsPage() {
                 <>
                   <strong className="text-foreground">Regret</strong> is the bandit&apos;s
                   cumulative time above the hindsight reference, round by round, with pointwise
-                  bootstrap bands.
+                  bootstrap bands, and a count of the replicates where the reference was proven
+                  optimal.
                 </>,
                 <>
                   <strong className="text-foreground">Drift sensitivity</strong> repeats everything
@@ -346,9 +384,12 @@ export default async function MethodsPage() {
                 </>,
                 <>
                   <strong className="text-foreground">The invalid-proposal rate</strong> of the LLM
-                  advisor is the share of proposed indexes the validator rejects, and the share of
-                  calls with an unusable reply or any rejection, each with a Wilson interval over
-                  every call logged in the browser. Provider and network failures are left out.
+                  advisor is reported separately for each provider, model (the one that answered),
+                  prompt version and dataset, never pooled. The share of calls with an unusable
+                  reply or any rejection gets a Wilson interval, because calls are independent. The
+                  share of proposed indexes the validator rejects gets a bootstrap interval that
+                  resamples whole calls, because indexes from one reply share its mistakes.
+                  Provider, network and cancelled calls are left out.
                 </>,
                 <>
                   <strong className="text-foreground">Forecasting</strong> is summarised over ten
@@ -368,9 +409,11 @@ export default async function MethodsPage() {
 
           <Section id="results" kicker="What the benchmark found" title="Headline results">
             <p>
-              Measured SQLite, 10 replicates, 25 rounds, 200% budget, means in milliseconds with 95%
-              intervals. Negative change means the bandit was faster than greedy. These numbers come
-              from <code className={code}>pnpm bench:report</code> ({numbers.platform}, Node{" "}
+              Measured SQLite, {sessions} sessions x 10 workload seeds, 25 rounds, 200% budget,
+              means in milliseconds with 95% pigeonhole-bootstrap intervals. Negative change means
+              the bandit was faster than greedy; under each change is the range of the {sessions}{" "}
+              single-session estimates. These numbers come from{" "}
+              <code className={code}>pnpm bench:report</code> ({numbers.platform}, Node{" "}
               {numbers.node}, {generated}). A browser on another machine gives different absolute
               times.
             </p>
@@ -388,7 +431,7 @@ export default async function MethodsPage() {
               items={[
                 "The what-if model assumes uniform, independent columns and fixed per-row costs fitted on one laptop.",
                 "Recommendation time is the advisors' own JavaScript run time plus 0.02 ms per what-if call, standing in for an optimiser call that would take milliseconds in a server DBMS.",
-                "Replicates differ only in query literals and noise. The data, schema and template mix stay fixed, so the intervals describe workload-to-workload variation on one dataset and one machine.",
+                "Replicates differ only in query literals and noise. The data, schema and template mix stay fixed. The published intervals cover workload-to-workload and run-to-run variation on one machine, not machine-to-machine variation.",
                 "Every index is a plain B-tree in SQLite. There are no INCLUDE columns, partial indexes or materialised views.",
                 "The Louvre data is synthetic and small (about two visiting parties a day), and the museum workload's mix and parameters are my own choices.",
               ]}
@@ -399,8 +442,8 @@ export default async function MethodsPage() {
             <Bullets
               items={[
                 "Workloads take hundreds of milliseconds, so recommendation time weighs far more than in the papers the survey quoted. Rankings on total time can flip on build + run time.",
-                "Percentile-bootstrap intervals from ten replicates are somewhat too narrow. Raise R in the benchmark for firmer intervals.",
-                "The simulated engine's constants were fitted on TPC-H-like data and overestimate the Louvre's no-index time by about 23%.",
+                `In the browser, intervals come from one session's replicates and leave out run-to-run variation, which is larger: across ${sessions} sessions on the author's machine the bandit's static TPC-H change against greedy ranged ${staticRange}. More replicates narrow those intervals without fixing that, so re-run the benchmark before trusting a small difference. Percentile intervals from ten workloads are also somewhat too narrow.`,
+                "The simulated engine's constants were fitted on TPC-H-like data and overestimate the Louvre's no-index time by about 21%.",
                 "The forecasting lab uses synthetic traces and no LSTM.",
                 "LLM results exist only in the browsers of visitors who bring a key. None are published here.",
                 "Measured times depend on the visitor's hardware, browser and other open tabs.",
@@ -452,7 +495,11 @@ export default async function MethodsPage() {
                 <ul className="mt-2 space-y-1.5 text-sm">
                   <li>Write or run SQL. The lab writes every CREATE INDEX itself.</li>
                   <li>Build anything a person has not accepted.</li>
-                  <li>See the visitor&apos;s key, the audit log or anything about the visitor.</li>
+                  <li>See your key or your audit log.</li>
+                  <li>
+                    Get anything about you in its prompt (see below for what any web request
+                    reveals).
+                  </li>
                 </ul>
               </div>
             </div>
@@ -463,13 +510,19 @@ export default async function MethodsPage() {
                   with row counts and distinct-value counts, round 1 of the workload (SQL with
                   literals from the synthetic data, and each template&apos;s share of estimated
                   cost), SQLite&apos;s query plans and the storage budget. The full message is kept
-                  in the audit log.
+                  in the audit log. The prompt contains nothing about you, but the call goes
+                  straight from your browser, so, as with any web request, the provider also sees
+                  your IP address and browser headers (such as the User-Agent and this site&apos;s
+                  Origin), under its own privacy terms.
                 </>,
                 <>
                   <strong className="text-foreground">Models.</strong> Anthropic by default (
                   {ANTHROPIC_MODELS.map((m) => m.label).join(" or ")}), or any OpenAI model id
                   (default {DEFAULT_OPENAI_MODEL}). Prompt version{" "}
-                  <code className={code}>{PROMPT_VERSION}</code>.
+                  <code className={code}>{PROMPT_VERSION}</code>. With Claude Sonnet 5.5 the refusal
+                  fallback is on by default: a request Sonnet declines may be re-run on another
+                  Claude model, and the audit log records the model that answered. AI settings can
+                  turn it off.
                 </>,
                 <>
                   <strong className="text-foreground">Your key.</strong> Kept in sessionStorage, or
@@ -481,16 +534,20 @@ export default async function MethodsPage() {
                   <strong className="text-foreground">Human in the loop.</strong> Every output is
                   labelled AI-generated. The validator rejects anything outside the schema or the
                   budget with a reason, and a person accepts, edits or rejects the rest before
-                  anything is built.
+                  anything is built. An accepted configuration is measured only on the settings the
+                  model was shown: changing them discards it, and the drift sweep leaves it out.
                 </>,
                 <>
-                  <strong className="text-foreground">Audit trail.</strong> Every call, decision and
+                  <strong className="text-foreground">Audit trail.</strong> Every call that leaves
+                  the browser (failed and cancelled ones included), every decision and every
                   measurement is appended to an audit log in your browser (IndexedDB), viewable and
                   exportable as JSON or CSV at{" "}
                   <Link className={a} href="/ai-log">
                     /ai-log
                   </Link>
-                  . The key is never written to it.
+                  . The key is never written to it. If a record cannot be written, for example
+                  because the browser blocks site storage, the page says so and the proposal cannot
+                  be accepted.
                 </>,
                 <>
                   <strong className="text-foreground">Frameworks.</strong> The design is informed by

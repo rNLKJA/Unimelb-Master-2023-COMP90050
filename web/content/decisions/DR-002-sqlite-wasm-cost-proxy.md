@@ -42,21 +42,27 @@ and 15% (Louvre) of SQLite's page counts.
 ## What happened
 
 - The model and SQLite agree on which index the tested templates use, but not on how long things take. With no
-  indexes, the simulated engine estimates 976 ms (95% CI 938 to 1010) for 25 static TPC-H rounds, averaged over 10
-  replicates, where measured SQLite takes 539 ms (95% CI 528 to 557). On the Louvre data it estimates 255 ms where
-  SQLite takes 208 ms, about 23% too high. The constants were fitted on the TPC-H-like data, and Louvre's text
-  timestamps compare at a different cost. (Numbers from `docs/benchmark-numbers.json`.)
+  indexes, the simulated engine estimates 976 ms (95% CI 939 to 1010) for 25 static TPC-H rounds, averaged over 10
+  replicates, where measured SQLite takes 534 ms (95% CI 530 to 541, over five sessions of the same 10 replicates).
+  On the Louvre data it estimates 255 ms where SQLite takes 211 ms, about 21% too high. The constants were fitted on
+  the TPC-H-like data, and Louvre's text timestamps compare at a different cost. (Numbers from
+  `docs/benchmark-numbers.json`.)
 - The direction of the bandit-against-greedy comparison matched between the two engines in all 16 settings I ran (two
   datasets, each with three scenarios and five drift levels), and the sizes did not. For example, the bandit against AutoAdmin on static
-  TPC-H was 17% faster on the simulated engine and 24% faster on SQLite.
+  TPC-H was 17% faster on the simulated engine and 23% faster on SQLite.
 - Charging recommendation as real JavaScript time is the weakest part of the design. The workloads are small (hundreds
   of milliseconds in total), so an advisor's own search time is a large share of the total. On static TPC-H,
-  AutoAdmin spent 61 ms recommending on average, about as much as it then spent running queries (64 ms). In the papers the report quoted,
+  AutoAdmin spent 61 ms recommending on average, about as much as it then spent running queries (62 ms). In the papers the report quoted,
   recommendation is minutes against hours of execution. This is why the benchmark also reports build + run time
   without recommendation. Because recommendation is always measured, even the simulated engine's totals vary slightly
   from run to run.
-- Timings vary with the visitor's machine and browser. The benchmark's intervals describe variation across seeded
-  workloads on one machine, not across machines.
+- Timings vary from run to run on the same machine, not only between machines. The first version of the benchmark
+  resampled the replicates of one run, and a review re-ran it in fresh processes: most headline estimates landed
+  outside their own 95% intervals (the bandit-to-greedy ratio on static TPC-H moved from 0.76 to between 0.77 and
+  0.84). The advisors now run in a seeded random order after a discarded warm-up replicate, and `pnpm bench:report`
+  runs five independent sessions and pools them with a pigeonhole bootstrap over sessions and workload seeds (Owen
+  2007), reporting the range of single-session estimates next to each interval. The browser's intervals still
+  describe one session only, and the page says so. None of this covers machine-to-machine variation.
 
 ## What I'd change
 
