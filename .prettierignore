@@ -1,6 +1,10 @@
-_archive/
-images/
-lectures/
-tutorials/
-project/
-presentation/
+# The web app has its own Prettier config and ignore file (run it from web/).
+web/
+
+# Original coursework: binary course material, screenshots and the verbatim archive.
+coursework/_archive/
+coursework/images/
+coursework/lectures/
+coursework/tutorials/
+coursework/project/
+coursework/presentation/

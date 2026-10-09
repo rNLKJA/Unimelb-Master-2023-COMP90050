@@ -1,0 +1,228 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens — "database console": midnight navy with mint accents in the
+ * dark theme, cool white with deep-mint accents in the light theme. Fonts:
+ * IBM Plex Sans (text), IBM Plex Sans Condensed (display), IBM Plex Mono (data).
+ */
+@theme inline {
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-display: var(--font-plex-condensed), var(--font-plex-sans), sans-serif;
+  --font-heading: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-grid: var(--grid);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-coral: var(--coral);
+  --color-sky: var(--sky);
+  --color-violet: var(--violet);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+
+  --text-display: clamp(2.6rem, 6vw, 4.75rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.02em;
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* cool white */
+  --background: oklch(0.982 0.006 250);
+  --foreground: oklch(0.22 0.04 262);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.962 0.01 252);
+  --grid: oklch(0.9 0.015 252);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+  /* 0.50 lightness keeps mint text and white-on-mint buttons above 4.5:1 (WCAG AA) */
+  --primary: oklch(0.5 0.12 166);
+  --primary-foreground: oklch(0.99 0.01 166);
+  --secondary: oklch(0.94 0.014 252);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.945 0.012 252);
+  --muted-foreground: oklch(0.47 0.035 260);
+  --accent: oklch(0.93 0.035 166);
+  --accent-foreground: oklch(0.3 0.07 166);
+  --destructive: oklch(0.56 0.2 25);
+  --border: oklch(0.885 0.018 255);
+  --input: oklch(0.86 0.02 255);
+  --ring: oklch(0.5 0.12 166);
+
+  --mint: oklch(0.5 0.12 166);
+  --mint-soft: oklch(0.93 0.04 166);
+  --amber: oklch(0.66 0.14 70);
+  /* amber is a fill colour; text uses the darker ink (about 5:1 on white) */
+  --amber-ink: oklch(0.52 0.12 70);
+  --coral: oklch(0.55 0.17 22);
+  --sky: oklch(0.56 0.13 245);
+  --violet: oklch(0.52 0.16 295);
+
+  --chart-1: var(--mint);
+  --chart-2: var(--sky);
+  --chart-3: var(--amber);
+  --chart-4: var(--violet);
+  --chart-5: var(--coral);
+
+  /* advisor identities, used by every chart */
+  --adv-none: oklch(0.6 0.02 260);
+  --adv-drop: var(--amber);
+  --adv-autoadmin: var(--sky);
+  --adv-db2advis: var(--violet);
+  --adv-cophy: var(--coral);
+  --adv-mab: var(--mint);
+
+  /* time-breakdown segments */
+  --seg-exec: oklch(0.5 0.05 258);
+  --seg-create: var(--amber);
+  --seg-rec: var(--coral);
+}
+
+.dark {
+  /* midnight navy */
+  --background: oklch(0.155 0.03 262);
+  --foreground: oklch(0.93 0.015 250);
+  --surface: oklch(0.19 0.035 262);
+  --surface-2: oklch(0.225 0.038 262);
+  --grid: oklch(0.27 0.035 262);
+  --card: oklch(0.19 0.035 262);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.21 0.038 262);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.86 0.14 166);
+  --primary-foreground: oklch(0.2 0.05 170);
+  --secondary: oklch(0.25 0.038 262);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.24 0.035 262);
+  --muted-foreground: oklch(0.72 0.03 255);
+  --accent: oklch(0.3 0.06 170);
+  --accent-foreground: oklch(0.92 0.08 166);
+  --destructive: oklch(0.7 0.17 22);
+  --border: oklch(0.3 0.04 262);
+  --input: oklch(0.34 0.04 262);
+  --ring: oklch(0.86 0.14 166);
+
+  --mint: oklch(0.86 0.14 166);
+  --mint-soft: oklch(0.32 0.07 168);
+  --amber: oklch(0.83 0.13 80);
+  --amber-ink: var(--amber);
+  --coral: oklch(0.74 0.15 18);
+  --sky: oklch(0.76 0.11 240);
+  --violet: oklch(0.74 0.12 295);
+
+  --adv-none: oklch(0.62 0.025 258);
+  --seg-exec: oklch(0.68 0.045 255);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply scroll-smooth font-sans;
+    font-feature-settings: "ss01", "ss02";
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--mint) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  /* faint console grid used behind heroes and panels */
+  .bg-console-grid {
+    background-image:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .kicker {
+    @apply text-muted-foreground font-mono text-[0.72rem] font-medium tracking-[0.14em] uppercase;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .prose-lab p {
+    @apply text-muted-foreground leading-relaxed;
+  }
+  .prose-lab p + p {
+    @apply mt-4;
+  }
+  .prose-lab strong {
+    @apply text-foreground font-semibold;
+  }
+  .prose-lab a {
+    @apply text-foreground decoration-mint hover:text-mint underline decoration-2 underline-offset-4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
