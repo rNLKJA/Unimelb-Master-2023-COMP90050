@@ -7,31 +7,22 @@
  * "query shape" every advisor reasons over.
  */
 import { BRANDS, PRIORITIES, SEGMENTS, SHIP_MODES } from "@/lib/db/generate";
-import { CURRENT_DATE, ORDER_DATE_MAX, isoFromDay, type TableName } from "@/lib/db/schema";
-import type { DatabaseStats } from "@/lib/db/stats";
-import { pick, randInt, type Rng } from "@/lib/random";
-import type { QueryInstance } from "@/lib/engine/types";
+import { CURRENT_DATE, ORDER_DATE_MAX, isoFromDay, type TpchTable } from "@/lib/db/schema";
+import { pick, randInt } from "@/lib/random";
+import { makeSuite, type QueryTemplate, type TemplateContext } from "./types";
+
+export type { QueryTemplate, TemplateContext } from "./types";
 
 export type TemplateGroup = "orders" | "shipping" | "catalogue";
 
-export interface TemplateContext {
-  stats: DatabaseStats;
-}
-
-export interface QueryTemplate {
-  id: string;
-  title: string;
-  group: TemplateGroup;
-  kind: "select" | "update";
-  blurb: string;
-  build: (rng: Rng, ctx: TemplateContext) => Omit<QueryInstance, "id">;
-}
-
-const rows = (ctx: TemplateContext, t: TableName) => ctx.stats[t].rows;
+const rows = (ctx: TemplateContext, t: TpchTable) => ctx.stats[t].rows;
 const q = (s: string) => `'${s}'`;
 const money = (x: number) => x.toFixed(2);
 
-export const TEMPLATES: QueryTemplate[] = [
+/** A TPC-H template, whose group is one of the three TPC-H phases. */
+export type TpchTemplate = QueryTemplate & { group: TemplateGroup };
+
+export const TEMPLATES: TpchTemplate[] = [
   {
     id: "Q1",
     title: "Customer order history",
@@ -341,3 +332,11 @@ export const GROUP_LABELS: Record<TemplateGroup, string> = {
   shipping: "Shipping analytics",
   catalogue: "Parts & customers",
 };
+
+/** The TPC-H-like workload: twelve reads in three groups and one UPDATE. */
+export const TPCH_SUITE = makeSuite(
+  "tpch",
+  TEMPLATES,
+  (["orders", "shipping", "catalogue"] as const).map((id) => ({ id, label: GROUP_LABELS[id] })),
+  "U1",
+);
