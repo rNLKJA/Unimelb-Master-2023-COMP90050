@@ -2616,7 +2616,7 @@ It can happen when an application executes database querying user-input data, an
 
 ```sql
 LOGIC `a` = `a` -- login with username and password
-SELECT * FROM `login` WHERE `user`='farhana' AND pass = `comp90050`
+SELECT * FROM `login` WHERE `user`='admin' AND pass = `comp90050`
 
 -- SQL injection use multi statement
 -- first level of injection
